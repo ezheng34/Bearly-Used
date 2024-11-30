@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import router components
 import HomePage from "./web pages/HomePage";
 import ListingPage from "./web pages/ListingPage";
+import UserProfile from "./web pages/UserProfile";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product" element={<ListingPage />} />
+          <Route path="/user" element={<UserProfile />} />
         </Routes>
       </div>
     </Router>
