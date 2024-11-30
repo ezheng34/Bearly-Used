@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/UserProfile.css";
+import ListItemPopup from "./ListItemPopup";
+import { Modal } from "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 type Listing = {
   id: number;
@@ -44,6 +48,35 @@ const UserProfile: React.FC = () => {
   const visibleListings = paginate(dummyListings, listingsPage);
   const visibleBought = paginate(dummyListings, boughtPage);
 
+  const closeModal = () => {
+    const modalElement = document.getElementById("addListingModal");
+    if (modalElement) {
+      const modal = Modal.getInstance(modalElement);
+      modal?.hide();
+
+      // Remove all modal-related effects
+      modalElement.classList.remove("show");
+      modalElement.style.display = "none";
+      modalElement.setAttribute("aria-hidden", "true");
+
+      const backdrops = document.querySelectorAll(".modal-backdrop");
+      backdrops.forEach((backdrop) => backdrop.remove());
+
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("padding-right");
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("height");
+    }
+  };
+
+  // Initialize modal
+  useEffect(() => {
+    const modalElement = document.getElementById("addListingModal");
+    if (modalElement) {
+      new Modal(modalElement);
+    }
+  }, []);
+
   return (
     <div className="user-profile-container">
       <div className="header">
@@ -56,7 +89,11 @@ const UserProfile: React.FC = () => {
             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
         </Link>
-        <button className="create-listing" onClick={() => navigate("/listing")}>
+        <button
+          className="create-listing"
+          data-bs-toggle="modal"
+          data-bs-target="#addListingModal"
+        >
           Create Listing
         </button>
       </div>
@@ -138,6 +175,30 @@ const UserProfile: React.FC = () => {
         >
           &#8594;
         </button>
+      </div>
+
+      <div
+        className="modal fade"
+        id="addListingModal"
+        tabIndex={-1}
+        aria-labelledby="addListingModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-0">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <ListItemPopup onSubmit={closeModal} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

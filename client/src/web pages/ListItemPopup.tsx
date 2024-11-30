@@ -109,7 +109,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
 
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
-      // Remove the show class and hide the modal
+      // hide modal stuff TODO this might be a duplicate
       modalElement.classList.remove("show");
       modalElement.style.display = "none";
       modalElement.setAttribute("aria-hidden", "true");
@@ -181,7 +181,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
               value={priceInput}
               onChange={(e) => {
                 const value = e.target.value;
-                // Allow empty input, digits, and one decimal point
+                // got regex thingy from Claude
                 if (value === "" || /^\d*\.?\d*$/.test(value)) {
                   setPriceInput(value);
                   setFormData({

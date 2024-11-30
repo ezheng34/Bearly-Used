@@ -5,7 +5,7 @@ import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-// Types that will match your backend eventually
+// backend types - might be wrong
 interface ListingItem {
   id: number;
   title: string;
@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
     { label: "$30+", min: 30, max: null },
   ];
 
-  // Filter listings based on selected category and price range
+  // filter listings based on selected category and price range
   useEffect(() => {
     let filtered = [...mockListings];
 
@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
     // Get the modal element
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
-      // Hide the modal using Bootstrap's Modal instance
+      // Hide the modal using Bootstrap's Modal instance . bc wtf
       const modal = Modal.getInstance(modalElement);
       modal?.hide();
 
@@ -120,12 +120,8 @@ const HomePage: React.FC = () => {
       modalElement.classList.remove("show");
       modalElement.style.display = "none";
       modalElement.setAttribute("aria-hidden", "true");
-
-      // Remove all backdrop elements (there might be multiple)
       const backdrops = document.querySelectorAll(".modal-backdrop");
       backdrops.forEach((backdrop) => backdrop.remove());
-
-      // Clean up the body
       document.body.classList.remove("modal-open");
       document.body.style.removeProperty("padding-right");
       document.body.style.removeProperty("overflow");
@@ -265,7 +261,6 @@ const HomePage: React.FC = () => {
       <div
         className="modal fade"
         id="addListingModal"
-        data-backdrop=""
         tabIndex={-1}
         aria-labelledby="addListingModalLabel"
         aria-hidden="true"
