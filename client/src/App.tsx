@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Im
 import HomePage from "./web pages/HomePage";
 import ListingPage from "./web pages/ListingPage";
 import UserProfile from "./web pages/UserProfile";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App: React.FC = () => {
   return (
