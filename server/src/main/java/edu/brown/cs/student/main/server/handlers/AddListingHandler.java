@@ -16,7 +16,7 @@ public class AddListingHandler implements Route {
   }
 
   @Override
-  public Object handle(Request request, Response response) throws Exception {
+  public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
@@ -32,7 +32,6 @@ public class AddListingHandler implements Route {
 
       //"http://localhost:3232/add-listing?seller_id=1&title=test&available=true&description=test&price=1.20&category=test&condition=bruh&image_url=test"
 
-      System.out.println("hi");
       this.dbHandler.createListing(
           sellerId, title, available, description, price, category, condition, imageUrl);
 
