@@ -24,13 +24,11 @@ public class AddListingHandler implements Route {
       Long sellerId = Long.valueOf(request.queryParams("seller_id"));
       String title = request.queryParams("title");
       boolean available = Boolean.parseBoolean(request.queryParams("available"));
-      System.out.println("hi!!!");
       String description = request.queryParams("available");
       float price = Float.parseFloat(request.queryParams("price"));
-      System.out.println("hi!!!");
-      String category = request.queryParams("available");
-      String condition = request.queryParams("available");
-      String imageUrl = request.queryParams("available");
+      String category = request.queryParams("category");
+      String condition = request.queryParams("condition");
+      String imageUrl = request.queryParams("imageUrl");
 
       //"http://localhost:3232/add-listing?seller_id=1&title=test&available=true&description=test&price=1.20&category=test&condition=bruh&image_url=test"
 
