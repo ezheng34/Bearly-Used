@@ -2,6 +2,9 @@ package edu.brown.cs.student.main.server.storage;
 
 import java.util.List;
 
+/**
+ * Mocked storage
+ */
 public class MockStorage implements StorageInterface {
 
   @Override

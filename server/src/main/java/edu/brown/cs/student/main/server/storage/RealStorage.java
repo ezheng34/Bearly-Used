@@ -4,18 +4,21 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.*;
 import java.util.List;
 
+/**
+ * A handler for the Postgres database
+ */
 public class RealStorage implements StorageInterface {
 
-  private String DB_PW;
-  private String DB_ENDPOINT;
-  private String DB_KEY;
+//  private String DB_PW;
+//  private String DB_ENDPOINT;
+//  private String DB_KEY;
   private String JDBC;
 
   public RealStorage() {
     Dotenv dotenv = Dotenv.load();
-    this.DB_PW = dotenv.get("DB_PASSWORD");
-    this.DB_ENDPOINT = dotenv.get("DB_ENDPOINT");
-    this.DB_KEY = dotenv.get("DB_KEY");
+//    this.DB_PW = dotenv.get("DB_PASSWORD");
+//    this.DB_ENDPOINT = dotenv.get("DB_ENDPOINT");
+//    this.DB_KEY = dotenv.get("DB_KEY");
     this.JDBC = dotenv.get("JDBC");
   }
 

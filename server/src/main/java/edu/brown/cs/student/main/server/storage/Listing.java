@@ -1,5 +1,8 @@
 package edu.brown.cs.student.main.server.storage;
 
+/**
+ * Represents a listing
+ */
 public class Listing {
   public int id;
   public String title;
