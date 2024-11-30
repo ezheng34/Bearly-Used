@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
+import "../styles/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -240,17 +241,16 @@ const HomePage: React.FC = () => {
       </nav>
 
       {/* Display filtered listings */}
-      <div className="container mt-4">
-        <div className="row">
+      <div className="homepage-listings">
+        <div className="homepage-listings-grid">
           {filteredListings.map((item) => (
-            <div key={item.id} className="col-md-3 mb-4">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">{item.title}</h5>
-                  <p className="card-text">${item.price}</p>
-                  <p className="card-text">{item.category}</p>
-                  <p className="card-text">{item.description}</p>
-                </div>
+            <div key={item.id} className="homepage-listing">
+              <div className="homepage-listing-image"></div>
+              <div className="homepage-listing-title">{item.title}</div>
+              <div className="homepage-listing-price">${item.price}</div>
+              <div className="homepage-listing-category">{item.category}</div>
+              <div className="homepage-listing-description">
+                {item.description}
               </div>
             </div>
           ))}

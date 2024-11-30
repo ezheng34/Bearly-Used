@@ -1,0 +1,52 @@
+.homepage-listings {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.homepage-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.homepage-listing {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-listing-image {
+  height: 8rem;
+  background-color: #d1d5db;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+.homepage-listing-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.homepage-listing-price {
+  color: #3b82f6;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.homepage-listing-category {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.homepage-listing-description {
+  color: #4b5563;
+  font-size: 0.875rem;
+  flex-grow: 1;
+}
