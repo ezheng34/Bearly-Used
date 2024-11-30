@@ -56,7 +56,6 @@ const UserProfile: React.FC = () => {
             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
         </Link>
-        <h1 className="title">Bearly Used</h1>
         <button className="create-listing" onClick={() => navigate("/listing")}>
           Create Listing
         </button>
