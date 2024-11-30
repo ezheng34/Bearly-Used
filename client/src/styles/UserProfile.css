@@ -2,7 +2,6 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  /* Removed overflow-y: auto and height */
 }
 
 .header {
@@ -94,47 +93,21 @@ h2 {
   margin: 1rem 0;
 }
 
-.listings,
-.previously-bought {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.listing {
-  background-color: #f3f4f6;
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
-
-.listing-image {
-  height: 8rem;
-  background-color: #d1d5db;
-}
-
-.listing-price {
-  font-weight: bold;
-  color: #374151;
-  margin-top: 0.5rem;
-}
-
-.listing-name {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.listings,
-.previously-bought {
+.listings-navigation {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 1rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scrollbar-width: thin;
+}
+
+.listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  flex-grow: 1;
 }
 
 .listing {
-  flex: 0 0 150px;
   background-color: #f3f4f6;
   padding: 1rem;
   border-radius: 0.5rem;
@@ -144,4 +117,22 @@ h2 {
 .listing-image {
   height: 8rem;
   background-color: #d1d5db;
+}
+
+.arrow-btn {
+  background-color: #e5e7eb;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.arrow-btn:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.arrow-btn:hover:not(:disabled) {
+  background-color: #d1e8ff;
 }

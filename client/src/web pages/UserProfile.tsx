@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/UserProfile.css";
 
-const UserProfile = () => {
-  const dummyListings = Array.from({ length: 12 }, (_, i) => ({
+type Listing = {
+  id: number;
+  name: string;
+  price: string;
+};
+
+const UserProfile: React.FC = () => {
+  const navigate = useNavigate();
+  // Dummy data for now idk the format
+  const dummyListings: Listing[] = Array.from({ length: 12 }, (_, i) => ({
     id: i,
     name: "Stand and Mirror",
     price: i % 2 === 0 ? "$19.99" : "Free",
@@ -12,30 +20,23 @@ const UserProfile = () => {
   const [listingsPage, setListingsPage] = useState(0);
   const [boughtPage, setBoughtPage] = useState(0);
 
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 6;
 
-  const paginate = (items: string | any[], page: number) =>
+  // paginate for arrow press on listings/items bought prob have to separate later
+  const paginate = (items: Listing[], page: number): Listing[] =>
     items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
   const handleNextPage = (
     page: number,
-    setPage: {
-      (value: React.SetStateAction<number>): void;
-      (value: React.SetStateAction<number>): void;
-      (arg0: any): void;
-    },
-    items: string | any[]
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    items: Listing[]
   ) => {
     if ((page + 1) * ITEMS_PER_PAGE < items.length) setPage(page + 1);
   };
 
   const handlePrevPage = (
     page: number,
-    setPage: {
-      (value: React.SetStateAction<number>): void;
-      (value: React.SetStateAction<number>): void;
-      (arg0: number): void;
-    }
+    setPage: React.Dispatch<React.SetStateAction<number>>
   ) => {
     if (page > 0) setPage(page - 1);
   };
@@ -56,7 +57,9 @@ const UserProfile = () => {
           </svg>
         </Link>
         <h1 className="title">Bearly Used</h1>
-        <button className="create-listing">Create Listing</button>
+        <button className="create-listing" onClick={() => navigate("/listing")}>
+          Create Listing
+        </button>
       </div>
 
       <div className="profile-container">
@@ -90,41 +93,13 @@ const UserProfile = () => {
           &#8592;
         </button>
         <div className="listings">
-          {visibleListings.map(
-            (listing: {
-              id: React.Key | null | undefined;
-              price:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              name:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <div key={listing.id} className="listing">
-                <div className="listing-image"></div>
-                <p className="listing-price">{listing.price}</p>
-                <p className="listing-name">{listing.name}</p>
-              </div>
-            )
-          )}
+          {visibleListings.map((listing: Listing) => (
+            <div key={listing.id} className="listing">
+              <div className="listing-image"></div>
+              <p className="listing-price">{listing.price}</p>
+              <p className="listing-name">{listing.name}</p>
+            </div>
+          ))}
         </div>
         <button
           className="arrow-btn"
@@ -147,41 +122,13 @@ const UserProfile = () => {
           &#8592;
         </button>
         <div className="listings">
-          {visibleBought.map(
-            (listing: {
-              id: number;
-              price:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-              name:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined;
-            }) => (
-              <div key={listing.id + 12} className="listing">
-                <div className="listing-image"></div>
-                <p className="listing-price">{listing.price}</p>
-                <p className="listing-name">{listing.name}</p>
-              </div>
-            )
-          )}
+          {visibleBought.map((listing: Listing) => (
+            <div key={listing.id + 12} className="listing">
+              <div className="listing-image"></div>
+              <p className="listing-price">{listing.price}</p>
+              <p className="listing-name">{listing.name}</p>
+            </div>
+          ))}
         </div>
         <button
           className="arrow-btn"
