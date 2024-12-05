@@ -24,7 +24,7 @@ public class AddListingHandler implements Route {
       Long sellerId = Long.valueOf(request.queryParams("seller_id"));
       String title = request.queryParams("title");
       boolean available = Boolean.parseBoolean(request.queryParams("available"));
-      String description = request.queryParams("available");
+      String description = request.queryParams("description");
       float price = Float.parseFloat(request.queryParams("price"));
       String category = request.queryParams("category");
       String condition = request.queryParams("condition");
