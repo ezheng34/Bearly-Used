@@ -1,8 +1,13 @@
 package edu.brown.cs.student.main.server.storage;
 
+import edu.brown.cs.student.main.server.classes.Listing;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface StorageInterface {
+
+  public void createUser(String email, String name, String phoneNumber, String school)
+      throws SQLException;
 
   // all-purpose to get either all listings or filtered listings
   List<Listing> getListings(String category, float minPrice, float maxPrice, Sorter toSort);
@@ -15,7 +20,8 @@ public interface StorageInterface {
       float price,
       String category,
       String condition,
-      String imageUrl);
+      String imageUrl,
+      List<String> tags) throws SQLException;
 
   Listing getListingById();
 

@@ -1,7 +1,9 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -30,10 +32,16 @@ public class AddListingHandler implements Route {
       String condition = request.queryParams("condition");
       String imageUrl = request.queryParams("image_url");
 
-      //"http://localhost:3232/add-listing?seller_id=1&title=test&available=true&description=test&price=1.20&category=test&condition=bruh&image_url=test"
+      // parse tags
+      String tagsParam = request.queryParams("tags");
+      List<String> tags = Arrays.asList(tagsParam.split(","));
+
+      // EXAMPLE QUERY:
+      // http://localhost:3232/add-listing?seller_id=1&title=Book&available=true&description=Great+book
+      // &price=15.0&category=Books&condition=New&image_url=book.jpg&tags=[%22fiction%22,%22thriller%22]
 
       this.dbHandler.createListing(
-          sellerId, title, available, description, price, category, condition, imageUrl);
+          sellerId, title, available, description, price, category, condition, imageUrl, tags);
 
       responseMap.put("response_type", "success");
     } catch (Exception e) {
