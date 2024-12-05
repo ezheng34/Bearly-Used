@@ -5,6 +5,13 @@ import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import ProductPage from "./ProductPage";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 
 // backend types - might be wrong
 interface ListingItem {
@@ -129,6 +136,15 @@ const HomePage: React.FC = () => {
       document.body.style.removeProperty("height");
     }
   };
+
+
+  const navigate = useNavigate();
+  //redirects user to product page via different url based on id of product
+  const handleProductClick = (id: number) => {
+    navigate(`/product/${id}`);
+  };
+
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-info">
@@ -246,7 +262,16 @@ const HomePage: React.FC = () => {
           {filteredListings.map((item) => (
             <div key={item.id} className="homepage-listing">
               <div className="homepage-listing-image"></div>
-              <div className="homepage-listing-title">{item.title}</div>
+
+              {/* button for product title, upon click will redirects user to the specific product's page*/}
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={() => handleProductClick(item.id)}
+              >
+                <div className="homepage-listing-title">{item.title}</div>
+              </button>
+
               <div className="homepage-listing-price">${item.price}</div>
               <div className="homepage-listing-category">{item.category}</div>
               <div className="homepage-listing-description">
