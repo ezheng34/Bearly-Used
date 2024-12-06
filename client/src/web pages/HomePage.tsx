@@ -5,7 +5,7 @@ import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import ProductPage from "./ProductPage";
+import mockProducts from "../data/product";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,52 +20,15 @@ interface ListingItem {
   price: number;
   category: string;
   description: string;
+  images: string[];
 }
 
 const HomePage: React.FC = () => {
-  // Mock data??
-  const mockListings: ListingItem[] = [
-    {
-      id: 1,
-      title: "iPhone 12",
-      price: 400,
-      category: "Electronics",
-      description: "Good condition iPhone",
-    },
-    {
-      id: 2,
-      title: "Desk Lamp",
-      price: 15,
-      category: "Furniture",
-      description: "LED desk lamp",
-    },
-    {
-      id: 3,
-      title: "cs320 Textbook",
-      price: 25,
-      category: "Books",
-      description: "never used. readings hwo",
-    },
-    {
-      id: 4,
-      title: "NEW shiny sexy nike shoes",
-      price: 45,
-      category: "Clothing & Accessories",
-      description: "Size 10",
-    },
-    {
-      id: 5,
-      title: "ur mom",
-      price: 0,
-      category: "Clothing & Accessories",
-      description: "FREE 99",
-    },
-  ];
-
+  
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
   const [filteredListings, setFilteredListings] =
-    useState<ListingItem[]>(mockListings);
+    useState<ListingItem[]>(mockProducts.mockProducts);
 
   const categories = [
     "Electronics",
@@ -89,7 +52,7 @@ const HomePage: React.FC = () => {
 
   // filter listings based on selected category and price range
   useEffect(() => {
-    let filtered = [...mockListings];
+    let filtered = mockProducts.mockProducts;
 
     if (selectedCategory) {
       filtered = filtered.filter((item) => item.category === selectedCategory);
@@ -261,7 +224,12 @@ const HomePage: React.FC = () => {
         <div className="homepage-listings-grid">
           {filteredListings.map((item) => (
             <div key={item.id} className="homepage-listing">
-              <div className="homepage-listing-image"></div>
+              <div className="homepage-listing-image">
+                <img
+                  src={item.images[0]}
+                  className="img-fluid rounded mb-3 product-image"
+                />
+              </div>
 
               {/* button for product title, upon click will redirects user to the specific product's page*/}
               <button

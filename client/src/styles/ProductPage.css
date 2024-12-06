@@ -1,0 +1,23 @@
+.thumbnail-container {
+  max-width: 100%; 
+}
+
+.thumbnail-container .d-flex {
+  display: flex; /* Flexbox to display thumbnails in a row */
+  flex-wrap: nowrap; 
+  overflow-x: auto; /* Enable horizontal scrolling when content exceeds container */
+  gap: 10px; 
+  padding-bottom: 10px; 
+}
+
+.thumbnail-container .thumbnail {
+  width: 60px; /* Thumbnail size */
+  height: 60px; /* Thumbnail size */
+  object-fit: cover; /* Ensures the image fills the box without distortion */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.thumbnail-container img:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
