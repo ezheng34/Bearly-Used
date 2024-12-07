@@ -6,6 +6,7 @@ import ListingPage from "./web pages/[delete] ListingPage";
 import UserProfile from "./web pages/UserProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ProductPage from "./web pages/ProductPage";
+import "./styles/App.css";
 
 const App: React.FC = () => {
   return (
@@ -13,9 +14,9 @@ const App: React.FC = () => {
       {" "}
       {/* Wrap app with Router */}
       <div>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark text-white">
+        <nav className="navbar navbar-expand-lg navbar-custom">
           <div className="container-fluid align-items-center">
-            <a className="navbar-brand mx-auto" href="/">
+            <a className="navbar-brand mx-auto text-white" href="/">
               Bearly Used
             </a>
             <div className="d-flex align-items-center">

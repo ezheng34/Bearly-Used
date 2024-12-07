@@ -16,9 +16,13 @@
 :root {
   --primary-blue: #4FC3DB;
   --primary-dark: #2D3047;
+  --primary-brown: #c3925d;
   --secondary-beige: #F5EBE0;
   --accent-coral: #FF8360;
   --accent-sage: #7CA982;
   --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
+.navbar-custom {
+  background-color: var(--primary-brown) !important;
+}

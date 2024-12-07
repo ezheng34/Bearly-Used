@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-info">
+      <nav className="navbar navbar-expand-lg">
         <div className="container-fluid">
           <ul className="navbar-nav">
             {/* Prices Dropdown */}
