@@ -54,7 +54,6 @@ const UserProfile: React.FC = () => {
       const modal = Modal.getInstance(modalElement);
       modal?.hide();
 
-      // Remove all modal-related effects
       modalElement.classList.remove("show");
       modalElement.style.display = "none";
       modalElement.setAttribute("aria-hidden", "true");
@@ -63,9 +62,9 @@ const UserProfile: React.FC = () => {
       backdrops.forEach((backdrop) => backdrop.remove());
 
       document.body.classList.remove("modal-open");
-      document.body.style.removeProperty("padding-right");
-      document.body.style.removeProperty("overflow");
-      document.body.style.removeProperty("height");
+      document.body.removeAttribute("style");
+      document.body.style.overflow = "auto";
+      document.body.style.overflowY = "auto";
     }
   };
 

@@ -12,3 +12,13 @@
   font-size: calc(1px + 2vmin);
   color: white;
 }
+
+:root {
+  --primary-blue: #4FC3DB;
+  --primary-dark: #2D3047;
+  --secondary-beige: #F5EBE0;
+  --accent-coral: #FF8360;
+  --accent-sage: #7CA982;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
