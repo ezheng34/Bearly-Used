@@ -2,20 +2,27 @@ package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
 import java.util.List;
+import java.util.Optional;
 
 /** Mocked storage */
 public class MockStorage implements StorageInterface {
 
   @Override
-  public void createUser(String email, String name, String phoneNumber, String school) {}
-
-  @Override
-  public List<Listing> getListings(String category, float minPrice, float maxPrice, Sorter toSort) {
+  public Long createUser(String email, String name, String phoneNumber, String school) {
     return null;
   }
 
   @Override
-  public void createListing(
+  public List<Listing> getListings(
+      Optional<String> category,
+      Optional<Float> minPrice,
+      Optional<Float> maxPrice,
+      Optional<Sorter> sorter) {
+    return null;
+  }
+
+  @Override
+  public Long createListing(
       Long sellerId,
       String title,
       boolean isAvailable,
@@ -24,16 +31,22 @@ public class MockStorage implements StorageInterface {
       String category,
       String condition,
       String imageUrl,
-      List<String> tags) {}
-
-  @Override
-  public Listing getListingById() {
+      List<String> tags) {
     return null;
   }
 
   @Override
-  public void updateListing() {}
+  public Optional<Listing> getListingById(Long listingId) {
+    return null;
+  }
 
   @Override
-  public void deleteListing() {}
+  public boolean updateListing(Long listingId, Listing updatedListing) {
+    return false;
+  }
+
+  @Override
+  public boolean deleteListing(Long listingId) {
+    return false;
+  }
 }

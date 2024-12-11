@@ -3,7 +3,10 @@ package edu.brown.cs.student.main.server.storage;
 import edu.brown.cs.student.main.server.classes.Listing;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /** A handler for the Postgres database */
 public class RealStorage implements StorageInterface {
@@ -14,13 +17,31 @@ public class RealStorage implements StorageInterface {
     this.JDBC = dotenv.get("JDBC");
   }
 
+  // Validate email
+  private void validateEmail(String email) {
+    if (email == null || !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+      throw new IllegalArgumentException("Invalid email format");
+    }
+  }
+
+  // Validate price
+  private void validatePrice(float price) {
+    if (price < 0) {
+      throw new IllegalArgumentException("Price cannot be negative");
+    }
+  }
+
   /* USER FUNCTIONS */
 
   // Creates a user
-  public void createUser(String email, String name, String phoneNumber, String school)
+  @Override
+  public Long createUser(String email, String name, String phoneNumber, String school)
       throws SQLException {
+    validateEmail(email);
+
     // SQL parameterization
-    String sql = "INSERT INTO users (email, name, phone_number, school) VALUES (?, ?, ?, ?)";
+    String sql =
+        "INSERT INTO users (email, name, phone_number, school) VALUES (?, ?, ?, ?) RETURNING id";
 
     try {
       Connection connection = DriverManager.getConnection(this.JDBC);
@@ -31,25 +52,34 @@ public class RealStorage implements StorageInterface {
       statement.setString(3, phoneNumber);
       statement.setString(4, school);
 
-      if (statement.executeUpdate() > 0) {
-        System.out.println("User created successfully");
-      } else {
-        System.out.println("Failed to create user");
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          Long userId = result.getLong(1);
+          System.out.println("User created successfully with ID: " + userId);
+          return userId;
+        } else {
+          System.err.println("Failed to retrieve created user ID");
+          throw new SQLException("No ID obtained for created user");
+        }
       }
-
     } catch (SQLException e) {
-      System.err.println("Error connection to SQL Database: " + e.getMessage());
+      System.err.println("Error creating user: " + e.getMessage());
       throw e;
     }
   }
 
   /* LISTING FUNCTIONS */
 
-  public List<Listing> getListings(String category, float minPrice, float maxPrice, Sorter toSort) {
+  @Override
+  public List<Listing> getListings(
+      Optional<String> category,
+      Optional<Float> minPrice,
+      Optional<Float> maxPrice,
+      Optional<Sorter> sorter) {
     return null;
   }
 
-  public void createListing(
+  public Long createListing(
       Long sellerId,
       String title,
       boolean isAvailable,
@@ -58,12 +88,16 @@ public class RealStorage implements StorageInterface {
       String category,
       String condition,
       String imageUrl,
-      List<String> tags) throws SQLException {
+      List<String> tags)
+      throws IllegalArgumentException, SQLException {
+
+    validatePrice(price);
 
     // SQL parameterization
     String sql =
-        "INSERT INTO listings (seller_id, title, available, description, price, category, "
-            + "condition, image_url, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO listings "
+            + "(seller_id, title, available, description, price, category, condition, image_url, tags) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
 
     System.out.println(sql);
 
@@ -81,23 +115,141 @@ public class RealStorage implements StorageInterface {
       statement.setString(8, imageUrl);
       statement.setArray(9, connection.createArrayOf("TEXT", tags.toArray()));
 
-      if (statement.executeUpdate() > 0) {
-        System.out.println("Listing created successfully");
-      } else {
-        System.out.println("Failed to create listing");
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          Long listingId = result.getLong(1);
+          System.out.println("Listing created successfully with ID: " + listingId);
+          return listingId;
+        } else {
+          System.err.println("Failed to retrieve created listing ID");
+          throw new SQLException("No ID obtained for created listing");
+        }
       }
-
     } catch (SQLException e) {
       System.err.println("Error connection to SQL Database: " + e.getMessage());
       throw e;
     }
   }
 
-  public Listing getListingById() {
-    return null;
+  @Override
+  public Optional<Listing> getListingById(Long listingId) {
+    return Optional.empty();
   }
 
-  public void updateListing() {}
+  @Override
+  public boolean updateListing(Long listingId, Listing updatedListing) {
+    // Validate price if price is being updated
+    if (updatedListing.getPrice() != null) {
+      validatePrice(updatedListing.getPrice());
+    }
 
-  public void deleteListing() {}
+    // Construct dynamic SQL update query
+    StringBuilder sqlBuilder = new StringBuilder("UPDATE listings SET ");
+    boolean hasUpdates = false;
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC)) {
+      // Create a list to hold parameters
+      List<Object> params = new ArrayList<>();
+
+      // Dynamically add fields to update
+      if (updatedListing.getTitle() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("title = ?");
+        params.add(updatedListing.getTitle());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getDescription() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("description = ?");
+        params.add(updatedListing.getDescription());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getPrice() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("price = ?");
+        params.add(updatedListing.getPrice());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getCategory() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("category = ?");
+        params.add(updatedListing.getCategory());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getCondition() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("condition = ?");
+        params.add(updatedListing.getCondition());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getImageUrl() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("image_url = ?");
+        params.add(updatedListing.getImageUrl());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getAvailable()) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("available = ?");
+        params.add(updatedListing.getAvailable());
+        hasUpdates = true;
+      }
+
+      if (updatedListing.getTags() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("tags = ?");
+        params.add(connection.createArrayOf("TEXT", updatedListing.getTags().toArray()));
+        hasUpdates = true;
+      }
+
+      if (!hasUpdates) {
+        System.err.println("No fields to update");
+        return false;
+      }
+
+      sqlBuilder.append(" WHERE id = ?");
+      params.add(listingId);
+
+      try (PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+          statement.setObject(i + 1, params.get(i));
+        }
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+          System.out.println("Listing updated successfully: " + listingId);
+          return true;
+        } else {
+          System.err.println("No listing found with ID: " + listingId);
+          return false;
+        }
+      }
+    } catch (SQLException e) {
+      System.err.println("Error updating listing: " + e.getMessage());
+      return false;
+    }
+  }
+
+  @Override
+  public boolean deleteListing(Long listingId) {
+    String sql = "DELETE FROM listings WHERE id = ?";
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+
+      statement.setLong(1, listingId);
+
+      int rowsAffected = statement.executeUpdate();
+
+      if (rowsAffected > 0) {
+        System.out.println("Listing deleted successfully: " + listingId);
+        return true;
+      } else {
+        System.err.println("No listing found with ID: " + listingId);
+        return false;
+      }
+    } catch (SQLException e) {
+      System.err.println("Error deleting listing: " + e.getMessage());
+      return false;
+    }
+  }
 }
