@@ -4,6 +4,7 @@ import edu.brown.cs.student.main.server.classes.Listing;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -69,15 +70,92 @@ public class RealStorage implements StorageInterface {
   }
 
   /* LISTING FUNCTIONS */
-
   @Override
   public List<Listing> getListings(
       Optional<String> category,
       Optional<Float> minPrice,
       Optional<Float> maxPrice,
+      Optional<List<String>> tags,
       Optional<Sorter> sorter) {
-    return null;
+
+    List<Listing> listings = new ArrayList<>();
+
+    // "Where 1=1" is the same as WHERE TRUE so it lets us append additional filters with AND
+    StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM listings WHERE 1=1");
+    List<Object> params = new ArrayList<>();
+
+    // Apply filters dynamically
+    category.ifPresent(cat -> {
+      sqlBuilder.append(" AND category = ?");
+      params.add(cat);
+    });
+
+    minPrice.ifPresent(min -> {
+      sqlBuilder.append(" AND price >= ?");
+      params.add(min);
+    });
+
+    maxPrice.ifPresent(max -> {
+      sqlBuilder.append(" AND price <= ?");
+      params.add(max);
+    });
+
+    // TODO change to be a list
+    // Add tag filtering
+    tags.ifPresent(t -> {
+      sqlBuilder.append(" AND ? = ANY(tags)"); // SQL for checking tags in an array
+      params.add(t);
+    });
+
+    // Apply sorting
+    sorter.ifPresent(s -> {
+      sqlBuilder.append(" ORDER BY ");
+      switch (s) {
+        case PRICE_ASC:
+          sqlBuilder.append("price ASC");
+          break;
+        case PRICE_DESC:
+          sqlBuilder.append("price DESC");
+          break;
+        default:
+          throw new IllegalArgumentException("Unsupported sorter");
+      }
+    });
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
+
+      // Set query parameters
+      for (int i = 0; i < params.size(); i++) {
+        statement.setObject(i + 1, params.get(i));
+      }
+
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          // Map ResultSet to Listing object
+          Listing listing = new Listing(
+              resultSet.getLong("id"),
+              resultSet.getString("title"),
+              resultSet.getString("description"),
+              resultSet.getFloat("price"),
+              resultSet.getString("category"),
+              resultSet.getString("condition"),
+              resultSet.getString("image_url"),
+              Arrays.asList(resultSet.getString("tags")),
+              //Arrays.asList((String[]) resultSet.getArray("tags").getArray()), // Handle array conversion
+              resultSet.getBoolean("available")
+          );
+          listings.add(listing);
+        }
+      }
+
+    } catch (SQLException e) {
+      System.err.println("Error fetching listings: " + e.getMessage());
+    }
+
+    return listings;
   }
+
 
   public Long createListing(
       Long sellerId,

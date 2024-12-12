@@ -17,6 +17,7 @@ public class MockStorage implements StorageInterface {
       Optional<String> category,
       Optional<Float> minPrice,
       Optional<Float> maxPrice,
+      Optional<String> tag,
       Optional<Sorter> sorter) {
     return null;
   }

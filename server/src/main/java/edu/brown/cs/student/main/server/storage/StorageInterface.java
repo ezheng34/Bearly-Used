@@ -15,6 +15,7 @@ public interface StorageInterface {
       Optional<String> category,
       Optional<Float> minPrice,
       Optional<Float> maxPrice,
+      Optional<List<String>> tags,
       Optional<Sorter> sorter);
 
   Long createListing(
