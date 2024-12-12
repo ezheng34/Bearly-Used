@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /** Mocked storage */
@@ -17,7 +18,7 @@ public class MockStorage implements StorageInterface {
       Optional<String> category,
       Optional<Float> minPrice,
       Optional<Float> maxPrice,
-      Optional<String> tag,
+      Optional<List<String>> tags,
       Optional<Sorter> sorter) {
     return null;
   }
@@ -49,5 +50,15 @@ public class MockStorage implements StorageInterface {
   @Override
   public boolean deleteListing(Long listingId) {
     return false;
+  }
+
+  @Override
+  public Map<String, Object> getUser(long userId) throws Exception {
+    return null;
+  }
+
+  @Override
+  public List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception {
+    return null;
   }
 }

@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server.storage;
 import edu.brown.cs.student.main.server.classes.Listing;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface StorageInterface {
@@ -35,6 +36,10 @@ public interface StorageInterface {
   boolean updateListing(Long listingId, Listing updatedListing);
 
   boolean deleteListing(Long listingId);
+
+  Map<String, Object> getUser(long userId) throws Exception;
+
+  List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception;
 
   //  void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data);
   //

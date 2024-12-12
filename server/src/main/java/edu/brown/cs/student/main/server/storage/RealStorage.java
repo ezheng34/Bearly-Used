@@ -5,9 +5,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /** A handler for the Postgres database */
 public class RealStorage implements StorageInterface {
@@ -85,42 +88,47 @@ public class RealStorage implements StorageInterface {
     List<Object> params = new ArrayList<>();
 
     // Apply filters dynamically
-    category.ifPresent(cat -> {
-      sqlBuilder.append(" AND category = ?");
-      params.add(cat);
-    });
+    category.ifPresent(
+        cat -> {
+          sqlBuilder.append(" AND category = ?");
+          params.add(cat);
+        });
 
-    minPrice.ifPresent(min -> {
-      sqlBuilder.append(" AND price >= ?");
-      params.add(min);
-    });
+    minPrice.ifPresent(
+        min -> {
+          sqlBuilder.append(" AND price >= ?");
+          params.add(min);
+        });
 
-    maxPrice.ifPresent(max -> {
-      sqlBuilder.append(" AND price <= ?");
-      params.add(max);
-    });
+    maxPrice.ifPresent(
+        max -> {
+          sqlBuilder.append(" AND price <= ?");
+          params.add(max);
+        });
 
     // TODO change to be a list
     // Add tag filtering
-    tags.ifPresent(t -> {
-      sqlBuilder.append(" AND ? = ANY(tags)"); // SQL for checking tags in an array
-      params.add(t);
-    });
+    tags.ifPresent(
+        t -> {
+          sqlBuilder.append(" AND ? = ANY(tags)"); // SQL for checking tags in an array
+          params.add(t);
+        });
 
     // Apply sorting
-    sorter.ifPresent(s -> {
-      sqlBuilder.append(" ORDER BY ");
-      switch (s) {
-        case PRICE_ASC:
-          sqlBuilder.append("price ASC");
-          break;
-        case PRICE_DESC:
-          sqlBuilder.append("price DESC");
-          break;
-        default:
-          throw new IllegalArgumentException("Unsupported sorter");
-      }
-    });
+    sorter.ifPresent(
+        s -> {
+          sqlBuilder.append(" ORDER BY ");
+          switch (s) {
+            case PRICE_ASC:
+              sqlBuilder.append("price ASC");
+              break;
+            case PRICE_DESC:
+              sqlBuilder.append("price DESC");
+              break;
+            default:
+              throw new IllegalArgumentException("Unsupported sorter");
+          }
+        });
 
     try (Connection connection = DriverManager.getConnection(this.JDBC);
         PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
@@ -133,18 +141,19 @@ public class RealStorage implements StorageInterface {
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
           // Map ResultSet to Listing object
-          Listing listing = new Listing(
-              resultSet.getLong("id"),
-              resultSet.getString("title"),
-              resultSet.getString("description"),
-              resultSet.getFloat("price"),
-              resultSet.getString("category"),
-              resultSet.getString("condition"),
-              resultSet.getString("image_url"),
-              Arrays.asList(resultSet.getString("tags")),
-              //Arrays.asList((String[]) resultSet.getArray("tags").getArray()), // Handle array conversion
-              resultSet.getBoolean("available")
-          );
+          Listing listing =
+              new Listing(
+                  resultSet.getLong("id"),
+                  resultSet.getString("title"),
+                  resultSet.getString("description"),
+                  resultSet.getFloat("price"),
+                  resultSet.getString("category"),
+                  resultSet.getString("condition"),
+                  resultSet.getString("image_url"),
+                  Arrays.asList(resultSet.getString("tags")),
+                  // Arrays.asList((String[]) resultSet.getArray("tags").getArray()), // Handle
+                  // array conversion
+                  resultSet.getBoolean("available"));
           listings.add(listing);
         }
       }
@@ -155,7 +164,6 @@ public class RealStorage implements StorageInterface {
 
     return listings;
   }
-
 
   public Long createListing(
       Long sellerId,
@@ -210,6 +218,71 @@ public class RealStorage implements StorageInterface {
   }
 
   @Override
+  public Map<String, Object> getUser(long userId) throws Exception {
+    Map<String, Object> userData = new HashMap<>();
+    String sql = "SELECT * FROM users WHERE id = ?";
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setLong(1, userId);
+      try (ResultSet rs = statement.executeQuery()) {
+        if (rs.next()) {
+          userData.put("id", rs.getLong("id"));
+          userData.put("email", rs.getString("email"));
+          userData.put("name", rs.getString("name"));
+          userData.put("phone_number", rs.getString("phone_number"));
+          userData.put("school", rs.getString("school"));
+        }
+      }
+    }
+    return userData;
+  }
+
+  @Override
+  public List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception {
+    List<Map<String, Object>> listings = new ArrayList<>();
+    String sql = "SELECT * FROM listings WHERE seller_id = ?";
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+
+      statement.setLong(1, sellerId);
+
+      try (ResultSet rs = statement.executeQuery()) {
+        while (rs.next()) {
+          Map<String, Object> listing = new HashMap<>();
+          listing.put("id", rs.getLong("id"));
+          listing.put("title", rs.getString("title"));
+          listing.put("description", rs.getString("description"));
+          listing.put("price", rs.getDouble("price"));
+          listing.put("available", rs.getBoolean("available"));
+          listing.put("category", rs.getString("category"));
+          listing.put("condition", rs.getString("condition"));
+          listing.put("image_url", rs.getString("image_url"));
+
+          String tagsJson = rs.getString("tags");
+          listing.put("tags", cleanTags(tagsJson));
+          listings.add(listing);
+        }
+      }
+    }
+
+    return listings;
+  }
+
+  private List<String> cleanTags(String tagsJson) {
+    if (tagsJson == null || tagsJson.trim().isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    String cleanedTags = tagsJson.replaceAll("[\\{\\}\\[\\]\\\"]", "").replace("\\", "");
+    return Arrays.stream(cleanedTags.split(","))
+        .map(String::trim)
+        .filter(tag -> !tag.isEmpty())
+        .collect(Collectors.toList());
+  }
+
+  @Override
   public Optional<Listing> getListingById(Long listingId) {
     return Optional.empty();
   }
@@ -221,7 +294,7 @@ public class RealStorage implements StorageInterface {
       validatePrice(updatedListing.getPrice());
     }
 
-    // Construct dynamic SQL update query
+    // Construct SQL update query
     StringBuilder sqlBuilder = new StringBuilder("UPDATE listings SET ");
     boolean hasUpdates = false;
 
@@ -229,7 +302,7 @@ public class RealStorage implements StorageInterface {
       // Create a list to hold parameters
       List<Object> params = new ArrayList<>();
 
-      // Dynamically add fields to update
+      // Add fields to update
       if (updatedListing.getTitle() != null) {
         sqlBuilder.append(hasUpdates ? ", " : "").append("title = ?");
         params.add(updatedListing.getTitle());

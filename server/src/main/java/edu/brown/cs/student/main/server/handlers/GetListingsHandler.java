@@ -25,13 +25,13 @@ public class GetListingsHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     /*
-      public List<Listing> getListings(
-      Optional<String> category,
-      Optional<Float> minPrice,
-      Optional<Float> maxPrice,
-      Optional<String> tag,
-      Optional<Sorter> sorter) {
-     */
+     public List<Listing> getListings(
+     Optional<String> category,
+     Optional<Float> minPrice,
+     Optional<Float> maxPrice,
+     Optional<String> tag,
+     Optional<Sorter> sorter) {
+    */
     try {
       Long listingId = validateListingId(request.queryParams("listing_id"));
 
@@ -45,23 +45,24 @@ public class GetListingsHandler implements Route {
       validatePrice(String.valueOf(maxPrice));
       List<String> tagsList = parseTags(tagsParam);
 
-
       Sorter sorter = null;
 
       if (sorterStr.equals("PRICE_ASC")) {
         sorter = Sorter.PRICE_ASC;
-      } else if (sorterStr.equals("PRICE_DESC")){
+      } else if (sorterStr.equals("PRICE_DESC")) {
         sorter = Sorter.PRICE_DESC;
-      } else if (!sorterStr.isEmpty()){
-        throw new IllegalArgumentException("Invalid input for sorter. It is either PRICE_ASC or PRICE_DESC");
+      } else if (!sorterStr.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Invalid input for sorter. It is either PRICE_ASC or PRICE_DESC");
       }
 
-      List<Listing> res = this.dbHandler.getListings(
-          Optional.of(title),
-          Optional.of(minPrice),
-          Optional.of(maxPrice),
-          Optional.of(tagsList),
-          Optional.of(sorter));
+      List<Listing> res =
+          this.dbHandler.getListings(
+              Optional.of(title),
+              Optional.of(minPrice),
+              Optional.of(maxPrice),
+              Optional.of(tagsList),
+              Optional.of(sorter));
 
       responseMap.put("response_type", "success");
       responseMap.put("result", res);
