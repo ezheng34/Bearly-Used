@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/ListItemPopup.css";
 
 interface ListingForm {
@@ -32,12 +32,30 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
     images: [],
   });
 
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [priceInput, setPriceInput] = useState("");
 
   const categories = ["Electronics", "Clothing", "Books", "Sports", "Other"];
   const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 
-  const [priceInput, setPriceInput] = useState("");
+  useEffect(() => {
+    const objectUrls = formData.images.map((image) =>
+      URL.createObjectURL(image)
+    );
+    setImagePreviews(objectUrls);
+
+    if (formData.images.length > 0) {
+      const firstImageUrl = objectUrls[0];
+      setFormData((prev) => ({
+        ...prev,
+        imageUrl: firstImageUrl,
+      }));
+    }
+    return () => {
+      objectUrls.forEach(URL.revokeObjectURL);
+    };
+  }, [formData.images]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -87,16 +105,23 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
   };
 
   const removeImage = (index: number) => {
+    // Revoke the specific object URL before removing the image
+    if (imagePreviews[index]) {
+      URL.revokeObjectURL(imagePreviews[index]);
+    }
+
+    // Remove image from both formData and previews
     setFormData({
       ...formData,
       images: formData.images.filter((_, i) => i !== index),
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const backendData = {
-      seller_id: formData.sellerId,
+      // seller_id: formData.sellerId,
+      seller_id: 1, // replace later with real data
       title: formData.title,
       available: formData.available,
       description: formData.description,
@@ -104,27 +129,45 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
       category: formData.category,
       condition: formData.condition,
       imageUrl: formData.imageUrl,
+      tags: formData.tags,
     };
     console.log("Ready for backend:", backendData);
+    try {
+      // may have to fix styling??
+      const response = await fetch(
+        `http://localhost:3232/add-listing?seller_id=1&title=${backendData.title}&available=${backendData.available}&description=${backendData.description}&price=${backendData.price}&category=${backendData.category}&condition=${backendData.condition}&image_url=${backendData.imageUrl}&tags=${backendData.tags}`
+      );
 
-    const modalElement = document.getElementById("addListingModal");
-    if (modalElement) {
-      // hide modal stuff TODO this might be a duplicate
-      modalElement.classList.remove("show");
-      modalElement.style.display = "none";
-      modalElement.setAttribute("aria-hidden", "true");
+      if (!response.ok) {
+        throw new Error("Failed to add listing");
+      }
 
-      const backdrops = document.querySelectorAll(".modal-backdrop");
-      backdrops.forEach((backdrop) => backdrop.remove());
+      const result = await response.json();
+      console.log("Listing added successfully:", result);
 
-      document.body.classList.remove("modal-open");
-      document.body.style.removeProperty("padding-right");
-      document.body.style.removeProperty("overflow");
-      document.body.style.removeProperty("height");
+      // dont think we need this
+      // const modalElement = document.getElementById("addListingModal");
+      // if (modalElement) {
+      //   // hide modal stuff TODO this might be a duplicate
+      //   modalElement.classList.remove("show");
+      //   modalElement.style.display = "none";
+      //   modalElement.setAttribute("aria-hidden", "true");
+
+      //   const backdrops = document.querySelectorAll(".modal-backdrop");
+      //   backdrops.forEach((backdrop) => backdrop.remove());
+
+      //   document.body.classList.remove("modal-open");
+      //   document.body.style.removeProperty("padding-right");
+      //   document.body.style.removeProperty("overflow");
+      //   document.body.style.removeProperty("height");
+      // }
+
+      onSubmit?.();
+    } catch (error) {
+      console.error("Error adding listing:", error);
     }
-
-    onSubmit?.();
   };
+
   return (
     <div>
       <h2 className="text-center mb-4">Add Listing</h2>
@@ -268,10 +311,10 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
             className="form-control"
           />
           <div className="image-preview-container d-flex flex-wrap gap-2 mt-2">
-            {formData.images.map((image, index) => (
+            {imagePreviews.map((imageUrl, index) => (
               <div key={index} className="position-relative">
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={imageUrl}
                   alt={`Upload ${index + 1}`}
                   className="img-thumbnail"
                   style={{

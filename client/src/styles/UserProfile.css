@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500&family=Manrope:wght@500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500&family=Manrope:wght@500;600&display=swap");
 
 :root {
-  --primary-blue: #4FC3DB;
-  --primary-dark: #2D3047;
-  --secondary-beige: #F5EBE0;
-  --accent-coral: #FF8360;
-  --accent-sage: #7CA982;
+  --primary-blue: #4fc3db;
+  --primary-dark: #2d3047;
+  --secondary-beige: #f5ebe0;
+  --accent-coral: #ff8360;
+  --accent-sage: #7ca982;
   --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
@@ -13,7 +13,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* Header styles */
@@ -50,7 +50,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   font-size: 1rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 500;
   border: none;
   transition: all 0.2s ease;
@@ -96,7 +96,7 @@
 }
 
 .profile-info .name {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--primary-dark);
@@ -144,7 +144,7 @@
   color: var(--primary-dark);
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 500;
   border: none;
   transition: all 0.2s ease;
@@ -158,7 +158,7 @@
 
 /* Listings section */
 h2 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 1.8rem;
   color: var(--primary-dark);
   margin: 2rem 0 1.5rem;
@@ -201,7 +201,7 @@ h2 {
 }
 
 .listing-price {
-  font-family: 'Manrope', sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--accent-coral);
@@ -209,7 +209,7 @@ h2 {
 }
 
 .listing-name {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 500;
   color: var(--primary-dark);
 }

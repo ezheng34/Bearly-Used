@@ -2,7 +2,11 @@ package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
 import io.github.cdimascio.dotenv.Dotenv;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -232,6 +236,7 @@ public class RealStorage implements StorageInterface {
           userData.put("name", rs.getString("name"));
           userData.put("phone_number", rs.getString("phone_number"));
           userData.put("school", rs.getString("school"));
+          userData.put("tags", cleanTags(rs.getString("interests")));
         }
       }
     }

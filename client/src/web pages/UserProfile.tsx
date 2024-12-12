@@ -5,26 +5,54 @@ import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getUserListings, getUserProfile } from "../api";
 
 type Listing = {
   id: number;
+  title: string;
+  price: number;
+};
+
+type UserProfile = {
+  id: number;
   name: string;
-  price: string;
+  email: string;
+  phone_number: string;
+  school: string;
+  tags: string[];
 };
 
 const UserProfile: React.FC = () => {
-  const navigate = useNavigate();
-  // Dummy data for now idk the format
-  const dummyListings: Listing[] = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    name: "Stand and Mirror",
-    price: i % 2 === 0 ? "$19.99" : "Free",
-  }));
-
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [listingsPage, setListingsPage] = useState(0);
   const [boughtPage, setBoughtPage] = useState(0);
+  const ITEMS_PER_PAGE = 4;
 
-  const ITEMS_PER_PAGE = 6;
+  useEffect(() => {
+    const userId = 1; // Replace with actual user ID
+    fetchUserData(userId);
+    fetchUserListings(userId);
+  }, []);
+
+  const fetchUserData = async (userId: number) => {
+    try {
+      const userData = await getUserProfile(userId);
+      console.log("User data received:", userData);
+      setUserProfile(userData.user_data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const fetchUserListings = async (userId: number) => {
+    try {
+      const listingsData = await getUserListings(userId);
+      setListings(listingsData.listings);
+    } catch (error) {
+      console.error("Failed to fetch user listings:", error);
+    }
+  };
 
   // paginate for arrow press on listings/items bought prob have to separate later
   const paginate = (items: Listing[], page: number): Listing[] =>
@@ -45,26 +73,15 @@ const UserProfile: React.FC = () => {
     if (page > 0) setPage(page - 1);
   };
 
-  const visibleListings = paginate(dummyListings, listingsPage);
-  const visibleBought = paginate(dummyListings, boughtPage);
+  const visibleListings = paginate(listings, listingsPage);
+  // uses listings for now, need separate handler later
+  const visibleBought = paginate(listings, boughtPage);
 
   const closeModal = () => {
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
-      const modal = Modal.getInstance(modalElement);
-      modal?.hide();
-
-      modalElement.classList.remove("show");
-      modalElement.style.display = "none";
-      modalElement.setAttribute("aria-hidden", "true");
-
-      const backdrops = document.querySelectorAll(".modal-backdrop");
-      backdrops.forEach((backdrop) => backdrop.remove());
-
-      document.body.classList.remove("modal-open");
-      document.body.removeAttribute("style");
-      document.body.style.overflow = "auto";
-      document.body.style.overflowY = "auto";
+      const modalInstance = Modal.getInstance(modalElement);
+      modalInstance?.hide();
     }
   };
 
@@ -101,13 +118,17 @@ const UserProfile: React.FC = () => {
         <div className="profile">
           <div className="profile-picture"></div>
           <div className="profile-info">
-            <h2 className="name">User123</h2>
-            <p className="school">School: Brown</p>
-            <p className="email">Email: user123@brown.edu</p>
-            <p className="phone">Phone Number: (xxx) xxx-xxxx</p>
+            <h2 className="name">{userProfile?.name || "Loading..."}</h2>
+            <p className="school">
+              School: {userProfile?.school || "Loading..."}
+            </p>
+            <p className="email">Email: {userProfile?.email || "Loading..."}</p>
+            <p className="phone">
+              Phone Number: {userProfile?.phone_number || "Loading..."}
+            </p>
             <div className="tags">
               Interests:
-              {["Tag1", "Tag2", "Tag3"].map((tag) => (
+              {userProfile?.tags?.map((tag: string) => (
                 <span key={tag} className="tag">
                   {tag}
                 </span>
@@ -131,22 +152,23 @@ const UserProfile: React.FC = () => {
           {visibleListings.map((listing: Listing) => (
             <div key={listing.id} className="listing">
               <div className="listing-image"></div>
-              <p className="listing-price">{listing.price}</p>
-              <p className="listing-name">{listing.name}</p>
+              <p className="listing-price">${listing.price.toFixed(2)}</p>
+              <p className="listing-name">{listing.title}</p>
             </div>
           ))}
         </div>
         <button
           className="arrow-btn"
           onClick={() =>
-            handleNextPage(listingsPage, setListingsPage, dummyListings)
+            handleNextPage(listingsPage, setListingsPage, listings)
           }
-          disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= dummyListings.length}
+          disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= listings.length}
         >
           &#8594;
         </button>
       </div>
 
+      {/* currently uses listings */}
       <h2>Previously Bought</h2>
       <div className="listings-navigation">
         <button
@@ -161,16 +183,14 @@ const UserProfile: React.FC = () => {
             <div key={listing.id + 12} className="listing">
               <div className="listing-image"></div>
               <p className="listing-price">{listing.price}</p>
-              <p className="listing-name">{listing.name}</p>
+              <p className="listing-name">{listing.title}</p>
             </div>
           ))}
         </div>
         <button
           className="arrow-btn"
-          onClick={() =>
-            handleNextPage(boughtPage, setBoughtPage, dummyListings)
-          }
-          disabled={(boughtPage + 1) * ITEMS_PER_PAGE >= dummyListings.length}
+          onClick={() => handleNextPage(boughtPage, setBoughtPage, listings)}
+          disabled={(boughtPage + 1) * ITEMS_PER_PAGE >= listings.length}
         >
           &#8594;
         </button>
