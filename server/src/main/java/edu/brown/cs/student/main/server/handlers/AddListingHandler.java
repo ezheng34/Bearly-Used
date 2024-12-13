@@ -34,10 +34,11 @@ public class AddListingHandler implements Route {
 
       // parse tags
       List<String> tags = parseTags(request.queryParams("tags"));
+      System.out.println("TAGS AFTER PARSING " + tags);
 
       // EXAMPLE QUERY:
       // http://localhost:3232/add-listing?seller_id=1&title=Book&available=true&description=Great+book
-      // &price=15.0&category=Books&condition=New&image_url=book.jpg&tags=[%22fiction%22,%22thriller%22]
+      // &price=15.0&category=Books&condition=New&image_url=book.jpg&tags=fiction,thriller]
 
       Long listingId =
           this.dbHandler.createListing(

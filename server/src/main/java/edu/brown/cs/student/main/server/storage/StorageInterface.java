@@ -13,11 +13,11 @@ public interface StorageInterface {
 
   // all-purpose to get either all listings or filtered listings
   List<Listing> getListings(
-      Optional<String> category,
-      Optional<Float> minPrice,
-      Optional<Float> maxPrice,
-      Optional<List<String>> tags,
-      Optional<Sorter> sorter);
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter);
 
   Long createListing(
       Long sellerId,

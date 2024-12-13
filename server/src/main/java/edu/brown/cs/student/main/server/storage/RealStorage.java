@@ -79,94 +79,99 @@ public class RealStorage implements StorageInterface {
   /* LISTING FUNCTIONS */
   @Override
   public List<Listing> getListings(
-      Optional<String> category,
-      Optional<Float> minPrice,
-      Optional<Float> maxPrice,
-      Optional<List<String>> tags,
-      Optional<Sorter> sorter) {
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter) {
 
-    List<Listing> listings = new ArrayList<>();
+    try {
+      List<Listing> listings = new ArrayList<>();
 
-    // "Where 1=1" is the same as WHERE TRUE so it lets us append additional filters with AND
-    StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM listings WHERE 1=1");
-    List<Object> params = new ArrayList<>();
+      // "Where 1=1" is the same as WHERE TRUE so it lets us append additional filters with AND
+      StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM listings WHERE 1=1");
+      List<Object> params = new ArrayList<>();
 
-    // Apply filters dynamically
-    category.ifPresent(
-        cat -> {
-          sqlBuilder.append(" AND category = ?");
-          params.add(cat);
-        });
-
-    minPrice.ifPresent(
-        min -> {
-          sqlBuilder.append(" AND price >= ?");
-          params.add(min);
-        });
-
-    maxPrice.ifPresent(
-        max -> {
-          sqlBuilder.append(" AND price <= ?");
-          params.add(max);
-        });
-
-    // TODO change to be a list
-    // Add tag filtering
-    tags.ifPresent(
-        t -> {
-          sqlBuilder.append(" AND ? = ANY(tags)"); // SQL for checking tags in an array
-          params.add(t);
-        });
-
-    // Apply sorting
-    sorter.ifPresent(
-        s -> {
-          sqlBuilder.append(" ORDER BY ");
-          switch (s) {
-            case PRICE_ASC:
-              sqlBuilder.append("price ASC");
-              break;
-            case PRICE_DESC:
-              sqlBuilder.append("price DESC");
-              break;
-            default:
-              throw new IllegalArgumentException("Unsupported sorter");
-          }
-        });
-
-    try (Connection connection = DriverManager.getConnection(this.JDBC);
-        PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
-
-      // Set query parameters
-      for (int i = 0; i < params.size(); i++) {
-        statement.setObject(i + 1, params.get(i));
+      System.out.println("1");
+      // Apply filters dynamically
+      if (category != null){
+        sqlBuilder.append(" AND category = ?");
+        params.add(category);
       }
 
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          // Map ResultSet to Listing object
-          Listing listing =
-              new Listing(
-                  resultSet.getLong("id"),
-                  resultSet.getString("title"),
-                  resultSet.getString("description"),
-                  resultSet.getFloat("price"),
-                  resultSet.getString("category"),
-                  resultSet.getString("condition"),
-                  resultSet.getString("image_url"),
-                  Arrays.asList(resultSet.getString("tags")),
-                  // Arrays.asList((String[]) resultSet.getArray("tags").getArray()), // Handle
-                  // array conversion
-                  resultSet.getBoolean("available"));
-          listings.add(listing);
+      if (minPrice != null){
+        sqlBuilder.append(" AND price >= ?");
+        params.add(minPrice);
+      }
+
+      if (maxPrice != null){
+        sqlBuilder.append(" AND price <= ?");
+        params.add(maxPrice);
+      }
+
+      // check tags
+      if (tags != null && !tags.isEmpty()){
+        sqlBuilder.append(" AND (");
+        for (int i = 0; i < tags.size(); i++) {
+          if (i > 0) {
+            sqlBuilder.append(" OR ");
+          }
+          sqlBuilder.append("? = ANY(tags)");
+          params.add(tags.get(i));
+        }
+        sqlBuilder.append(")");
+      }
+
+      if (sorter != null){
+        sqlBuilder.append(" ORDER BY ");
+        switch (sorter) {
+          case PRICE_ASC:
+            sqlBuilder.append("price ASC");
+            break;
+          case PRICE_DESC:
+            sqlBuilder.append("price DESC");
+            break;
+          default:
+            throw new IllegalArgumentException("Unsupported sorter");
         }
       }
 
-    } catch (SQLException e) {
-      System.err.println("Error fetching listings: " + e.getMessage());
-    }
+      try (Connection connection = DriverManager.getConnection(this.JDBC);
+          PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
 
-    return listings;
+        System.out.println("STATEMENT: " + sqlBuilder.toString());
+
+        // Set query parameters
+        for (int i = 0; i < params.size(); i++) {
+          statement.setObject(i + 1, params.get(i));
+        }
+
+        try (ResultSet resultSet = statement.executeQuery()) {
+          while (resultSet.next()) {
+            // Map ResultSet to Listing object
+            Listing listing =
+                new Listing(
+                    resultSet.getLong("id"),
+                    resultSet.getString("title"),
+                    resultSet.getString("description"),
+                    resultSet.getFloat("price"),
+                    resultSet.getString("category"),
+                    resultSet.getString("condition"),
+                    resultSet.getString("image_url"),
+                    Arrays.asList((String[]) resultSet.getArray("tags").getArray()),
+                    resultSet.getBoolean("available"));
+            listings.add(listing);
+          }
+        }
+
+      } catch (SQLException e) {
+        throw new RuntimeException("Error fetching listings: " + e.getMessage());
+      }
+
+      return listings;
+    } catch (Exception e){
+      throw new RuntimeException("unknown error: " + e.getMessage());
+    }
   }
 
   public Long createListing(
@@ -203,7 +208,11 @@ public class RealStorage implements StorageInterface {
       statement.setString(6, category);
       statement.setString(7, condition);
       statement.setString(8, imageUrl);
-      statement.setArray(9, connection.createArrayOf("TEXT", tags.toArray()));
+
+      if (tags != null){
+        System.out.println("Tags being passed to createArrayOf: " + Arrays.toString(tags.toArray()));
+        statement.setArray(9, connection.createArrayOf("text", tags.toArray()));
+      }
 
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
