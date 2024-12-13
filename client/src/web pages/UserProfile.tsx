@@ -1,0 +1,226 @@
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/UserProfile.css";
+import ListItemPopup from "./ListItemPopup";
+import { Modal } from "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getUserListings, getUserProfile } from "../api";
+
+type Listing = {
+  id: number;
+  title: string;
+  price: number;
+};
+
+type UserProfile = {
+  id: number;
+  name: string;
+  email: string;
+  phone_number: string;
+  school: string;
+  tags: string[];
+};
+
+const UserProfile: React.FC = () => {
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [listingsPage, setListingsPage] = useState(0);
+  const [boughtPage, setBoughtPage] = useState(0);
+  const ITEMS_PER_PAGE = 4;
+
+  useEffect(() => {
+    const userId = 1; // Replace with actual user ID
+    fetchUserData(userId);
+    fetchUserListings(userId);
+  }, []);
+
+  const fetchUserData = async (userId: number) => {
+    try {
+      const userData = await getUserProfile(userId);
+      console.log("User data received:", userData);
+      setUserProfile(userData.user_data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const fetchUserListings = async (userId: number) => {
+    try {
+      const listingsData = await getUserListings(userId);
+      setListings(listingsData.listings);
+    } catch (error) {
+      console.error("Failed to fetch user listings:", error);
+    }
+  };
+
+  // paginate for arrow press on listings/items bought prob have to separate later
+  const paginate = (items: Listing[], page: number): Listing[] =>
+    items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+
+  const handleNextPage = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    items: Listing[]
+  ) => {
+    if ((page + 1) * ITEMS_PER_PAGE < items.length) setPage(page + 1);
+  };
+
+  const handlePrevPage = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>
+  ) => {
+    if (page > 0) setPage(page - 1);
+  };
+
+  const visibleListings = paginate(listings, listingsPage);
+  // uses listings for now, need separate handler later
+  const visibleBought = paginate(listings, boughtPage);
+
+  const closeModal = () => {
+    const modalElement = document.getElementById("addListingModal");
+    if (modalElement) {
+      const modalInstance = Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  };
+
+  // Initialize modal
+  useEffect(() => {
+    const modalElement = document.getElementById("addListingModal");
+    if (modalElement) {
+      new Modal(modalElement);
+    }
+  }, []);
+
+  return (
+    <div className="user-profile-container">
+      <div className="header">
+        <Link to="/" className="back-link">
+          <svg
+            className="back-icon"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </Link>
+        <button
+          className="create-listing"
+          data-bs-toggle="modal"
+          data-bs-target="#addListingModal"
+        >
+          Create Listing
+        </button>
+      </div>
+
+      <div className="profile-container">
+        <div className="profile">
+          <div className="profile-picture"></div>
+          <div className="profile-info">
+            <h2 className="name">{userProfile?.name || "Loading..."}</h2>
+            <p className="school">
+              School: {userProfile?.school || "Loading..."}
+            </p>
+            <p className="email">Email: {userProfile?.email || "Loading..."}</p>
+            <p className="phone">
+              Phone Number: {userProfile?.phone_number || "Loading..."}
+            </p>
+            <div className="tags">
+              Interests:
+              {userProfile?.tags?.map((tag: string) => (
+                <span key={tag} className="tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button className="edit-profile">Edit Profile</button>
+      </div>
+
+      <h2>Your Listings</h2>
+      <div className="listings-navigation">
+        <button
+          className="arrow-btn"
+          onClick={() => handlePrevPage(listingsPage, setListingsPage)}
+          disabled={listingsPage === 0}
+        >
+          &#8592;
+        </button>
+        <div className="listings">
+          {visibleListings.map((listing: Listing) => (
+            <div key={listing.id} className="listing">
+              <div className="listing-image"></div>
+              <p className="listing-price">${listing.price.toFixed(2)}</p>
+              <p className="listing-name">{listing.title}</p>
+            </div>
+          ))}
+        </div>
+        <button
+          className="arrow-btn"
+          onClick={() =>
+            handleNextPage(listingsPage, setListingsPage, listings)
+          }
+          disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= listings.length}
+        >
+          &#8594;
+        </button>
+      </div>
+
+      {/* currently uses listings */}
+      <h2>Previously Bought</h2>
+      <div className="listings-navigation">
+        <button
+          className="arrow-btn"
+          onClick={() => handlePrevPage(boughtPage, setBoughtPage)}
+          disabled={boughtPage === 0}
+        >
+          &#8592;
+        </button>
+        <div className="listings">
+          {visibleBought.map((listing: Listing) => (
+            <div key={listing.id + 12} className="listing">
+              <div className="listing-image"></div>
+              <p className="listing-price">{listing.price}</p>
+              <p className="listing-name">{listing.title}</p>
+            </div>
+          ))}
+        </div>
+        <button
+          className="arrow-btn"
+          onClick={() => handleNextPage(boughtPage, setBoughtPage, listings)}
+          disabled={(boughtPage + 1) * ITEMS_PER_PAGE >= listings.length}
+        >
+          &#8594;
+        </button>
+      </div>
+
+      <div
+        className="modal fade"
+        id="addListingModal"
+        tabIndex={-1}
+        aria-labelledby="addListingModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-0">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <ListItemPopup onSubmit={closeModal} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserProfile;

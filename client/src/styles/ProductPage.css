@@ -1,0 +1,148 @@
+:root {
+  --primary-blue: #4FC3DB;
+  --primary-dark: #2D3047;
+  --secondary-beige: #F5EBE0;
+  --accent-coral: #FF8360;
+  --accent-sage: #7CA982;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
+.thumbnail-container {
+  max-width: 100%; 
+}
+
+.thumbnail-container .d-flex {
+  display: flex; 
+  flex-wrap: nowrap; 
+  overflow-x: auto; 
+  gap: 10px; 
+  padding-bottom: 10px; 
+}
+
+.thumbnail-container .thumbnail {
+  width: 60px; 
+  height: 60px; 
+  object-fit: cover; 
+  cursor: pointer;
+}
+
+.thumbnail-container img:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.product-page {
+  background-color: var(--secondary-beige);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.product-container {
+  background: white;
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-image-container {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+  transform: scale(1.02);
+}
+
+.thumbnail-container {
+  margin-top: 1.5rem;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border-color: var(--primary-blue);
+}
+
+.product-info {
+  padding-left: 2rem;
+}
+
+.product-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.5rem;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.product-price {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2rem;
+  color: var(--accent-coral);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.product-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-blue);
+  border: none;
+  padding: 1rem 2rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-coral);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: white;
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-beige);
+  color: var(--primary-dark);
+}
