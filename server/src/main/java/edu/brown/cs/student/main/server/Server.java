@@ -10,6 +10,7 @@ import edu.brown.cs.student.main.server.handlers.GetListingsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.UpdateListingHandler;
+import edu.brown.cs.student.main.server.handlers.UpdateUserHandler;
 import edu.brown.cs.student.main.server.storage.RealStorage;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import spark.Filter;
@@ -36,6 +37,7 @@ public class Server {
     try {
       dbHandler = new RealStorage();
       Spark.get("add-user", new AddUserHandler(dbHandler));
+      Spark.get("update-user", new UpdateUserHandler(dbHandler));
       Spark.get("add-listing", new AddListingHandler(dbHandler));
       Spark.get("update-listing", new UpdateListingHandler(dbHandler));
       Spark.get("delete-listing", new DeleteListingHandler(dbHandler));

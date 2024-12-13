@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -38,7 +37,7 @@ public class GetListingsHandler implements Route {
 
       Sorter sorter = null;
 
-      if (sorterStr != null){
+      if (sorterStr != null) {
         if (sorterStr.equals("PRICE_ASC")) {
           sorter = Sorter.PRICE_ASC;
         } else if (sorterStr.equals("PRICE_DESC")) {
@@ -61,7 +60,6 @@ public class GetListingsHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("result", res);
-
 
     } catch (IllegalArgumentException e) {
       responseMap.put("response_type", "failure");

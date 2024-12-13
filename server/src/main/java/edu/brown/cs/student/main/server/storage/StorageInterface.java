@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +14,7 @@ public interface StorageInterface {
 
   // all-purpose to get either all listings or filtered listings
   List<Listing> getListings(
-      String category,
-      Float minPrice,
-      Float maxPrice,
-      List<String> tags,
-      Sorter sorter);
+      String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter);
 
   Long createListing(
       Long sellerId,
@@ -38,6 +35,8 @@ public interface StorageInterface {
   boolean deleteListing(Long listingId);
 
   Map<String, Object> getUser(long userId) throws Exception;
+
+  boolean updateUser(int userId, User updatedUser);
 
   List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception;
 

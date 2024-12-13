@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,12 +15,13 @@ public class MockStorage implements StorageInterface {
   }
 
   @Override
+  public boolean updateUser(int userId, User updatedUser) {
+    return false;
+  }
+
+  @Override
   public List<Listing> getListings(
-      String category,
-      Float minPrice,
-      Float maxPrice,
-      List<String> tags,
-      Sorter sorter) {
+      String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
     return null;
   }
 

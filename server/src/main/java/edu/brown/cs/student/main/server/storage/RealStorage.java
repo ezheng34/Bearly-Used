@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -76,14 +77,67 @@ public class RealStorage implements StorageInterface {
     }
   }
 
+  @Override
+  public boolean updateUser(int userId, User updatedUser) {
+    // Construct SQL update query
+    StringBuilder sqlBuilder = new StringBuilder("UPDATE users SET ");
+    boolean hasUpdates = false;
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC)) {
+      // Create a list to hold parameters
+      List<Object> params = new ArrayList<>();
+
+      // Add fields to update
+      if (updatedUser.getName() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("name = ?");
+        params.add(updatedUser.getName());
+        hasUpdates = true;
+      }
+
+      if (updatedUser.getPhoneNumber() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("phone_number = ?");
+        params.add(updatedUser.getPhoneNumber());
+        hasUpdates = true;
+      }
+
+      if (updatedUser.getSchool() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("school = ?");
+        params.add(updatedUser.getSchool());
+        hasUpdates = true;
+      }
+
+      sqlBuilder.append(" WHERE id = ?");
+      params.add(userId);
+
+      // debugging
+      System.out.println("SQL Query: " + sqlBuilder.toString());
+      System.out.println("Parameters: " + params);
+
+      try (PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+          statement.setObject(i + 1, params.get(i));
+        }
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+          System.out.println("User updated successfully: " + userId);
+          return true;
+        } else {
+          System.err.println("No User found with ID: " + userId);
+          return false;
+        }
+      }
+    } catch (SQLException e) {
+      System.err.println("Error updating user: " + e.getMessage());
+      return false;
+    }
+  }
+
   /* LISTING FUNCTIONS */
   @Override
   public List<Listing> getListings(
-      String category,
-      Float minPrice,
-      Float maxPrice,
-      List<String> tags,
-      Sorter sorter) {
+      String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
 
     try {
       List<Listing> listings = new ArrayList<>();
@@ -94,23 +148,23 @@ public class RealStorage implements StorageInterface {
 
       System.out.println("1");
       // Apply filters dynamically
-      if (category != null){
+      if (category != null) {
         sqlBuilder.append(" AND category = ?");
         params.add(category);
       }
 
-      if (minPrice != null){
+      if (minPrice != null) {
         sqlBuilder.append(" AND price >= ?");
         params.add(minPrice);
       }
 
-      if (maxPrice != null){
+      if (maxPrice != null) {
         sqlBuilder.append(" AND price <= ?");
         params.add(maxPrice);
       }
 
       // check tags
-      if (tags != null && !tags.isEmpty()){
+      if (tags != null && !tags.isEmpty()) {
         sqlBuilder.append(" AND (");
         for (int i = 0; i < tags.size(); i++) {
           if (i > 0) {
@@ -122,7 +176,7 @@ public class RealStorage implements StorageInterface {
         sqlBuilder.append(")");
       }
 
-      if (sorter != null){
+      if (sorter != null) {
         sqlBuilder.append(" ORDER BY ");
         switch (sorter) {
           case PRICE_ASC:
@@ -169,7 +223,7 @@ public class RealStorage implements StorageInterface {
       }
 
       return listings;
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new RuntimeException("unknown error: " + e.getMessage());
     }
   }
@@ -209,8 +263,9 @@ public class RealStorage implements StorageInterface {
       statement.setString(7, condition);
       statement.setString(8, imageUrl);
 
-      if (tags != null){
-        System.out.println("Tags being passed to createArrayOf: " + Arrays.toString(tags.toArray()));
+      if (tags != null) {
+        System.out.println(
+            "Tags being passed to createArrayOf: " + Arrays.toString(tags.toArray()));
         statement.setArray(9, connection.createArrayOf("text", tags.toArray()));
       }
 
