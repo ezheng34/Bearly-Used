@@ -15,11 +15,11 @@ public class MockStorage implements StorageInterface {
 
   @Override
   public List<Listing> getListings(
-      Optional<String> category,
-      Optional<Float> minPrice,
-      Optional<Float> maxPrice,
-      Optional<List<String>> tags,
-      Optional<Sorter> sorter) {
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter) {
     return null;
   }
 

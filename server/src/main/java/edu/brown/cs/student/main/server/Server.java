@@ -6,6 +6,7 @@ import edu.brown.cs.student.main.server.handlers.AddListingHandler;
 import edu.brown.cs.student.main.server.handlers.AddUserHandler;
 import edu.brown.cs.student.main.server.handlers.DefaultHandler;
 import edu.brown.cs.student.main.server.handlers.DeleteListingHandler;
+import edu.brown.cs.student.main.server.handlers.GetListingsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.UpdateListingHandler;
@@ -40,6 +41,7 @@ public class Server {
       Spark.get("delete-listing", new DeleteListingHandler(dbHandler));
       Spark.get("get-user", new GetUserHandler(dbHandler));
       Spark.get("get-user-listings", new GetUserListingsHandler(dbHandler));
+      Spark.get("get-listings", new GetListingsHandler(dbHandler));
       Spark.get("*", new DefaultHandler());
 
       Spark.notFound(
