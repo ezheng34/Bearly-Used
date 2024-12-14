@@ -13,6 +13,10 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+const ITEMS_PER_PAGE = 8; // TODO change later
+
+type SortOrder = "none" | "asc" | "desc";
+
 // backend types - might be wrong
 interface ListingItem {
   id: number;
@@ -24,11 +28,14 @@ interface ListingItem {
 }
 
 const HomePage: React.FC = () => {
-  
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
-  const [filteredListings, setFilteredListings] =
-    useState<ListingItem[]>(mockProducts.mockProducts);
+  const [priceSort, setPriceSort] = useState<SortOrder>("none");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
+    mockProducts.mockProducts
+  );
 
   const categories = [
     "Electronics",
@@ -50,6 +57,32 @@ const HomePage: React.FC = () => {
     { label: "$30+", min: 30, max: null },
   ];
 
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredListings.length / ITEMS_PER_PAGE);
+
+  // Get current page items
+  const getCurrentItems = () => {
+    const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+    const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+    return filteredListings.slice(indexOfFirstItem, indexOfLastItem);
+  };
+
+  // Generate page numbers array
+  const getPageNumbers = () => {
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top of the page
+    window.scrollTo(0, 0);
+  };
+
   // filter listings based on selected category and price range
   useEffect(() => {
     let filtered = mockProducts.mockProducts;
@@ -58,6 +91,7 @@ const HomePage: React.FC = () => {
       filtered = filtered.filter((item) => item.category === selectedCategory);
     }
 
+    // Price range filter
     if (selectedPriceRange) {
       const range = priceRanges.find((r) => r.label === selectedPriceRange);
       if (range) {
@@ -68,8 +102,92 @@ const HomePage: React.FC = () => {
       }
     }
 
+    // Price sorting
+    if (priceSort !== "none") {
+      filtered = [...filtered].sort((a, b) => {
+        if (priceSort === "asc") {
+          return a.price - b.price;
+        } else {
+          return b.price - a.price;
+        }
+      });
+    }
+
     setFilteredListings(filtered);
-  }, [selectedCategory, selectedPriceRange]);
+    setCurrentPage(1); // resert to first page when filters/sort change
+  }, [selectedCategory, selectedPriceRange, priceSort]);
+
+  // prices dropdown with sorting options
+  const renderPricesDropdown = () => (
+    <li className="nav-item dropdown">
+      <button
+        className="nav-link dropdown-toggle"
+        data-bs-toggle="dropdown"
+        id="DropdownPrice"
+        aria-expanded="false"
+      >
+        {selectedPriceRange ? `Price: ${selectedPriceRange}` : "Price"}
+      </button>
+      <ul className="dropdown-menu" aria-labelledby="DropdownPrice">
+        <li>
+          <h6 className="dropdown-header">Price Range</h6>
+        </li>
+        {priceRanges.map((range) => (
+          <li key={range.label}>
+            <button
+              className="dropdown-item"
+              onClick={() => setSelectedPriceRange(range.label)}
+            >
+              {range.label}
+            </button>
+          </li>
+        ))}
+
+        <li>
+          <hr className="dropdown-divider" />
+        </li>
+
+        <li>
+          <h6 className="dropdown-header">Sort by Price</h6>
+        </li>
+        <li>
+          <button
+            className={`dropdown-item ${priceSort === "asc" ? "active" : ""}`}
+            onClick={() => setPriceSort("asc")}
+          >
+            <i className="bi bi-arrow-up"></i> Low to High
+          </button>
+        </li>
+        <li>
+          <button
+            className={`dropdown-item ${priceSort === "desc" ? "active" : ""}`}
+            onClick={() => setPriceSort("desc")}
+          >
+            <i className="bi bi-arrow-down"></i> High to Low
+          </button>
+        </li>
+
+        {(selectedPriceRange || priceSort !== "none") && (
+          <>
+            <li>
+              <hr className="dropdown-divider" />
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setSelectedPriceRange("");
+                  setPriceSort("none");
+                }}
+              >
+                Clear Price Filters
+              </button>
+            </li>
+          </>
+        )}
+      </ul>
+    </li>
+  );
 
   // Initialize modal
   useEffect(() => {
@@ -87,7 +205,7 @@ const HomePage: React.FC = () => {
       const modal = Modal.getInstance(modalElement);
       modal?.hide();
 
-      // Remove all modal-related effects
+      // remove all modal-related effects??? todo this DOESNT WORK SJDFKJDSF
       modalElement.classList.remove("show");
       modalElement.style.display = "none";
       modalElement.setAttribute("aria-hidden", "true");
@@ -100,13 +218,11 @@ const HomePage: React.FC = () => {
     }
   };
 
-
   const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}`);
   };
-
 
   return (
     <div>
@@ -114,43 +230,7 @@ const HomePage: React.FC = () => {
         <div className="container-fluid">
           <ul className="navbar-nav">
             {/* Prices Dropdown */}
-            <li className="nav-item dropdown">
-              <button
-                className="nav-link dropdown-toggle"
-                data-bs-toggle="dropdown"
-                id="DropdownPrice"
-                aria-expanded="false"
-              >
-                {selectedPriceRange || "Prices"}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="DropdownPrice">
-                {priceRanges.map((range) => (
-                  <li key={range.label}>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => setSelectedPriceRange(range.label)}
-                    >
-                      {range.label}
-                    </button>
-                  </li>
-                ))}
-                {selectedPriceRange && (
-                  <>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => setSelectedPriceRange("")}
-                      >
-                        Clear Price Filter
-                      </button>
-                    </li>
-                  </>
-                )}
-              </ul>
-            </li>
+            {renderPricesDropdown()}
 
             {/* Categories Dropdown */}
             <li className="nav-item dropdown">
@@ -213,6 +293,7 @@ const HomePage: React.FC = () => {
             className="btn btn-light"
             data-bs-toggle="modal"
             data-bs-target="#addListingModal"
+            font-family="DM Sans"
           >
             Create Listing
           </button>
@@ -221,59 +302,87 @@ const HomePage: React.FC = () => {
 
       {/* Display filtered listings */}
       <div className="homepage-listings">
-        <div className="homepage-listings-grid">
-          {filteredListings.map((item) => (
-            <div key={item.id} className="homepage-listing">
-              <div className="homepage-listing-image">
-                <img
-                  src={item.images[0]}
-                  className="img-fluid rounded mb-3 product-image"
-                />
-              </div>
-
-              {/* button for product title, upon click will redirects user to the specific product's page*/}
-              <button
-                type="button"
-                className="btn btn-light"
+        {filteredListings.length > 0 ? (
+          <div className="homepage-listings-grid">
+            {getCurrentItems().map((item) => (
+              <div
+                key={item.id}
+                className="homepage-listing cursor-pointer"
                 onClick={() => handleProductClick(item.id)}
+                style={{ cursor: "pointer" }}
               >
+                <div className="homepage-listing-image">
+                  <img
+                    src={item.images[0]}
+                    className="img-fluid rounded mb-3 product-image"
+                    alt={item.title}
+                  />
+                </div>
                 <div className="homepage-listing-title">{item.title}</div>
-              </button>
-
-              <div className="homepage-listing-price">${item.price}</div>
-              <div className="homepage-listing-category">{item.category}</div>
-              <div className="homepage-listing-description">
-                {item.description}
+                <div className="homepage-listing-price">${item.price}</div>
+                <div className="homepage-listing-category">{item.category}</div>
+                <div className="homepage-listing-description">
+                  {item.description}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="no-items-found">
+            <i className="bi bi-search"></i>
+            <h3>No Items Found</h3>
+            <p>Try adjusting your filters or search terms!</p>
+          </div>
+        )}
       </div>
 
-      {/* Modal */}
-      <div
-        className="modal fade"
-        id="addListingModal"
-        tabIndex={-1}
-        aria-labelledby="addListingModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header border-0">
+
+      {/* only show pagination if there are items */}
+      {filteredListings.length > 0 && (
+        <nav aria-label="Product pages" className="mt-4">
+          <ul className="pagination justify-content-center">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <ListItemPopup onSubmit={closeModal} />
-            </div>
-          </div>
-        </div>
-      </div>
+                className="page-link"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+            </li>
+
+            {getPageNumbers().map((number) => (
+              <li
+                key={number}
+                className={`page-item ${
+                  currentPage === number ? "active" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(number)}
+                >
+                  {number}
+                </button>
+              </li>
+            ))}
+
+            <li
+              className={`page-item ${
+                currentPage === totalPages ? "disabled" : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
     </div>
   );
 };

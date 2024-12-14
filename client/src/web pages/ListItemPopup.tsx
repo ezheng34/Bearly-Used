@@ -15,22 +15,32 @@ interface ListingForm {
 }
 
 interface ListItemPopupProps {
-  onSubmit?: () => void; // Add prop for handling submission
+  onSubmit?: () => void;
+  isEditing?: boolean;
+  initialData?: ListingForm;
+  editId?: number;
 }
 
-const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<ListingForm>({
-    sellerId: 0,
-    title: "",
-    available: true,
-    description: "",
-    price: 0,
-    category: "",
-    condition: "",
-    imageUrl: "",
-    tags: [],
-    images: [],
-  });
+const ListItemPopup: React.FC<ListItemPopupProps> = ({
+  onSubmit,
+  isEditing = false,
+  initialData,
+  editId,
+}) => {
+  const [formData, setFormData] = useState<ListingForm>(
+    initialData || {
+      sellerId: 0,
+      title: "",
+      available: true,
+      description: "",
+      price: 0,
+      category: "",
+      condition: "",
+      imageUrl: "",
+      tags: [],
+      images: [],
+    }
+  );
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -38,6 +48,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
 
   const categories = ["Electronics", "Clothing", "Books", "Sports", "Other"];
   const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+      // Also set the price input
+      setPriceInput(initialData.price.toString());
+    }
+  }, [initialData]);
 
   useEffect(() => {
     const objectUrls = formData.images.map((image) =>
@@ -120,8 +138,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const backendData = {
-      // seller_id: formData.sellerId,
-      seller_id: 1, // replace later with real data
+      seller_id: 1,
       title: formData.title,
       available: formData.available,
       description: formData.description,
@@ -133,17 +150,42 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
     };
     console.log("Ready for backend:", backendData);
     try {
-      // may have to fix styling??
-      const response = await fetch(
-        `http://localhost:3232/add-listing?seller_id=1&title=${backendData.title}&available=${backendData.available}&description=${backendData.description}&price=${backendData.price}&category=${backendData.category}&condition=${backendData.condition}&image_url=${backendData.imageUrl}&tags=${backendData.tags}`
-      );
+      const baseUrl = isEditing
+        ? `http://localhost:3232/update-listing`
+        : "http://localhost:3232/add-listing";
+      // Add listing_id to query params when editing
+      const queryParams = new URLSearchParams({
+        seller_id: "1",
+        title: backendData.title,
+        available: backendData.available.toString(),
+        description: backendData.description,
+        price: backendData.price.toString(),
+        category: backendData.category,
+        condition: backendData.condition,
+        image_url: backendData.imageUrl,
+        tags: backendData.tags.join(","),
+      });
+
+      // Add listing_id only when editing
+      if (isEditing && editId) {
+        queryParams.append("listing_id", editId.toString());
+      }
+
+      const response = await fetch(`${baseUrl}?${queryParams.toString()}`);
 
       if (!response.ok) {
-        throw new Error("Failed to add listing");
+        throw new Error(
+          isEditing ? "Failed to update listing" : "Failed to add listing"
+        );
       }
 
       const result = await response.json();
-      console.log("Listing added successfully:", result);
+      console.log(
+        isEditing
+          ? "Listing updated successfully:"
+          : "Listing added successfully:",
+        result
+      );
 
       // dont think we need this
       // const modalElement = document.getElementById("addListingModal");
@@ -164,13 +206,18 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
 
       onSubmit?.();
     } catch (error) {
-      console.error("Error adding listing:", error);
+      console.error(
+        isEditing ? "Error updating listing:" : "Error adding listing:",
+        error
+      );
     }
   };
 
   return (
     <div>
-      <h2 className="text-center mb-4">Add Listing</h2>
+      <h2 className="text-center mb-4">
+        {isEditing ? "Edit Listing" : "Add Listing"}
+      </h2>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -309,6 +356,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
             multiple
             onChange={handleImageUpload}
             className="form-control"
+            required
           />
           <div className="image-preview-container d-flex flex-wrap gap-2 mt-2">
             {imagePreviews.map((imageUrl, index) => (
@@ -335,7 +383,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
         </div>
 
         <button type="submit" className="btn btn-secondary w-100">
-          Create listing
+          {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>
     </div>
