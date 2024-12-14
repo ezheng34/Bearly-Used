@@ -10,7 +10,7 @@ public class Listing {
   public Float price;
   public String category;
   public String condition;
-  public String ImageUrl;
+  public String image_url;
   public List<String> tags;
 
   public boolean available;
@@ -31,7 +31,7 @@ public class Listing {
     this.price = price;
     this.category = category;
     this.condition = condition;
-    this.ImageUrl = img;
+    this.image_url = img;
     this.tags = tags;
     this.available = avail;
   }
@@ -57,7 +57,7 @@ public class Listing {
   }
 
   public String getImageUrl() {
-    return this.ImageUrl;
+    return this.image_url;
   }
 
   public boolean getAvailable() {

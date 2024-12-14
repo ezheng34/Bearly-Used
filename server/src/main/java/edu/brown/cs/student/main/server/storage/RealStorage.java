@@ -356,6 +356,54 @@ public class RealStorage implements StorageInterface {
     return Optional.empty();
   }
 
+  @Override
+  public Listing obtainListing(Long listingId) {
+    Listing listing = null;
+    String sql = "SELECT * FROM listings WHERE id = ?";
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+
+      statement.setLong(1, listingId);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          // Fetch BLOB (image data) from the database
+          // Blob imageBlob = resultSet.getBlob("image_url");
+          // String base64Image = null;
+          // if (imageBlob != null) {
+          //   byte[] imageData = imageBlob.getBytes(1, (int) imageBlob.length());
+          //   base64Image = "data:image/jpeg;base64," +
+          // Base64.getEncoder().encodeToString(imageData);
+          // }
+
+          // debugging
+          String imageUrl = resultSet.getString("image_url");
+          System.out.println("Fetched image URL: " + imageUrl);
+
+          // create Listing object from ResultSet
+          listing =
+              new Listing(
+                  resultSet.getLong("id"),
+                  resultSet.getString("title"),
+                  resultSet.getString("description"),
+                  resultSet.getFloat("price"),
+                  resultSet.getString("category"),
+                  resultSet.getString("condition"),
+                  resultSet.getString("image_url"),
+
+                  // base64Image,
+                  Arrays.asList((String[]) resultSet.getArray("tags").getArray()),
+                  resultSet.getBoolean("available"));
+        }
+      }
+      return listing;
+
+    } catch (SQLException e) {
+      System.err.println("Error obtaining listing: " + e.getMessage());
+      return null;
+    }
+  }
+
   //   @Override
   // public Listing getListingById(Long listingId) {
   //     Listing listing = null;

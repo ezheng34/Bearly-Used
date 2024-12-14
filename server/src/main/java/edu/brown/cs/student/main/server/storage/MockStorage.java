@@ -45,6 +45,11 @@ public class MockStorage implements StorageInterface {
   }
 
   @Override
+  public Listing obtainListing(Long listingId) {
+    return null;
+  }
+
+  @Override
   public boolean updateListing(Long listingId, Listing updatedListing) {
     return false;
   }

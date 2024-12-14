@@ -19,15 +19,22 @@ const ProductPage: React.FC = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3232/get-listing?id=${id}` //NOT FUNCTIONAL YET
+          `http://localhost:3232/get-listing-by-id?listing_id=${id}` //NOT FUNCTIONAL YET
         );
         const data = await response.json();
-        console.log(data);
+        console.log("Fetched data:", data);
 
         if (data.response_type === "success") {
-          const fetchedProduct = data.result[0];
-          setProduct(fetchedProduct);
+          // const fetchedProduct = data.result[0];
+          const fetchedProduct = data.listing;
+          console.log("Fetched product data:", fetchedProduct);
+          console.log("Fetched product image_url:", fetchedProduct.image_url);
+          // setProduct(fetchedProduct);
+          // setMainImage(fetchedProduct.image_url);
+          
+          setProduct({ ...fetchedProduct });
           setMainImage(fetchedProduct.image_url);
+          console.log("url", fetchedProduct.image_url);
         } else {
           console.error("Error fetching product data");
         }
@@ -55,7 +62,8 @@ const ProductPage: React.FC = () => {
               />
             </div>
 
-            <div className="thumbnail-container">
+{/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
+            {/* <div className="thumbnail-container">
               <div className="d-flex gap-3">
                 {product?.images.map((image: string, index: number) => (
                   <img
@@ -69,7 +77,7 @@ const ProductPage: React.FC = () => {
                   />
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Product Info */}
@@ -77,6 +85,18 @@ const ProductPage: React.FC = () => {
             <h1 className="product-title">{product?.title}</h1>
             <div className="product-price">${product?.price}</div>
             <p className="product-description">{product?.description}</p>
+
+            {/* <div className="tags-container">
+              {product.tags && product.tags.length > 0 ? (
+                product.tags.map((tag: string, index: number) => (
+                  <span key={index} className="tag">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span>No tags available</span>
+              )}
+            </div> */}
 
             <div className="action-buttons">
               <button className="btn btn-primary">Buy Now</button>
