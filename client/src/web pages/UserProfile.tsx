@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../styles/UserProfile.css";
 import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { getUserListings, getUserProfile } from "../api";
+import { getUserListings, getUserProfile, updateUserProfile } from "../api";
 
 type Listing = {
   id: number;
@@ -35,11 +35,22 @@ const UserProfile: React.FC = () => {
   const [boughtPage, setBoughtPage] = useState(0);
   const ITEMS_PER_PAGE = 4;
 
+  const { id } = useParams();
+  console.log("User ID from useParams:", id);
+  // useEffect(() => {
+  //   // let id = 9
+  //   if (id) {
+  //     fetchUserData(Number(id));
+  //     fetchUserListings(Number(id));
+  //   }
+  // }, [id]);
+  // -------------------------USED FOR MOCK DATA------------------------------------
   useEffect(() => {
     const userId = 1; // Replace with actual user ID
     fetchUserData(userId);
     fetchUserListings(userId);
   }, []);
+  // -------------------------USED FOR MOCK DATA------------------------------------
 
   const fetchUserData = async (userId: number) => {
     try {
@@ -91,6 +102,29 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  // const [updateUserProfile, setUpdateUserProfile] = useState<UserProfile | null>(null);
+  // //fetch updated user profile data
+  // useEffect(() => {
+  //   const newUserProfile = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `http://localhost:3232/update-user?user_id=${id}&name=robbie&phone_number=123-444-3333&school=risd`
+  //       );
+  //       const data = await response.json();
+  //       console.log(data);
+  //   }
+  //     df,
+  //   };
+  // }, []);
+
+  // const handleUpdatingUserProfile = () => {
+  //   const newUserProfile = {
+  //     df,
+  //   };
+  //   setUpdateProfile(newProfile);
+  // };
+
+
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
 
   const handleEditListing = (listing: Listing) => {
@@ -133,6 +167,14 @@ const UserProfile: React.FC = () => {
       new Modal(modalElement);
     }
   }, []);
+
+  //trying to set this up to redirect not to /user but to /user/userid. 
+  //cuz we need the id for the backend handlers to grab user specific data 
+  //for some reason its only going to /user.
+  const navigate = useNavigate();
+  const handleUserClick = (id: number) => {
+     navigate(`/user/${id}`);
+   };
 
   return (
     <div className="user-profile-container">
@@ -178,6 +220,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <button className="edit-profile">Edit Profile</button>
+        {/* updateProfile */}
         {editingListing && (
           <div
             className="modal fade show"
@@ -248,13 +291,13 @@ const UserProfile: React.FC = () => {
                     className="btn btn-sm btn-outline-success"
                     onClick={() =>
                       handleMarkAsSold(listing.id, !listing.isSold)
-                    } 
+                    }
                     // TODO idk if any of this actualy works
-                  > 
-                    {listing.isSold ? "Unmark as Sold" : "Mark as Sold"} 
+                  >
+                    {listing.isSold ? "Unmark as Sold" : "Mark as Sold"}
                   </button>
                 )}
-              </div> 
+              </div>
             </div>
           ))}
         </div>
