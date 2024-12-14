@@ -11,6 +11,12 @@ type Listing = {
   id: number;
   title: string;
   price: number;
+  description: string;
+  category: string;
+  condition: string;
+  imageUrl: string;
+  tags: string[];
+  isSold?: boolean;
 };
 
 type UserProfile = {
@@ -85,6 +91,41 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+
+  const handleEditListing = (listing: Listing) => {
+    const initialData = {
+      title: listing.title,
+      available: !listing.isSold,
+      description: listing.description,
+      price: listing.price,
+      category: listing.category,
+      condition: listing.condition,
+      imageUrl: listing.imageUrl,
+      tags: listing.tags,
+      images: [], // TODO figure out how to handle existing images
+    };
+    setEditingListing(listing);
+  };
+
+  // const handleSaveListing = async (id: number, updates: Partial<Listing>) => {
+  //   // TODO: Integrate with backend
+  //   setListings(
+  //     listings.map((listing) =>
+  //       listing.id === id ? { ...listing, ...updates } : listing
+  //     )
+  //   );
+  // };
+
+  const handleMarkAsSold = async (id: number, isSold: boolean) => {
+    // TODO: Integrate with backend
+    setListings(
+      listings.map((listing) =>
+        listing.id === id ? { ...listing, isSold: isSold } : listing
+      )
+    );
+  };
+
   // Initialize modal
   useEffect(() => {
     const modalElement = document.getElementById("addListingModal");
@@ -137,9 +178,49 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <button className="edit-profile">Edit Profile</button>
+        {editingListing && (
+          <div
+            className="modal fade show"
+            style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog modal-lg modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header border-0">
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setEditingListing(null)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <ListItemPopup
+                    isEditing={true}
+                    initialData={{
+                      sellerId: userProfile?.id || 1,
+                      title: editingListing.title,
+                      available: !editingListing.isSold,
+                      description: editingListing.description,
+                      price: editingListing.price,
+                      category: editingListing.category,
+                      condition: editingListing.condition,
+                      imageUrl: editingListing.imageUrl,
+                      tags: editingListing.tags,
+                      images: [],
+                    }}
+                    editId={editingListing.id}
+                    onSubmit={() => {
+                      setEditingListing(null);
+                      fetchUserListings(userProfile?.id || 1);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <h2>Your Listings</h2>
+      <h2>My Listings</h2>
       <div className="listings-navigation">
         <button
           className="arrow-btn"
@@ -154,6 +235,26 @@ const UserProfile: React.FC = () => {
               <div className="listing-image"></div>
               <p className="listing-price">${listing.price.toFixed(2)}</p>
               <p className="listing-name">{listing.title}</p>
+              {listing.isSold && <div className="sold-badge">SOLD</div>}
+              <div className="listing-actions">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => handleEditListing(listing)}
+                >
+                  Edit
+                </button>
+                {!listing.isSold && (
+                  <button
+                    className="btn btn-sm btn-outline-success"
+                    onClick={() =>
+                      handleMarkAsSold(listing.id, !listing.isSold)
+                    } 
+                    // TODO idk if any of this actualy works
+                  > 
+                    {listing.isSold ? "Unmark as Sold" : "Mark as Sold"} 
+                  </button>
+                )}
+              </div> 
             </div>
           ))}
         </div>

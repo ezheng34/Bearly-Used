@@ -336,30 +336,6 @@ const HomePage: React.FC = () => {
         )}
       </div>
 
-      {/* Modal */}
-      <div
-        className="modal fade"
-        id="addListingModal"
-        tabIndex={-1}
-        aria-labelledby="addListingModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header border-0">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <ListItemPopup onSubmit={closeModal} />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* only show pagination if there are items */}
       {filteredListings.length > 0 && (
