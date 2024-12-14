@@ -79,11 +79,7 @@ public class RealStorage implements StorageInterface {
   /* LISTING FUNCTIONS */
   @Override
   public List<Listing> getListings(
-      String category,
-      Float minPrice,
-      Float maxPrice,
-      List<String> tags,
-      Sorter sorter) {
+      String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
 
     try {
       List<Listing> listings = new ArrayList<>();
@@ -94,23 +90,23 @@ public class RealStorage implements StorageInterface {
 
       System.out.println("1");
       // Apply filters dynamically
-      if (category != null){
+      if (category != null) {
         sqlBuilder.append(" AND category = ?");
         params.add(category);
       }
 
-      if (minPrice != null){
+      if (minPrice != null) {
         sqlBuilder.append(" AND price >= ?");
         params.add(minPrice);
       }
 
-      if (maxPrice != null){
+      if (maxPrice != null) {
         sqlBuilder.append(" AND price <= ?");
         params.add(maxPrice);
       }
 
       // check tags
-      if (tags != null && !tags.isEmpty()){
+      if (tags != null && !tags.isEmpty()) {
         sqlBuilder.append(" AND (");
         for (int i = 0; i < tags.size(); i++) {
           if (i > 0) {
@@ -122,7 +118,7 @@ public class RealStorage implements StorageInterface {
         sqlBuilder.append(")");
       }
 
-      if (sorter != null){
+      if (sorter != null) {
         sqlBuilder.append(" ORDER BY ");
         switch (sorter) {
           case PRICE_ASC:
@@ -169,7 +165,7 @@ public class RealStorage implements StorageInterface {
       }
 
       return listings;
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new RuntimeException("unknown error: " + e.getMessage());
     }
   }
@@ -209,8 +205,9 @@ public class RealStorage implements StorageInterface {
       statement.setString(7, condition);
       statement.setString(8, imageUrl);
 
-      if (tags != null){
-        System.out.println("Tags being passed to createArrayOf: " + Arrays.toString(tags.toArray()));
+      if (tags != null) {
+        System.out.println(
+            "Tags being passed to createArrayOf: " + Arrays.toString(tags.toArray()));
         statement.setArray(9, connection.createArrayOf("text", tags.toArray()));
       }
 
