@@ -2,8 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import router components
 import HomePage from "./web pages/HomePage";
-import ListingPage from "./web pages/[delete] ListingPage";
 import UserProfile from "./web pages/UserProfile";
+import SellerProfile from "./web pages/SellerProfile";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import ProductPage from "./web pages/ProductPage";
 import "./styles/App.css";
@@ -40,6 +41,7 @@ const App: React.FC = () => {
           {/* <Route path="/product" element={<ListingPage />} /> */}
           <Route path="/user" element={<UserProfile />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/seller/:sellerId" element={<SellerProfile />} />
         </Routes>
       </div>
     </Router>
