@@ -214,6 +214,7 @@ h6 {
 /* Add to your HomePage.css */
 .pagination {
   margin-bottom: 2rem;
+  font-family: "DM Sans", sans-serif;
 }
 
 .page-link {

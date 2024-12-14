@@ -114,10 +114,10 @@ const HomePage: React.FC = () => {
     }
 
     setFilteredListings(filtered);
-    setCurrentPage(1); // Reset to first page when filters/sort change
+    setCurrentPage(1); // resert to first page when filters/sort change
   }, [selectedCategory, selectedPriceRange, priceSort]);
 
-  // Prices Dropdown with sorting options
+  // prices dropdown with sorting options
   const renderPricesDropdown = () => (
     <li className="nav-item dropdown">
       <button
@@ -205,7 +205,7 @@ const HomePage: React.FC = () => {
       const modal = Modal.getInstance(modalElement);
       modal?.hide();
 
-      // Remove all modal-related effects
+      // remove all modal-related effects??? todo this DOESNT WORK SJDFKJDSF
       modalElement.classList.remove("show");
       modalElement.style.display = "none";
       modalElement.setAttribute("aria-hidden", "true");
@@ -293,6 +293,7 @@ const HomePage: React.FC = () => {
             className="btn btn-light"
             data-bs-toggle="modal"
             data-bs-target="#addListingModal"
+            font-family="DM Sans"
           >
             Create Listing
           </button>
@@ -360,7 +361,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Only show pagination if there are items */}
+      {/* only show pagination if there are items */}
       {filteredListings.length > 0 && (
         <nav aria-label="Product pages" className="mt-4">
           <ul className="pagination justify-content-center">

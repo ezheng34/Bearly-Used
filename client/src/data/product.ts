@@ -10,6 +10,13 @@ const mockProducts = {
         "https://m.media-amazon.com/images/I/71ZOtNdaZCL.jpg",
         "https://i.ytimg.com/vi/YH_DCqAmtxQ/maxresdefault.jpg",
       ],
+      seller: {
+        id: 1,
+        name: "bob wright",
+        rating: 4.5,
+        school: "brown",
+        email: "bob_wright@brown.edu"
+      },
     },
     {
       id: 2,
@@ -21,6 +28,13 @@ const mockProducts = {
         "https://m.media-amazon.com/images/I/713iJYS8jDL.jpg",
         "https://image.lampsplus.com/is/image/b9gt8/360-lighting-wray-black-antique-brass-adjustable-usb-desk-lamp__56f23.jpg?qlt=65&wid=710&hei=710&op_sharpen=1&fmt=jpeg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 3,
@@ -34,6 +48,13 @@ const mockProducts = {
         "https://m.media-amazon.com/images/I/714jjZEj8LL._UF894,1000_QL80_.jpg",
         "https://thecomputersciencebook.com/images/cover-new.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 4,
@@ -52,6 +73,13 @@ const mockProducts = {
         "data:image/jpeg;base64,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",
         "data:image/jpeg;base64,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",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 5,
@@ -62,10 +90,17 @@ const mockProducts = {
       images: [
         "https://ih1.redbubble.net/image.4953820872.8898/st,small,845x845-pad,1000x1000,f8f8f8.u1.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 6,
-      title: "emotional damage",
+      title: "bro are we fr rn",
       price: 150,
       category: "Miscellaneous",
       description:
@@ -73,16 +108,30 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 7,
-      title: "my hopes and dreams",
+      title: "ur mom pt 2",
       price: 49,
       category: "Miscellaneous",
       description: "never used still in packaging",
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 8,
@@ -93,16 +142,30 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 9,
       title: "hw answers",
       price: 10,
       category: "Books",
-      description: "100% real no scam trust",
+      description: "100% real not scam trust",
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 10,
@@ -113,6 +176,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 11,
@@ -123,6 +193,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 12,
@@ -133,6 +210,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 13,
@@ -143,16 +227,30 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 14,
       title: "my hopes and dreams",
       price: 35,
       category: "Miscellaneous",
-      description: "me after seeing r/csmajors",
+      description: "me after opening any cs-related online platform",
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 15,
@@ -163,16 +261,31 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 16,
       title: "used tissue",
       price: 12,
       category: "Miscellaneous",
-      description: "me after 10 page sts pater",
+      description:
+        "me after 10 page sts paper due tmr and i'm coding at 1:30 am",
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 17,
@@ -183,6 +296,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 18,
@@ -193,6 +313,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
     {
       id: 19,
@@ -203,6 +330,13 @@ const mockProducts = {
       images: [
         "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
       ],
+      seller: {
+        id: 2,
+        name: "Kathy Li",
+        rating: 4.8,
+        school: "Brown",
+        email: "kathy_m_li@brown.edu",
+      },
     },
   ],
 };
