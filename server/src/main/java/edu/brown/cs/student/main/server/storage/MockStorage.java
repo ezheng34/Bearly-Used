@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,6 +12,11 @@ public class MockStorage implements StorageInterface {
   @Override
   public Long createUser(String email, String name, String phoneNumber, String school) {
     return null;
+  }
+
+  @Override
+  public boolean updateUser(int userId, User updatedUser) {
+    return false;
   }
 
   @Override
@@ -35,6 +41,11 @@ public class MockStorage implements StorageInterface {
 
   @Override
   public Optional<Listing> getListingById(Long listingId) {
+    return null;
+  }
+
+  @Override
+  public Listing obtainListing(Long listingId) {
     return null;
   }
 

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import mockProducts from "../data/product";
 import "../styles/ProductPage.css";
-
 // Update the interface to include seller information
 interface Seller {
   id: number;
@@ -155,3 +154,4 @@ const ProductPage: React.FC = () => {
 };
 
 export default ProductPage;
+

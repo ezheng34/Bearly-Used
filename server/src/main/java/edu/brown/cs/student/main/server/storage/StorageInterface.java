@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,16 @@ public interface StorageInterface {
 
   Optional<Listing> getListingById(Long listingId);
 
+  //   Listing getListingById(Long listingId);
+  Listing obtainListing(Long listingId);
+
   boolean updateListing(Long listingId, Listing updatedListing);
 
   boolean deleteListing(Long listingId);
 
   Map<String, Object> getUser(long userId) throws Exception;
+
+  boolean updateUser(int userId, User updatedUser);
 
   List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception;
 

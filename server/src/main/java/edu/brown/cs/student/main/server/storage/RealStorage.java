@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
+import edu.brown.cs.student.main.server.classes.User;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -73,6 +74,63 @@ public class RealStorage implements StorageInterface {
     } catch (SQLException e) {
       System.err.println("Error creating user: " + e.getMessage());
       throw e;
+    }
+  }
+
+  @Override
+  public boolean updateUser(int userId, User updatedUser) {
+    // Construct SQL update query
+    StringBuilder sqlBuilder = new StringBuilder("UPDATE users SET ");
+    boolean hasUpdates = false;
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC)) {
+      // Create a list to hold parameters
+      List<Object> params = new ArrayList<>();
+
+      // Add fields to update
+      if (updatedUser.getName() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("name = ?");
+        params.add(updatedUser.getName());
+        hasUpdates = true;
+      }
+
+      if (updatedUser.getPhoneNumber() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("phone_number = ?");
+        params.add(updatedUser.getPhoneNumber());
+        hasUpdates = true;
+      }
+
+      if (updatedUser.getSchool() != null) {
+        sqlBuilder.append(hasUpdates ? ", " : "").append("school = ?");
+        params.add(updatedUser.getSchool());
+        hasUpdates = true;
+      }
+
+      sqlBuilder.append(" WHERE id = ?");
+      params.add(userId);
+
+      // debugging
+      System.out.println("SQL Query: " + sqlBuilder.toString());
+      System.out.println("Parameters: " + params);
+
+      try (PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+          statement.setObject(i + 1, params.get(i));
+        }
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+          System.out.println("User updated successfully: " + userId);
+          return true;
+        } else {
+          System.err.println("No User found with ID: " + userId);
+          return false;
+        }
+      }
+    } catch (SQLException e) {
+      System.err.println("Error updating user: " + e.getMessage());
+      return false;
     }
   }
 
@@ -297,6 +355,87 @@ public class RealStorage implements StorageInterface {
   public Optional<Listing> getListingById(Long listingId) {
     return Optional.empty();
   }
+
+  @Override
+  public Listing obtainListing(Long listingId) {
+    Listing listing = null;
+    String sql = "SELECT * FROM listings WHERE id = ?";
+
+    try (Connection connection = DriverManager.getConnection(this.JDBC);
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+
+      statement.setLong(1, listingId);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          // Fetch BLOB (image data) from the database
+          // Blob imageBlob = resultSet.getBlob("image_url");
+          // String base64Image = null;
+          // if (imageBlob != null) {
+          //   byte[] imageData = imageBlob.getBytes(1, (int) imageBlob.length());
+          //   base64Image = "data:image/jpeg;base64," +
+          // Base64.getEncoder().encodeToString(imageData);
+          // }
+
+          // debugging
+          String imageUrl = resultSet.getString("image_url");
+          System.out.println("Fetched image URL: " + imageUrl);
+
+          // create Listing object from ResultSet
+          listing =
+              new Listing(
+                  resultSet.getLong("id"),
+                  resultSet.getString("title"),
+                  resultSet.getString("description"),
+                  resultSet.getFloat("price"),
+                  resultSet.getString("category"),
+                  resultSet.getString("condition"),
+                  resultSet.getString("image_url"),
+
+                  // base64Image,
+                  Arrays.asList((String[]) resultSet.getArray("tags").getArray()),
+                  resultSet.getBoolean("available"));
+        }
+      }
+      return listing;
+
+    } catch (SQLException e) {
+      System.err.println("Error obtaining listing: " + e.getMessage());
+      return null;
+    }
+  }
+
+  //   @Override
+  // public Listing getListingById(Long listingId) {
+  //     Listing listing = null;
+  //     String sql = "SELECT * FROM listings WHERE id = ?";
+
+  //     try (Connection connection = DriverManager.getConnection(this.JDBC);
+  //          PreparedStatement statement = connection.prepareStatement(sql)) {
+
+  //         statement.setLong(1, listingId);
+
+  //         try (ResultSet resultSet = statement.executeQuery()) {
+  //           while (resultSet.next()) {
+  //             // Map ResultSet to Listing object
+  //             listing =
+  //                 new Listing(
+  //                     resultSet.getLong("id"),
+  //                     resultSet.getString("title"),
+  //                     resultSet.getString("description"),
+  //                     resultSet.getFloat("price"),
+  //                     resultSet.getString("category"),
+  //                     resultSet.getString("condition"),
+  //                     resultSet.getString("image_url"),
+  //                     Arrays.asList((String[]) resultSet.getArray("tags").getArray()),
+  //                     resultSet.getBoolean("available"));
+  //           }
+  //         }
+  //     } catch (SQLException e) {
+  //         e.printStackTrace();
+  //     }
+
+  //     return listing;  // Return null if no listing is found
+  // }
 
   @Override
   public boolean updateListing(Long listingId, Listing updatedListing) {

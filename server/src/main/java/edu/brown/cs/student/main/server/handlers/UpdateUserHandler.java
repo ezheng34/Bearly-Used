@@ -1,5 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import edu.brown.cs.student.main.server.classes.User;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,33 +9,48 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class AddUserHandler implements Route {
+// USER cant update their tags yet
+// should user be allowed to switch their schools maybe not,
 
+public class UpdateUserHandler implements Route {
   public StorageInterface dbHandler;
 
-  public AddUserHandler(StorageInterface dbHandler) {
+  public UpdateUserHandler(StorageInterface dbHandler) {
     this.dbHandler = dbHandler;
   }
 
   @Override
   public Object handle(Request request, Response response) {
+    System.out.println("Received request to update user");
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
 
-      // "INSERT INTO users (email, name, phoneNumber, school) VALUES (? ? ? ?)";
+      int userId = validateUserId(request.queryParams("user_id"));
 
-      String email = validateEmail(request.queryParams("email"));
-      String name = validateName(request.queryParams("name"));
-      String phoneNumber = validatePhoneNumber(request.queryParams("phone_number"));
-      String school = validateSchool(request.queryParams("school"));
+      String name = request.queryParams("name");
+      String phoneNumber = request.queryParams("phone_number");
+      String school = request.queryParams("school");
+
       // EXAMPLE QUERY:
-      // http://localhost:3232/add-user?email=abc@gmail.com&name=bob&phone_number=123&school=brown
+      // http://localhost:3232/update-user?user_id=9&name=robbie&phone_number=123-444-3333&school=risd
 
-      Long userId = this.dbHandler.createUser(email, name, phoneNumber, school);
+      User newUser =
+          new User(
+              userId,
+              name != null ? validateName(name) : null,
+              phoneNumber != null ? validatePhoneNumber(phoneNumber) : null,
+              school != null ? validateSchool(school) : null);
 
-      responseMap.put("response_type", "success");
-      responseMap.put("user_id", userId);
+      boolean updated = this.dbHandler.updateUser(userId, newUser);
+
+      if (updated) {
+        responseMap.put("response_type", "success");
+        responseMap.put("message", "User updated successfully");
+      } else {
+        responseMap.put("response_type", "failure");
+        responseMap.put("error", "User could not be updated");
+      }
     } catch (IllegalArgumentException e) {
       // Handle input validation errors
       responseMap.put("response_type", "failure");
@@ -47,18 +63,13 @@ public class AddUserHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // validation for user input
-  private String validateEmail(String email) {
-    if (email == null || email.trim().isEmpty()) {
-      throw new IllegalArgumentException("Email is required");
+  // handlers to validate user input
+  private int validateUserId(String userIdStr) {
+    int userId = Integer.parseInt(userIdStr);
+    if (userId < 0) {
+      throw new IllegalArgumentException("Invalid user id inputted");
     }
-
-    // Basic email validation regex
-    if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
-      throw new IllegalArgumentException("Invalid email format");
-    }
-
-    return email.trim();
+    return userId;
   }
 
   private String validateName(String name) {
