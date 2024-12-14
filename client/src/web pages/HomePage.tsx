@@ -17,25 +17,43 @@ const ITEMS_PER_PAGE = 8; // TODO change later
 
 type SortOrder = "none" | "asc" | "desc";
 
-// backend types - might be wrong
+// // backend types - might be wrong
+// interface ListingItem {
+//   id: number;
+//   title: string;
+//   price: number;
+//   category: string;
+//   description: string;
+//   images: string[];
+// }
+
+//actual backend types
 interface ListingItem {
   id: number;
   title: string;
+  description: string;
   price: number;
   category: string;
-  description: string;
-  images: string[];
+  condition: string;
+  image_url: string;
+  available: boolean;
+  tags: string[];
 }
 
 const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
+
+  const [allListings, setAllListings] = useState<ListingItem[]>([]);
+  const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
+
   const [priceSort, setPriceSort] = useState<SortOrder>("none");
   const [currentPage, setCurrentPage] = useState(1);
-
-  const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
-    mockProducts.mockProducts
-  );
+  // -------------------------USED FOR MOCK DATA------------------------------------
+  // const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
+  //   mockProducts.mockProducts
+  // );
+  // -------------------------USED FOR MOCK DATA------------------------------------
 
   const categories = [
     "Electronics",
@@ -83,19 +101,42 @@ const HomePage: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  //fetch all listings from backend
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await fetch("http://localhost:3232/get-listings");
+        const data = await response.json();
+        console.log(data);
+        if (data.response_type === "success") {
+          setAllListings(data.result);
+          setFilteredListings(data.result);
+        } else {
+          console.error("Error fetching listings");
+        }
+      } catch (err) {
+        console.error("Error fetching listings");
+      }
+    };
+
+    fetchListings();
+  }, []);
+
   // filter listings based on selected category and price range
   useEffect(() => {
-    let filtered = mockProducts.mockProducts;
+    let filteredListings = allListings;
 
     if (selectedCategory) {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
+      filteredListings = filteredListings.filter(
+        (item) => item.category === selectedCategory
+      );
     }
 
     // Price range filter
     if (selectedPriceRange) {
       const range = priceRanges.find((r) => r.label === selectedPriceRange);
       if (range) {
-        filtered = filtered.filter((item) => {
+        filteredListings = filteredListings.filter((item) => {
           if (range.max === null) return item.price >= range.min;
           return item.price >= range.min && item.price <= range.max;
         });
@@ -104,7 +145,7 @@ const HomePage: React.FC = () => {
 
     // Price sorting
     if (priceSort !== "none") {
-      filtered = [...filtered].sort((a, b) => {
+      filteredListings = [...filteredListings].sort((a, b) => {
         if (priceSort === "asc") {
           return a.price - b.price;
         } else {
@@ -113,9 +154,44 @@ const HomePage: React.FC = () => {
       });
     }
 
-    setFilteredListings(filtered);
+    setFilteredListings(filteredListings);
     setCurrentPage(1); // resert to first page when filters/sort change
   }, [selectedCategory, selectedPriceRange, priceSort]);
+
+  // -------------------------USED FOR MOCK DATA------------------------------------
+  // useEffect(() => {
+  //   let filtered = mockProducts.mockProducts;
+
+  //   if (selectedCategory) {
+  //     filtered = filtered.filter((item) => item.category === selectedCategory);
+  //   }
+
+  //   // Price range filter
+  //   if (selectedPriceRange) {
+  //     const range = priceRanges.find((r) => r.label === selectedPriceRange);
+  //     if (range) {
+  //       filtered = filtered.filter((item) => {
+  //         if (range.max === null) return item.price >= range.min;
+  //         return item.price >= range.min && item.price <= range.max;
+  //       });
+  //     }
+  //   }
+
+  //   // Price sorting
+  //   if (priceSort !== "none") {
+  //     filtered = [...filtered].sort((a, b) => {
+  //       if (priceSort === "asc") {
+  //         return a.price - b.price;
+  //       } else {
+  //         return b.price - a.price;
+  //       }
+  //     });
+  //   }
+
+  //   setFilteredListings(filtered);
+  //   setCurrentPage(1); // resert to first page when filters/sort change
+  // }, [selectedCategory, selectedPriceRange, priceSort]);
+  // -------------------------USED FOR MOCK DATA------------------------------------
 
   // prices dropdown with sorting options
   const renderPricesDropdown = () => (
@@ -312,10 +388,15 @@ const HomePage: React.FC = () => {
                 style={{ cursor: "pointer" }}
               >
                 <div className="homepage-listing-image">
-                  <img
-                    src={item.images[0]}
+                  {/* <img
+                    src={item.images[0]} //used when mock
                     className="img-fluid rounded mb-3 product-image"
                     alt={item.title}
+                  /> */}
+                  <img
+                    src={item.image_url}
+                    className="img-fluid rounded mb-3 product-image"
+                    alt="Product"
                   />
                 </div>
                 <div className="homepage-listing-title">{item.title}</div>
@@ -335,7 +416,6 @@ const HomePage: React.FC = () => {
           </div>
         )}
       </div>
-
 
       {/* only show pagination if there are items */}
       {filteredListings.length > 0 && (

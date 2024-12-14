@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import mockProducts from "../data/product";
@@ -25,8 +25,13 @@ interface Product {
 const ProductPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = mockProducts.mockProducts.find((p) => p.id === Number(id));
-  const [mainImage, setMainImage] = useState(product?.images[0]);
+  // -------------------------USED FOR MOCK DATA------------------------------------
+  // const product = mockProducts.mockProducts.find((p) => p.id === Number(id));
+  // const [mainImage, setMainImage] = useState(product?.images[0]);
+  // -------------------------USED FOR MOCK DATA------------------------------------
+
+  const [product, setProduct] = useState<any>(null);
+  const [mainImage, setMainImage] = useState<string>("");
 
   const handleViewProfile = (sellerId: number) => {
     navigate(`/seller/${sellerId}`);
@@ -58,6 +63,40 @@ const ProductPage: React.FC = () => {
     });
   };
 
+  // Fetch the product data based on the ID
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3232/get-listing-by-id?listing_id=${id}` //NOT FUNCTIONAL YET
+        );
+        const data = await response.json();
+        console.log("Fetched data:", data);
+
+        if (data.response_type === "success") {
+          // const fetchedProduct = data.result[0];
+          const fetchedProduct = data.listing;
+          console.log("Fetched product data:", fetchedProduct);
+          console.log("Fetched product image_url:", fetchedProduct.image_url);
+          // setProduct(fetchedProduct);
+          // setMainImage(fetchedProduct.image_url);
+
+          setProduct({ ...fetchedProduct });
+          setMainImage(fetchedProduct.image_url);
+          console.log("url", fetchedProduct.image_url);
+        } else {
+          console.error("Error fetching product data");
+        }
+      } catch (err) {
+        console.error("Error fetching product data:", err);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
   return (
     <div className="product-page">
       <div className="header">
@@ -83,8 +122,8 @@ const ProductPage: React.FC = () => {
                 className="product-image"
               />
             </div>
-
-            <div className="thumbnail-container">
+            {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
+            {/* <div className="thumbnail-container">
               <div className="d-flex gap-3">
                 {product?.images.map((image, index) => (
                   <img
@@ -98,7 +137,7 @@ const ProductPage: React.FC = () => {
                   />
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Product Info */}
