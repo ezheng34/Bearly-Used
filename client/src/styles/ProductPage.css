@@ -1,28 +1,28 @@
 :root {
-  --primary-blue: #4FC3DB;
-  --primary-dark: #2D3047;
-  --secondary-beige: #F5EBE0;
-  --accent-coral: #FF8360;
-  --accent-sage: #7CA982;
+  --primary-blue: #4fc3db;
+  --primary-dark: #2d3047;
+  --secondary-beige: #f5ebe0;
+  --accent-coral: #ff8360;
+  --accent-sage: #7ca982;
   --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
 .thumbnail-container {
-  max-width: 100%; 
+  max-width: 100%;
 }
 
 .thumbnail-container .d-flex {
-  display: flex; 
-  flex-wrap: nowrap; 
-  overflow-x: auto; 
-  gap: 10px; 
-  padding-bottom: 10px; 
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 10px;
 }
 
 .thumbnail-container .thumbnail {
-  width: 60px; 
-  height: 60px; 
-  object-fit: cover; 
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
   cursor: pointer;
 }
 
@@ -94,14 +94,14 @@
 }
 
 .product-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 2.5rem;
   color: var(--primary-dark);
   margin-bottom: 1rem;
 }
 
 .product-price {
-  font-family: 'Manrope', sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 2rem;
   color: var(--accent-coral);
   font-weight: 600;
@@ -109,13 +109,29 @@
 }
 
 .product-description {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 1.1rem;
   line-height: 1.6;
   color: #666;
   margin-bottom: 2rem;
 }
 
+.seller-profile-btn {
+  display: flex;
+  align-items: center;
+  background-color: var(--secondary-beige);
+  color: var(--primary-dark);
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.seller-profile-btn:hover {
+  background-color: var(--secondary-brown);
+  transform: translateY(-2px);
+}
 .action-buttons {
   display: flex;
   gap: 1rem;
@@ -125,7 +141,7 @@
   background-color: var(--primary-blue);
   border: none;
   padding: 1rem 2rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 500;
   transition: all 0.2s ease;
   border-radius: 12px;

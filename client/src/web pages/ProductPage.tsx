@@ -1,12 +1,34 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import mockProducts from "../data/product";
 import "../styles/ProductPage.css";
 
+// Update the interface to include seller information
+interface Seller {
+  id: number;
+  name: string;
+  rating: number;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  description: string;
+  images: string[];
+  seller: Seller;
+}
+
 const ProductPage: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = mockProducts.mockProducts.find((p) => p.id === Number(id));
   const [mainImage, setMainImage] = useState(product?.images[0]);
+
+  const handleViewProfile = (sellerId: number) => {
+    navigate(`/profile/${sellerId}`);
+  };
 
   return (
     <div className="product-page">
@@ -43,6 +65,15 @@ const ProductPage: React.FC = () => {
             <div className="product-price">${product?.price}</div>
             <p className="product-description">{product?.description}</p>
             
+            {/* Seller Profile Button with Bootstrap icon */}
+            <button 
+              className="btn seller-profile-btn" 
+              //onClick={() => product?.seller && handleViewProfile(product.seller.id)}
+            >
+              <i className="bi bi-person-circle me-2"></i>
+              View Seller Profile
+            </button>
+
             <div className="action-buttons">
               <button className="btn btn-primary">
                 Buy Now

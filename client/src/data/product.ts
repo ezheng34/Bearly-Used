@@ -63,6 +63,147 @@ const mockProducts = {
         "https://ih1.redbubble.net/image.4953820872.8898/st,small,845x845-pad,1000x1000,f8f8f8.u1.jpg",
       ],
     },
+    {
+      id: 6,
+      title: "emotional damage",
+      price: 150,
+      category: "Miscellaneous",
+      description:
+        "getting rejected from 150 jobs straight and one while i was typing this",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 7,
+      title: "my hopes and dreams",
+      price: 49,
+      category: "Miscellaneous",
+      description: "never used still in packaging",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 8,
+      title: "moms spaghetti",
+      price: 15,
+      category: "Food",
+      description: "knees weak arms are heavy",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 9,
+      title: "hw answers",
+      price: 10,
+      category: "Books",
+      description: "100% real no scam trust",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 10,
+      title: "my cat is very cute",
+      price: 25,
+      category: "Fashion",
+      description: "he is tho",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 11,
+      title: "free rp card",
+      price: 30,
+      category: "Gaming",
+      description: "eric probably spent money on league of legends",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 12,
+      title: "gently used fork",
+      price: 45,
+      category: "Kitchen",
+      description: "found in kitchen",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 13,
+      title: "instant noodles (fancy)",
+      price: 20,
+      category: "Food",
+      description: "ur welcome for buldak eric",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 14,
+      title: "my hopes and dreams",
+      price: 35,
+      category: "Miscellaneous",
+      description: "me after seeing r/csmajors",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 15,
+      title: "that one playlist",
+      price: 29,
+      category: "Music",
+      description: "u know the one with that song",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 16,
+      title: "used tissue",
+      price: 12,
+      category: "Miscellaneous",
+      description: "me after 10 page sts pater",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 17,
+      title: "bootleg airpods",
+      price: 55,
+      category: "Electronics",
+      description: "airpods at home",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 18,
+      title: "dirt cheap dirt",
+      price: 8,
+      category: "Garden",
+      description: "premium dirt straight from ground",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
+    {
+      id: 19,
+      title: "pet rock (certified)",
+      price: 99,
+      category: "Pets",
+      description: "house trained and everything",
+      images: [
+        "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2020/02/League-of-Legends-Wallpaper-Resized.jpg",
+      ],
+    },
   ],
 };
 

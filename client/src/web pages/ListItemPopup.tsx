@@ -309,6 +309,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({ onSubmit }) => {
             multiple
             onChange={handleImageUpload}
             className="form-control"
+            required
           />
           <div className="image-preview-container d-flex flex-wrap gap-2 mt-2">
             {imagePreviews.map((imageUrl, index) => (
