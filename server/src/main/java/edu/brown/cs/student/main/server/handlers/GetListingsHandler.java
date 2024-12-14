@@ -72,7 +72,6 @@ public class GetListingsHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // validate inputs
   private Long validateListingId(String listingIdStr) {
     if (listingIdStr == null || listingIdStr.isEmpty()) {
       throw new IllegalArgumentException("Listing ID is required");

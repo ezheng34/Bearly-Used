@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
@@ -13,22 +12,29 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-// backend types - might be wrong
 interface ListingItem {
   id: number;
   title: string;
+  description: string;
   price: number;
   category: string;
-  description: string;
-  images: string[];
+  condition: string;
+  image_url: string;
+  available: boolean;
+  tags: string[];
 }
 
 const HomePage: React.FC = () => {
-  
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
-  const [filteredListings, setFilteredListings] =
-    useState<ListingItem[]>(mockProducts.mockProducts);
+
+  const [allListings, setAllListings] = useState<ListingItem[]>([]);
+  const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
+  
+  // -------------------------USED FOR MOCK DATA------------------------------------
+  // const [filteredListings, setFilteredListings] =
+  //   useState<ListingItem[]>(mockProducts.mockProducts);
+  // -------------------------USED FOR MOCK DATA------------------------------------
 
   const categories = [
     "Electronics",
@@ -50,26 +56,72 @@ const HomePage: React.FC = () => {
     { label: "$30+", min: 30, max: null },
   ];
 
-  // filter listings based on selected category and price range
+  //fetch all listings from backend
   useEffect(() => {
-    let filtered = mockProducts.mockProducts;
+    const fetchListings = async () => {
+      try {
+        const response = await fetch("http://localhost:3232/get-listings");
+        const data = await response.json();
+        console.log(data);
+        if (data.response_type === "success") {
+          setAllListings(data.result);
+          setFilteredListings(data.result);
+        } else {
+          console.error("Error fetching listings");
+        }
+      } catch (err) {
+        console.error("Error fetching listings");
+      }
+    };
+
+    fetchListings();
+  }, []);
+
+  //filter listings based on selected category and price range
+  useEffect(() => {
+    let filteredListings = allListings;
 
     if (selectedCategory) {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
+      filteredListings = filteredListings.filter(
+        (item) => item.category === selectedCategory
+      );
     }
 
     if (selectedPriceRange) {
       const range = priceRanges.find((r) => r.label === selectedPriceRange);
       if (range) {
-        filtered = filtered.filter((item) => {
+        filteredListings = filteredListings.filter((item) => {
           if (range.max === null) return item.price >= range.min;
           return item.price >= range.min && item.price <= range.max;
         });
       }
     }
 
-    setFilteredListings(filtered);
+    setFilteredListings(filteredListings);
   }, [selectedCategory, selectedPriceRange]);
+
+  // -------------------------USED FOR MOCK DATA------------------------------------
+  // filter listings based on selected category and price range
+  // useEffect(() => {
+  //   let filtered = mockProducts.mockProducts;
+
+  //   if (selectedCategory) {
+  //     filtered = filtered.filter((item) => item.category === selectedCategory);
+  //   }
+
+  //   if (selectedPriceRange) {
+  //     const range = priceRanges.find((r) => r.label === selectedPriceRange);
+  //     if (range) {
+  //       filtered = filtered.filter((item) => {
+  //         if (range.max === null) return item.price >= range.min;
+  //         return item.price >= range.min && item.price <= range.max;
+  //       });
+  //     }
+  //   }
+
+  //   setFilteredListings(filtered);
+  // }, [selectedCategory, selectedPriceRange]);
+  // -------------------------USED FOR MOCK DATA------------------------------------
 
   // Initialize modal
   useEffect(() => {
@@ -100,13 +152,11 @@ const HomePage: React.FC = () => {
     }
   };
 
-
   const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}`);
   };
-
 
   return (
     <div>
@@ -225,9 +275,15 @@ const HomePage: React.FC = () => {
           {filteredListings.map((item) => (
             <div key={item.id} className="homepage-listing">
               <div className="homepage-listing-image">
-                <img
-                  src={item.images[0]}
+                {/* <img
+                  // src={item.images[0]} //used when mock
+                  src={item.image_url}
                   className="img-fluid rounded mb-3 product-image"
+                /> */}
+                <img
+                  src={item.image_url}
+                  className="img-fluid rounded mb-3 product-image"
+                  alt="Product"
                 />
               </div>
 

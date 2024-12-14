@@ -30,6 +30,8 @@ public interface StorageInterface {
 
   Optional<Listing> getListingById(Long listingId);
 
+  //   Listing getListingById(Long listingId);
+
   boolean updateListing(Long listingId, Listing updatedListing);
 
   boolean deleteListing(Long listingId);

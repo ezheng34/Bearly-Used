@@ -9,6 +9,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+// USER cant update their tags yet
+// should user be allowed to switch their schools maybe not,
+
 public class UpdateUserHandler implements Route {
   public StorageInterface dbHandler;
 

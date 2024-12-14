@@ -44,6 +44,7 @@ public class Server {
       Spark.get("get-user", new GetUserHandler(dbHandler));
       Spark.get("get-user-listings", new GetUserListingsHandler(dbHandler));
       Spark.get("get-listings", new GetListingsHandler(dbHandler));
+      // Spark.get("get-listings-by-id", new GetListingsByIdHandler(dbHandler));
       Spark.get("*", new DefaultHandler());
 
       Spark.notFound(

@@ -356,6 +356,39 @@ public class RealStorage implements StorageInterface {
     return Optional.empty();
   }
 
+  //   @Override
+  // public Listing getListingById(Long listingId) {
+  //     Listing listing = null;
+  //     String sql = "SELECT * FROM listings WHERE id = ?";
+
+  //     try (Connection connection = DriverManager.getConnection(this.JDBC);
+  //          PreparedStatement statement = connection.prepareStatement(sql)) {
+
+  //         statement.setLong(1, listingId);
+
+  //         try (ResultSet resultSet = statement.executeQuery()) {
+  //           while (resultSet.next()) {
+  //             // Map ResultSet to Listing object
+  //             listing =
+  //                 new Listing(
+  //                     resultSet.getLong("id"),
+  //                     resultSet.getString("title"),
+  //                     resultSet.getString("description"),
+  //                     resultSet.getFloat("price"),
+  //                     resultSet.getString("category"),
+  //                     resultSet.getString("condition"),
+  //                     resultSet.getString("image_url"),
+  //                     Arrays.asList((String[]) resultSet.getArray("tags").getArray()),
+  //                     resultSet.getBoolean("available"));
+  //           }
+  //         }
+  //     } catch (SQLException e) {
+  //         e.printStackTrace();
+  //     }
+
+  //     return listing;  // Return null if no listing is found
+  // }
+
   @Override
   public boolean updateListing(Long listingId, Listing updatedListing) {
     // Validate price if price is being updated
