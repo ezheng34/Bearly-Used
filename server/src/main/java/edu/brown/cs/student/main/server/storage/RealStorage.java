@@ -306,8 +306,8 @@ public class RealStorage implements StorageInterface {
       statement.setString(1, clerkId);
       try (ResultSet rs = statement.executeQuery()) {
         if (rs.next()) {
-          userData.put("id", rs.getString("id"));
-          userData.put("clerk_id", rs.getLong("clerk_id"));
+          userData.put("id", rs.getLong("id"));
+          userData.put("clerk_id", rs.getString("clerk_id"));
           userData.put("email", rs.getString("email"));
           userData.put("name", rs.getString("name"));
           userData.put("phone_number", rs.getString("phone_number"));

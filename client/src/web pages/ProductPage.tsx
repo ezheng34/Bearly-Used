@@ -102,6 +102,7 @@ const ProductPage: React.FC = () => {
         const data = await response.json();
         console.log("Fetched user:", data);
         setSeller({ ...data.user_data });
+        console.log("new seller", seller);
         if (data.response_type === "success") {
         } else {
           console.error("Error fetching seller data");
@@ -114,6 +115,25 @@ const ProductPage: React.FC = () => {
       fetchSeller();
     }
   }, [product]);
+
+  // delete listing
+  const handleDeleteListing = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3232/delete-listing?listing_id=${id}`
+      );
+      const data = await response.json();
+      if (data.response_type === "success") {
+        alert("Listing successfully deleted.");
+        navigate("/");
+      } else {
+        alert("Failed to delete the listing.");
+      }
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      alert("An error occurred while trying to delete the listing.");
+    }
+  };
 
   return (
     <div className="product-page">
@@ -198,11 +218,25 @@ const ProductPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="action-buttons">
-              <button className="btn btn-primary" onClick={copyEmailTemplate}>
-                <i className="bi bi-clipboard"></i> Copy Email Template
-              </button>
-            </div>
+            {seller?.clerk_id === "123" ? (
+              <div className="action-buttons">
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteListing}
+                >
+                  Delete listing
+                </button>
+                {/* TODO: make the handlers for these actions */}
+                <button className="btn btn-primary">Mark as sold</button>
+                <button className="btn btn-primary">Edit</button>
+              </div>
+            ) : (
+              <div className="action-buttons">
+                <button className="btn btn-primary" onClick={copyEmailTemplate}>
+                  <i className="bi bi-clipboard"></i> Copy Email Template
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

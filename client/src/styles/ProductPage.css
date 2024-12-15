@@ -233,6 +233,21 @@
   border-radius: 12px;
 }
 
+.btn-danger { 
+  background-color: var(--accent-coral);
+  border: none;
+  padding: 1rem 2rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+.btn-danger:hover { 
+  background-color: var(--accent-coral); 
+  transform: translateY(-2px);
+}
+
 .btn-primary:hover {
   background-color: var(--accent-coral);
   transform: translateY(-2px);

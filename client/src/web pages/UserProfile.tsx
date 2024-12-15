@@ -326,7 +326,9 @@ const UserProfile: React.FC = () => {
       </div>
 
       {/* currently uses listings */}
-      <h2>Previously Bought</h2>
+      {/* I'm hiding this since i don't think we're doing previously bought? - julie */}
+
+      {/* <h2>Previously Bought</h2>
       <div className="listings-navigation">
         <button
           className="arrow-btn"
@@ -338,8 +340,8 @@ const UserProfile: React.FC = () => {
         <div className="listings">
           {visibleBought.map((listing: Listing) => (
             <div key={listing.id + 12} className="listing">
-              <div className="listing-image"></div>
-              <p className="listing-price">{listing.price}</p>
+              <img className="listing-image" src={listing.image_url} />
+              <p className="listing-price">${listing.price}</p>
               <p className="listing-name">{listing.title}</p>
             </div>
           ))}
@@ -351,7 +353,7 @@ const UserProfile: React.FC = () => {
         >
           &#8594;
         </button>
-      </div>
+      </div> */}
 
       <div
         className="modal fade"
