@@ -24,6 +24,9 @@ public class GetListingsHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
+      // EXAMPLE QUERY to get all listings
+      // "http://localhost:3232/get-listings"
+
       String title = request.queryParams("title");
       String category = request.queryParams("category");
       String minPrice = request.queryParams("minPrice");

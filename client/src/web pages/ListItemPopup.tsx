@@ -47,7 +47,16 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   const [tagInput, setTagInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
 
-  const categories = ["Electronics", "Clothing", "Books", "Sports", "Other"];
+  const categories = [
+    "Electronics",
+    "Furniture",
+    "Appliances",
+    "Clothing & Accessories",
+    "Books",
+    "Decor",
+    "Tickets & Event Passes",
+    "Other",
+  ];
   const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 
   useEffect(() => {
