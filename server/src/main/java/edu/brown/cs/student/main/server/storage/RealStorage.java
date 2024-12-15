@@ -44,13 +44,14 @@ public class RealStorage implements StorageInterface {
 
   // Creates a user
   @Override
-  public Long createUser(String email, String name, String phoneNumber, String school)
+  public Long createUser(
+      String clerkId, String email, String name, String phoneNumber, String school)
       throws SQLException {
     validateEmail(email);
 
     // SQL parameterization
     String sql =
-        "INSERT INTO users (email, name, phone_number, school) VALUES (?, ?, ?, ?) RETURNING id";
+        "INSERT INTO users (email, name, phone_number, school, clerk_id) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
     try {
       Connection connection = DriverManager.getConnection(this.JDBC);
@@ -60,14 +61,14 @@ public class RealStorage implements StorageInterface {
       statement.setString(2, name);
       statement.setString(3, phoneNumber);
       statement.setString(4, school);
+      statement.setString(5, clerkId);
 
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           Long userId = result.getLong(1);
-          System.out.println("User created successfully with ID: " + userId);
+          System.out.println("User created successfully with clerk ID: " + clerkId);
           return userId;
         } else {
-          System.err.println("Failed to retrieve created user ID");
           throw new SQLException("No ID obtained for created user");
         }
       }
@@ -78,7 +79,7 @@ public class RealStorage implements StorageInterface {
   }
 
   @Override
-  public boolean updateUser(int userId, User updatedUser) {
+  public boolean updateUser(String clerkId, User updatedUser) {
     // Construct SQL update query
     StringBuilder sqlBuilder = new StringBuilder("UPDATE users SET ");
     boolean hasUpdates = false;
@@ -106,11 +107,11 @@ public class RealStorage implements StorageInterface {
         hasUpdates = true;
       }
 
-      sqlBuilder.append(" WHERE id = ?");
-      params.add(userId);
+      sqlBuilder.append(" WHERE clerk_id = ?");
+      params.add(clerkId);
 
       // debugging
-      System.out.println("SQL Query: " + sqlBuilder.toString());
+      System.out.println("SQL Query: " + sqlBuilder);
       System.out.println("Parameters: " + params);
 
       try (PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
@@ -121,10 +122,10 @@ public class RealStorage implements StorageInterface {
         int rowsAffected = statement.executeUpdate();
 
         if (rowsAffected > 0) {
-          System.out.println("User updated successfully: " + userId);
+          System.out.println("User updated successfully: " + clerkId);
           return true;
         } else {
-          System.err.println("No User found with ID: " + userId);
+          System.err.println("No User found with ID: " + clerkId);
           return false;
         }
       }
@@ -215,6 +216,7 @@ public class RealStorage implements StorageInterface {
             Listing listing =
                 new Listing(
                     resultSet.getLong("id"),
+                    resultSet.getString("seller_id"),
                     resultSet.getString("title"),
                     resultSet.getString("description"),
                     resultSet.getFloat("price"),
@@ -238,7 +240,7 @@ public class RealStorage implements StorageInterface {
   }
 
   public Long createListing(
-      Long sellerId,
+      String sellerId, // this is their clerk id
       String title,
       boolean isAvailable,
       String description,
@@ -263,7 +265,7 @@ public class RealStorage implements StorageInterface {
       Connection connection = DriverManager.getConnection(this.JDBC);
       PreparedStatement statement = connection.prepareStatement(sql);
 
-      statement.setLong(1, sellerId);
+      statement.setString(1, sellerId);
       statement.setString(2, title);
       statement.setBoolean(3, isAvailable);
       statement.setString(4, description);
@@ -295,16 +297,17 @@ public class RealStorage implements StorageInterface {
   }
 
   @Override
-  public Map<String, Object> getUser(long userId) throws Exception {
+  public Map<String, Object> getUser(String clerkId) throws Exception {
     Map<String, Object> userData = new HashMap<>();
-    String sql = "SELECT * FROM users WHERE id = ?";
+    String sql = "SELECT * FROM users WHERE clerk_id = ?";
 
     try (Connection connection = DriverManager.getConnection(this.JDBC);
         PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setLong(1, userId);
+      statement.setString(1, clerkId);
       try (ResultSet rs = statement.executeQuery()) {
         if (rs.next()) {
           userData.put("id", rs.getLong("id"));
+          userData.put("clerk_id", rs.getString("clerk_id"));
           userData.put("email", rs.getString("email"));
           userData.put("name", rs.getString("name"));
           userData.put("phone_number", rs.getString("phone_number"));
@@ -317,14 +320,14 @@ public class RealStorage implements StorageInterface {
   }
 
   @Override
-  public List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception {
+  public List<Map<String, Object>> getListingsBySellerId(String sellerId) throws Exception {
     List<Map<String, Object>> listings = new ArrayList<>();
     String sql = "SELECT * FROM listings WHERE seller_id = ?";
 
     try (Connection connection = DriverManager.getConnection(this.JDBC);
         PreparedStatement statement = connection.prepareStatement(sql)) {
 
-      statement.setLong(1, sellerId);
+      statement.setString(1, sellerId);
 
       try (ResultSet rs = statement.executeQuery()) {
         while (rs.next()) {
@@ -376,23 +379,12 @@ public class RealStorage implements StorageInterface {
       statement.setLong(1, listingId);
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
-          // Fetch BLOB (image data) from the database
-          // Blob imageBlob = resultSet.getBlob("image_url");
-          // String base64Image = null;
-          // if (imageBlob != null) {
-          //   byte[] imageData = imageBlob.getBytes(1, (int) imageBlob.length());
-          //   base64Image = "data:image/jpeg;base64," +
-          // Base64.getEncoder().encodeToString(imageData);
-          // }
-
-          // debugging
-          String imageUrl = resultSet.getString("image_url");
-          System.out.println("Fetched image URL: " + imageUrl);
 
           // create Listing object from ResultSet
           listing =
               new Listing(
                   resultSet.getLong("id"),
+                  resultSet.getString("seller_id"),
                   resultSet.getString("title"),
                   resultSet.getString("description"),
                   resultSet.getFloat("price"),

@@ -5,6 +5,7 @@ import java.util.List;
 /** Represents a listing */
 public class Listing {
   public Long id;
+  public String seller_id;
   public String title;
   public String description;
   public Float price;
@@ -17,6 +18,7 @@ public class Listing {
 
   public Listing(
       Long id,
+      String seller_id,
       String title,
       String description,
       Float price,
@@ -26,6 +28,7 @@ public class Listing {
       List<String> tags,
       boolean avail) {
     this.id = id;
+    this.seller_id = seller_id;
     this.title = title;
     this.description = description;
     this.price = price;
@@ -38,6 +41,10 @@ public class Listing {
 
   public Float getPrice() {
     return this.price;
+  }
+
+  public String getSellerId() {
+    return this.seller_id;
   }
 
   public String getTitle() {

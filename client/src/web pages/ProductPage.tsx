@@ -5,21 +5,22 @@ import mockProducts from "../data/product";
 import "../styles/ProductPage.css";
 // Update the interface to include seller information
 interface Seller {
+  clerk_id: string;
   id: number;
   name: string;
-  rating: number;
-  school: string;
   email: string;
+  phone_number: string;
+  school: string;
 }
 
 interface Product {
+  seller_id: string;
   id: number;
   title: string;
   price: number;
   category: string;
   description: string;
   images: string[];
-  seller: Seller;
 }
 
 const ProductPage: React.FC = () => {
@@ -30,10 +31,11 @@ const ProductPage: React.FC = () => {
   // const [mainImage, setMainImage] = useState(product?.images[0]);
   // -------------------------USED FOR MOCK DATA------------------------------------
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
 
-  const handleViewProfile = (sellerId: number) => {
+  const handleViewProfile = (sellerId: string) => {
     navigate(`/seller/${sellerId}`);
   };
 
@@ -42,8 +44,8 @@ const ProductPage: React.FC = () => {
   };
 
   const copyEmail = () => {
-    if (product?.seller?.email) {
-      navigator.clipboard.writeText(product.seller.email).then(() => {
+    if (seller?.email) {
+      navigator.clipboard.writeText(seller.email).then(() => {
         alert("Email copied to clipboard!"); // Could be replaced with a nicer toast notification
       });
     }
@@ -68,22 +70,15 @@ const ProductPage: React.FC = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3232/get-listing-by-id?listing_id=${id}` //NOT FUNCTIONAL YET
+          `http://localhost:3232/get-listing-by-id?listing_id=${id}`
         );
         const data = await response.json();
-        console.log("Fetched data:", data);
+        console.log("Fetched listing data:", data);
 
         if (data.response_type === "success") {
-          // const fetchedProduct = data.result[0];
           const fetchedProduct = data.listing;
-          console.log("Fetched product data:", fetchedProduct);
-          console.log("Fetched product image_url:", fetchedProduct.image_url);
-          // setProduct(fetchedProduct);
-          // setMainImage(fetchedProduct.image_url);
-
           setProduct({ ...fetchedProduct });
           setMainImage(fetchedProduct.image_url);
-          console.log("url", fetchedProduct.image_url);
         } else {
           console.error("Error fetching product data");
         }
@@ -96,6 +91,49 @@ const ProductPage: React.FC = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Fetches the seller
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3232/get-user?clerk_id=${product?.seller_id}`
+        );
+        const data = await response.json();
+        console.log("Fetched user:", data);
+        setSeller({ ...data.user_data });
+        console.log("new seller", seller);
+        if (data.response_type === "success") {
+        } else {
+          console.error("Error fetching seller data");
+        }
+      } catch (err) {
+        console.error("Error fetching seller:", err);
+      }
+    };
+    if (product) {
+      fetchSeller();
+    }
+  }, [product]);
+
+  // delete listing
+  const handleDeleteListing = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3232/delete-listing?listing_id=${id}`
+      );
+      const data = await response.json();
+      if (data.response_type === "success") {
+        alert("Listing successfully deleted.");
+        navigate("/");
+      } else {
+        alert("Failed to delete the listing.");
+      }
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      alert("An error occurred while trying to delete the listing.");
+    }
+  };
 
   return (
     <div className="product-page">
@@ -152,15 +190,15 @@ const ProductPage: React.FC = () => {
               <div className="seller-details">
                 <div className="seller-detail">
                   <i className="bi bi-person"></i>
-                  <span>{product?.seller?.name || "Anonymous"}</span>
+                  <span>{seller?.name || "Anonymous"}</span>
                 </div>
                 <div className="seller-detail">
                   <i className="bi bi-building"></i>
-                  <span>{product?.seller?.school || "Unknown School"}</span>
+                  <span>{seller?.school || "Unknown School"}</span>
                 </div>
                 <div className="seller-detail">
                   <i className="bi bi-envelope"></i>
-                  <span>{product?.seller?.email || "No email provided"}</span>
+                  <span>{seller?.email || "No email provided"}</span>
                   <button
                     className="copy-email-btn"
                     onClick={copyEmail}
@@ -172,7 +210,7 @@ const ProductPage: React.FC = () => {
                 <button
                   className="view-profile-btn"
                   onClick={() =>
-                    product?.seller?.id && handleViewProfile(product.seller.id)
+                    seller?.clerk_id && handleViewProfile(seller.clerk_id)
                   }
                 >
                   View Full Profile
@@ -180,11 +218,25 @@ const ProductPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="action-buttons">
-              <button className="btn btn-primary" onClick={copyEmailTemplate}>
-                <i className="bi bi-clipboard"></i> Copy Email Template
-              </button>
-            </div>
+            {seller?.clerk_id === "123" ? (
+              <div className="action-buttons">
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteListing}
+                >
+                  Delete listing
+                </button>
+                {/* TODO: make the handlers for these actions */}
+                <button className="btn btn-primary">Mark as sold</button>
+                <button className="btn btn-primary">Edit</button>
+              </div>
+            ) : (
+              <div className="action-buttons">
+                <button className="btn btn-primary" onClick={copyEmailTemplate}>
+                  <i className="bi bi-clipboard"></i> Copy Email Template
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -193,4 +245,3 @@ const ProductPage: React.FC = () => {
 };
 
 export default ProductPage;
-

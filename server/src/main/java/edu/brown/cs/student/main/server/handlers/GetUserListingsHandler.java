@@ -27,10 +27,8 @@ public class GetUserListingsHandler implements Route {
         throw new IllegalArgumentException("Seller ID is required");
       }
 
-      long sellerId = Long.parseLong(sellerIdParam);
-
       // Fetch listings from the database for specified seller_id
-      List<Map<String, Object>> listings = this.dbHandler.getListingsBySellerId(sellerId);
+      List<Map<String, Object>> listings = this.dbHandler.getListingsBySellerId(sellerIdParam);
 
       if (listings == null || listings.isEmpty()) {
         responseMap.put("response_type", "failure");

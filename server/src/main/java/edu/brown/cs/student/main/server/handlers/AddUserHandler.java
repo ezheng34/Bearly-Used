@@ -21,17 +21,18 @@ public class AddUserHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
-
-      // "INSERT INTO users (email, name, phoneNumber, school) VALUES (? ? ? ?)";
-
+      String clerkId = validateUserId(request.queryParams("clerk_id"));
       String email = validateEmail(request.queryParams("email"));
       String name = validateName(request.queryParams("name"));
       String phoneNumber = validatePhoneNumber(request.queryParams("phone_number"));
       String school = validateSchool(request.queryParams("school"));
-      // EXAMPLE QUERY:
-      // http://localhost:3232/add-user?email=abc@gmail.com&name=bob&phone_number=123&school=brown
 
-      Long userId = this.dbHandler.createUser(email, name, phoneNumber, school);
+      // TODO: error checking
+
+      // EXAMPLE QUERY:
+      // http://localhost:3232/add-user?clerk_id=12345&email=abc@gmail.com&name=bob&phone_number=1234567890&school=brown
+
+      Long userId = this.dbHandler.createUser(clerkId, email, name, phoneNumber, school);
 
       responseMap.put("response_type", "success");
       responseMap.put("user_id", userId);
@@ -59,6 +60,14 @@ public class AddUserHandler implements Route {
     }
 
     return email.trim();
+  }
+
+  private String validateUserId(String userIdStr) {
+    int userId = Integer.parseInt(userIdStr);
+    if (userId < 0) {
+      throw new IllegalArgumentException("Invalid user id inputted");
+    }
+    return userIdStr;
   }
 
   private String validateName(String name) {

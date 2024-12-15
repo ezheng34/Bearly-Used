@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface StorageInterface {
 
-  Long createUser(String email, String name, String phoneNumber, String school)
+  Long createUser(String clerkId, String email, String name, String phoneNumber, String school)
       throws IllegalArgumentException, SQLException;
 
   // all-purpose to get either all listings or filtered listings
@@ -22,7 +22,7 @@ public interface StorageInterface {
       Sorter sorter);
 
   Long createListing(
-      Long sellerId,
+      String sellerId,
       String title,
       boolean isAvailable,
       String description,
@@ -42,11 +42,11 @@ public interface StorageInterface {
 
   boolean deleteListing(Long listingId);
 
-  Map<String, Object> getUser(long userId) throws Exception;
+  Map<String, Object> getUser(String clerkId) throws Exception;
 
-  boolean updateUser(int userId, User updatedUser);
+  boolean updateUser(String userId, User updatedUser);
 
-  List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception;
+  List<Map<String, Object>> getListingsBySellerId(String sellerId) throws Exception;
 
   //  void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data);
   //

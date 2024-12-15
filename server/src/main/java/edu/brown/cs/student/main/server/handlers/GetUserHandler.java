@@ -20,14 +20,13 @@ public class GetUserHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
-      String userIdParam = request.queryParams("id");
+      String userIdParam = request.queryParams("clerk_id");
       // validate id here
       if (userIdParam == null || userIdParam.trim().isEmpty()) {
-        throw new IllegalArgumentException("User ID is required");
+        throw new IllegalArgumentException("Clerk ID is required");
       }
 
-      long userId = Long.parseLong(userIdParam);
-      Map<String, Object> userData = this.dbHandler.getUser(userId);
+      Map<String, Object> userData = this.dbHandler.getUser(userIdParam);
 
       if (userData == null || userData.isEmpty()) {
         responseMap.put("response_type", "failure");
