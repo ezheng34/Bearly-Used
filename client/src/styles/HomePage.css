@@ -45,12 +45,12 @@ h6 {
 }
 
 .search-bar {
+  display: flex; 
   position: relative;
   width: 30rem;
 }
 
 .search-bar input {
-  width: 100%;
   padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid var(--shadow-color);
@@ -61,6 +61,14 @@ h6 {
   outline: none;
   border-color: var(--accent-coral);
   box-shadow: 0 0 0 2px rgba(255, 131, 96, 0.1);
+}
+
+.search-btn { 
+  border-radius: 100%; 
+  width: 3em; 
+  height: 3em;
+  border: none; 
+  background: none; 
 }
 
 .dropdown-toggle {

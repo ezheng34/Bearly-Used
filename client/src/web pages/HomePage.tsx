@@ -15,17 +15,7 @@ import {
 
 const ITEMS_PER_PAGE = 8; // TODO change later
 
-type SortOrder = "none" | "asc" | "desc";
-
-// // backend types - might be wrong
-// interface ListingItem {
-//   id: number;
-//   title: string;
-//   price: number;
-//   category: string;
-//   description: string;
-//   images: string[];
-// }
+type SortOrder = "" | "PRICE_ASC" | "PRICE_DESC";
 
 //actual backend types
 interface ListingItem {
@@ -40,15 +30,26 @@ interface ListingItem {
   tags: string[];
 }
 
+// price interface
+interface price {
+  label: string | null;
+  min: number | null;
+  max: number | null;
+}
+
 const HomePage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedPrice, setSelectedPrice] = useState<price | null>(null);
 
   const [allListings, setAllListings] = useState<ListingItem[]>([]);
   const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
 
-  const [priceSort, setPriceSort] = useState<SortOrder>("none");
+  const [priceSort, setPriceSort] = useState<SortOrder>("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
+
   // -------------------------USED FOR MOCK DATA------------------------------------
   // const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
   //   mockProducts.mockProducts
@@ -124,7 +125,75 @@ const HomePage: React.FC = () => {
 
   // filter listings based on selected category and price range
   useEffect(() => {
-    let filteredListings = allListings;
+    const filterListings = async () => {
+      var apiUrl = "http://localhost:3232/get-listings?";
+
+      if (selectedCategory) {
+        apiUrl += "category=" + selectedCategory + "&";
+      }
+
+      if (selectedPrice) {
+        if (selectedPrice.min) {
+          apiUrl += "minPrice=" + selectedPrice.min + "&";
+        }
+        if (selectedPrice.max) {
+          apiUrl += "maxPrice=" + selectedPrice.max + "&";
+        }
+      }
+
+      if (priceSort !== "") {
+        apiUrl += "sorter=" + priceSort;
+      }
+
+      console.log("api url:", apiUrl);
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log(data);
+        if (data.response_type === "success") {
+          setFilteredListings(data.result);
+        } else {
+          console.error("Error fetching listings");
+        }
+      } catch (err) {
+        console.error("Error fetching listings");
+      }
+
+      setCurrentPage(1);
+    };
+
+    filterListings();
+  }, [selectedCategory, selectedPrice, priceSort]);
+
+  // searches for title
+  useEffect(() => {
+    const searchListings = async () => {
+      var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log(data);
+        if (data.response_type === "success") {
+          setFilteredListings(data.result);
+        } else {
+          console.error("Error fetching listings");
+        }
+      } catch (err) {
+        console.error("Error fetching listings");
+      }
+
+      setCurrentPage(1);
+    };
+    searchListings();
+  }, [searchQuery]);
+
+  // -------------------------USED FOR MOCK DATA------------------------------------
+
+  /* 
+  // THIS IS WHAT THE OLD FILTER WAS BEFORE I CHANGED IT -JULIE 
+      let filteredListings = allListings;
 
     if (selectedCategory) {
       filteredListings = filteredListings.filter(
@@ -156,9 +225,8 @@ const HomePage: React.FC = () => {
 
     setFilteredListings(filteredListings);
     setCurrentPage(1); // resert to first page when filters/sort change
-  }, [selectedCategory, selectedPriceRange, priceSort]);
+  */
 
-  // -------------------------USED FOR MOCK DATA------------------------------------
   // useEffect(() => {
   //   let filtered = mockProducts.mockProducts;
 
@@ -167,8 +235,8 @@ const HomePage: React.FC = () => {
   //   }
 
   //   // Price range filter
-  //   if (selectedPriceRange) {
-  //     const range = priceRanges.find((r) => r.label === selectedPriceRange);
+  //   if (selectedPrice) {
+  //     const range = priceRanges.find((r) => r === selectedPrice);
   //     if (range) {
   //       filtered = filtered.filter((item) => {
   //         if (range.max === null) return item.price >= range.min;
@@ -178,9 +246,9 @@ const HomePage: React.FC = () => {
   //   }
 
   //   // Price sorting
-  //   if (priceSort !== "none") {
+  //   if (priceSort !== "") {
   //     filtered = [...filtered].sort((a, b) => {
-  //       if (priceSort === "asc") {
+  //       if (priceSort === "PRICE_ASC") {
   //         return a.price - b.price;
   //       } else {
   //         return b.price - a.price;
@@ -190,7 +258,8 @@ const HomePage: React.FC = () => {
 
   //   setFilteredListings(filtered);
   //   setCurrentPage(1); // resert to first page when filters/sort change
-  // }, [selectedCategory, selectedPriceRange, priceSort]);
+  // }, [selectedCategory, selectedPrice, priceSort]);
+
   // -------------------------USED FOR MOCK DATA------------------------------------
 
   // prices dropdown with sorting options
@@ -202,7 +271,7 @@ const HomePage: React.FC = () => {
         id="DropdownPrice"
         aria-expanded="false"
       >
-        {selectedPriceRange ? `Price: ${selectedPriceRange}` : "Price"}
+        {selectedPrice ? `Price: ${selectedPrice.label}` : "Price"}
       </button>
       <ul className="dropdown-menu" aria-labelledby="DropdownPrice">
         <li>
@@ -212,7 +281,7 @@ const HomePage: React.FC = () => {
           <li key={range.label}>
             <button
               className="dropdown-item"
-              onClick={() => setSelectedPriceRange(range.label)}
+              onClick={() => setSelectedPrice(range)}
             >
               {range.label}
             </button>
@@ -228,22 +297,26 @@ const HomePage: React.FC = () => {
         </li>
         <li>
           <button
-            className={`dropdown-item ${priceSort === "asc" ? "active" : ""}`}
-            onClick={() => setPriceSort("asc")}
+            className={`dropdown-item ${
+              priceSort === "PRICE_ASC" ? "active" : ""
+            }`}
+            onClick={() => setPriceSort("PRICE_ASC")}
           >
             <i className="bi bi-arrow-up"></i> Low to High
           </button>
         </li>
         <li>
           <button
-            className={`dropdown-item ${priceSort === "desc" ? "active" : ""}`}
-            onClick={() => setPriceSort("desc")}
+            className={`dropdown-item ${
+              priceSort === "PRICE_DESC" ? "active" : ""
+            }`}
+            onClick={() => setPriceSort("PRICE_DESC")}
           >
             <i className="bi bi-arrow-down"></i> High to Low
           </button>
         </li>
 
-        {(selectedPriceRange || priceSort !== "none") && (
+        {(selectedPrice || priceSort !== "") && (
           <>
             <li>
               <hr className="dropdown-divider" />
@@ -252,8 +325,8 @@ const HomePage: React.FC = () => {
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  setSelectedPriceRange("");
-                  setPriceSort("none");
+                  setSelectedPrice(null);
+                  setPriceSort("");
                 }}
               >
                 Clear Price Filters
@@ -344,13 +417,13 @@ const HomePage: React.FC = () => {
             </li>
 
             {/* Clear All Filters */}
-            {(selectedCategory || selectedPriceRange) && (
+            {(selectedCategory || selectedPrice) && (
               <li className="nav-item">
                 <button
                   className="nav-link"
                   onClick={() => {
                     setSelectedCategory("");
-                    setSelectedPriceRange("");
+                    setSelectedPrice(null);
                   }}
                 >
                   Clear All Filters
@@ -359,14 +432,21 @@ const HomePage: React.FC = () => {
             )}
           </ul>
 
+          {/* Search */}
           <div className="search-bar mx-4">
             <input
               type="text"
               placeholder="Search listings..."
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)} TO DO JULIE INTEGRATE :d
+              onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
             />
+            <button
+              type="button"
+              className="search-btn"
+              onClick={() => setSearchQuery(tempSearchQuery)}
+            >
+              🔍
+            </button>
           </div>
 
           {/* Create Listing Button */}
