@@ -14,13 +14,14 @@ type Listing = {
   description: string;
   category: string;
   condition: string;
-  imageUrl: string;
+  image_url: string;
   tags: string[];
-  isSold?: boolean;
+  available: boolean;
 };
 
 type UserProfile = {
   id: number;
+  clerk_id: string;
   name: string;
   email: string;
   phone_number: string;
@@ -65,6 +66,7 @@ const UserProfile: React.FC = () => {
   const fetchUserListings = async (userId: number) => {
     try {
       const listingsData = await getUserListings(userId);
+      console.log("listing data", listingsData);
       setListings(listingsData.listings ? listingsData.listings : []);
     } catch (error) {
       console.error("Failed to fetch user listings:", error);
@@ -137,12 +139,12 @@ const UserProfile: React.FC = () => {
   const handleEditListing = (listing: Listing) => {
     const initialData = {
       title: listing.title,
-      available: !listing.isSold,
+      available: listing.available,
       description: listing.description,
       price: listing.price,
       category: listing.category,
       condition: listing.condition,
-      imageUrl: listing.imageUrl,
+      imageUrl: listing.image_url,
       tags: listing.tags,
       images: [], // TODO figure out how to handle existing images
     };
@@ -251,12 +253,12 @@ const UserProfile: React.FC = () => {
                     initialData={{
                       sellerId: userProfile?.id || 1,
                       title: editingListing.title,
-                      available: !editingListing.isSold,
+                      available: editingListing.available,
                       description: editingListing.description,
                       price: editingListing.price,
                       category: editingListing.category,
                       condition: editingListing.condition,
-                      imageUrl: editingListing.imageUrl,
+                      imageUrl: editingListing.image_url,
                       tags: editingListing.tags,
                       images: [],
                     }}
@@ -286,10 +288,10 @@ const UserProfile: React.FC = () => {
         <div className="listings">
           {visibleListings.map((listing: Listing) => (
             <div key={listing.id} className="listing">
-              <div className="listing-image"></div>
+              <img className="listing-image" src={listing.image_url} />
               <p className="listing-price">${listing.price.toFixed(2)}</p>
               <p className="listing-name">{listing.title}</p>
-              {listing.isSold && <div className="sold-badge">SOLD</div>}
+              {!listing.available && <div className="sold-badge">SOLD</div>}
               <div className="listing-actions">
                 <button
                   className="btn btn-sm btn-outline-primary"
@@ -297,15 +299,15 @@ const UserProfile: React.FC = () => {
                 >
                   Edit
                 </button>
-                {!listing.isSold && (
+                {listing.available && (
                   <button
                     className="btn btn-sm btn-outline-success"
                     onClick={() =>
-                      handleMarkAsSold(listing.id, !listing.isSold)
+                      handleMarkAsSold(listing.id, listing.available)
                     }
                     // TODO idk if any of this actualy works
                   >
-                    {listing.isSold ? "Unmark as Sold" : "Mark as Sold"}
+                    {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
                   </button>
                 )}
               </div>

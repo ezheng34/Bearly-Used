@@ -5,6 +5,7 @@ import mockProducts from "../data/product";
 import "../styles/ProductPage.css";
 // Update the interface to include seller information
 interface Seller {
+  clerk_id: string;
   id: number;
   name: string;
   email: string;
@@ -34,7 +35,7 @@ const ProductPage: React.FC = () => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
 
-  const handleViewProfile = (sellerId: number) => {
+  const handleViewProfile = (sellerId: string) => {
     navigate(`/seller/${sellerId}`);
   };
 
@@ -112,7 +113,6 @@ const ProductPage: React.FC = () => {
     if (product) {
       fetchSeller();
     }
-    console.log("SELLER", seller);
   }, [product]);
 
   return (
@@ -189,7 +189,9 @@ const ProductPage: React.FC = () => {
                 </div>
                 <button
                   className="view-profile-btn"
-                  onClick={() => seller?.id && handleViewProfile(seller.id)}
+                  onClick={() =>
+                    seller?.clerk_id && handleViewProfile(seller.clerk_id)
+                  }
                 >
                   View Full Profile
                 </button>

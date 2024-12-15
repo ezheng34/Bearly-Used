@@ -333,7 +333,6 @@ public class RealStorage implements StorageInterface {
         while (rs.next()) {
           Map<String, Object> listing = new HashMap<>();
           listing.put("id", rs.getLong("id"));
-          listing.put("clerk_id", rs.getString("clerk_id"));
           listing.put("title", rs.getString("title"));
           listing.put("description", rs.getString("description"));
           listing.put("price", rs.getDouble("price"));
