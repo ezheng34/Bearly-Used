@@ -17,16 +17,6 @@ const ITEMS_PER_PAGE = 8; // TODO change later
 
 type SortOrder = "" | "PRICE_ASC" | "PRICE_DESC";
 
-// // backend types - might be wrong
-// interface ListingItem {
-//   id: number;
-//   title: string;
-//   price: number;
-//   category: string;
-//   description: string;
-//   images: string[];
-// }
-
 //actual backend types
 interface ListingItem {
   id: number;
@@ -179,8 +169,7 @@ const HomePage: React.FC = () => {
   // searches for title
   useEffect(() => {
     const searchListings = async () => {
-      var apiUrl = "http://localhost:3232/get-listings?";
-      apiUrl += "title=" + searchQuery;
+      var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
 
       try {
         const response = await fetch(apiUrl);
@@ -201,6 +190,43 @@ const HomePage: React.FC = () => {
   }, [searchQuery]);
 
   // -------------------------USED FOR MOCK DATA------------------------------------
+
+  /* 
+  // THIS IS WHAT THE OLD FILTER WAS BEFORE I CHANGED IT -JULIE 
+      let filteredListings = allListings;
+
+    if (selectedCategory) {
+      filteredListings = filteredListings.filter(
+        (item) => item.category === selectedCategory
+      );
+    }
+
+    // Price range filter
+    if (selectedPriceRange) {
+      const range = priceRanges.find((r) => r.label === selectedPriceRange);
+      if (range) {
+        filteredListings = filteredListings.filter((item) => {
+          if (range.max === null) return item.price >= range.min;
+          return item.price >= range.min && item.price <= range.max;
+        });
+      }
+    }
+
+    // Price sorting
+    if (priceSort !== "none") {
+      filteredListings = [...filteredListings].sort((a, b) => {
+        if (priceSort === "asc") {
+          return a.price - b.price;
+        } else {
+          return b.price - a.price;
+        }
+      });
+    }
+
+    setFilteredListings(filteredListings);
+    setCurrentPage(1); // resert to first page when filters/sort change
+  */
+
   // useEffect(() => {
   //   let filtered = mockProducts.mockProducts;
 
@@ -407,9 +433,18 @@ const HomePage: React.FC = () => {
           </ul>
 
           {/* Search */}
-          <div>
-            <input onChange={(e) => setTempSearchQuery(e.target.value)}></input>
-            <button onClick={() => setSearchQuery(tempSearchQuery)}>
+          <div className="search-bar mx-4">
+            <input
+              type="text"
+              placeholder="Search listings..."
+              onChange={(e) => setTempSearchQuery(e.target.value)}
+              className="form-control"
+            />
+            <button
+              type="button"
+              className="btn btn-light"
+              onClick={() => setSearchQuery(tempSearchQuery)}
+            >
               Search
             </button>
           </div>
