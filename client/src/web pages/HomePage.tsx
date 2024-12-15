@@ -289,7 +289,7 @@ const HomePage: React.FC = () => {
       backdrops.forEach((backdrop) => backdrop.remove());
     }
   };
-  
+
   const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
@@ -359,10 +359,20 @@ const HomePage: React.FC = () => {
             )}
           </ul>
 
+          <div className="search-bar mx-4">
+            <input
+              type="text"
+              placeholder="Search listings..."
+              // value={searchTerm}
+              // onChange={(e) => setSearchTerm(e.target.value)} TO DO JULIE INTEGRATE :d
+              className="form-control"
+            />
+          </div>
+
           {/* Create Listing Button */}
           <button
             type="button"
-            className="btn btn-light"
+            className="create-listing"
             data-bs-toggle="modal"
             data-bs-target="#addListingModal"
             font-family="DM Sans"
@@ -470,14 +480,6 @@ const HomePage: React.FC = () => {
       >
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
-            <div className="modal-header border-0">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
             <div className="modal-body">
               <ListItemPopup
                 onSubmit={() => {

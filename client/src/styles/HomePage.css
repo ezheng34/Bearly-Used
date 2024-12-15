@@ -44,7 +44,25 @@ h6 {
   transform: translateY(-2px);
 }
 
-/* Dropdown styles */
+.search-bar {
+  position: relative;
+  width: 30rem;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--shadow-color);
+  font-family: "Inter", sans-serif;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent-coral);
+  box-shadow: 0 0 0 2px rgba(255, 131, 96, 0.1);
+}
+
 .dropdown-toggle {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
@@ -83,6 +101,24 @@ h6 {
 .btn-light:hover {
   background-color: var(--accent-coral);
   color: white;
+  transform: translateY(-2px);
+}
+
+.create-listing {
+  background-color: var(--primary-blue);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.create-listing:hover {
+  background-color: var(--accent-coral);
   transform: translateY(-2px);
 }
 
@@ -275,6 +311,11 @@ h6 {
   .homepage-listings-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1rem;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 10px 0;
   }
 
   .navbar {

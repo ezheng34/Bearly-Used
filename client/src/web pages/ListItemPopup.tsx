@@ -139,7 +139,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
     const backendData = {
       seller_id: 1,
       title: formData.title,
@@ -226,7 +225,13 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   return (
     <div>
       <h2 className="text-center mb-4">
-        {isEditing ? "Edit Listing" : "Add Listing"}
+        {isEditing ? "Edit Listing" : "Create Listing"}
+        <button
+          type="button"
+          className="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </h2>
 
       <form onSubmit={handleSubmit}>
@@ -241,24 +246,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             required
           />
         </div>
-
-        <div className="mb-3">
-          {/* TODO we might need this later to edit ?? but idk prob not 
-          <div className="form-check">
-            <input
-              type="checkbox"
-              name="available"
-              checked={formData.available}
-              onChange={handleInputChange}
-              className="form-check-input"
-              id="availableCheck"
-            />
-            <label className="form-check-label" htmlFor="availableCheck">
-              Available for Purchase
-            </label>
-          </div> */}
-        </div>
-
         <div className="mb-3">
           <label className="form-label">Description</label>
           <textarea
@@ -392,8 +379,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
-        <button type="submit" className="btn btn-secondary w-100" >
-          
+        <button type="submit" className="btn btn-secondary w-100">
           {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>
