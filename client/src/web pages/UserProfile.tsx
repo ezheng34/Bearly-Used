@@ -185,6 +185,8 @@ const UserProfile: React.FC = () => {
     navigate(`/user/${id}`);
   };
 
+  
+
   return (
     <div className="user-profile-container">
       <div className="header">
@@ -238,14 +240,15 @@ const UserProfile: React.FC = () => {
             <div className="modal-dialog modal-lg modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header border-0">
-                  <button
+                  {/* this creates another closing button in edit listing pop up*/}
+                  {/* <button
                     type="button"
                     className="btn-close"
                     onClick={() => {
                       setEditingListing(null);
                       document.body.style.overflow = "auto";
                     }}
-                  ></button>
+                  ></button> */}
                 </div>
                 <div className="modal-body">
                   <ListItemPopup

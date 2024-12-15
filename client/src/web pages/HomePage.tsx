@@ -88,7 +88,7 @@ const HomePage: React.FC = () => {
     "Books",
     "Decor",
     "Tickets & Event Passes",
-    "Miscellaneous",
+    "Other",
   ];
 
   const priceRanges = [
