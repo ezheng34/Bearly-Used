@@ -21,7 +21,12 @@ public class MockStorage implements StorageInterface {
 
   @Override
   public List<Listing> getListings(
-      String title, String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
+      String title,
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter) {
     return null;
   }
 

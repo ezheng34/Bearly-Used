@@ -224,14 +224,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   return (
     <div>
+      <button
+        type="button"
+        className="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      ></button>
       <h2 className="text-center mb-4">
         {isEditing ? "Edit Listing" : "Create Listing"}
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
       </h2>
 
       <form onSubmit={handleSubmit}>

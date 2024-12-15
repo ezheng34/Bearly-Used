@@ -10,8 +10,10 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useSearchParams,
   useNavigate,
 } from "react-router-dom";
+import { l } from "@clerk/clerk-react/dist/useAuth-DT1ot2zi";
 
 const ITEMS_PER_PAGE = 8; // TODO change later
 
@@ -31,23 +33,59 @@ interface ListingItem {
 }
 
 // price interface
-interface price {
+interface Price {
   label: string | null;
   min: number | null;
   max: number | null;
 }
 
 const HomePage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [selectedPrice, setSelectedPrice] = useState<price | null>(null);
+  // const [selectedCategory, setSelectedCategory] = useState<string>();
+  // const [selectedPrice, setSelectedPrice] = useState<price | null>(null);
+
+  // const [allListings, setAllListings] = useState<ListingItem[]>([]);
+  // const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
+
+  // const [priceSort, setPriceSort] = useState<SortOrder>("");
+  // const [currentPage, setCurrentPage] = useState(1);
+
+  // const [searchQuery, setSearchQuery] = useState<string>("");
+  // const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
+
+  // const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get("category") || ""
+  );
+  const [selectedPrice, setSelectedPrice] = useState<Price | null>(
+    searchParams.get("priceLabel")
+      ? {
+          label: searchParams.get("priceLabel"),
+          min: searchParams.get("priceMin")
+            ? Number(searchParams.get("priceMin"))
+            : null,
+          max: searchParams.get("priceMax")
+            ? Number(searchParams.get("priceMax"))
+            : null,
+        }
+      : null
+  );
 
   const [allListings, setAllListings] = useState<ListingItem[]>([]);
   const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
 
-  const [priceSort, setPriceSort] = useState<SortOrder>("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [priceSort, setPriceSort] = useState<SortOrder>(
+    (searchParams.get("priceSort") as SortOrder) || ""
+  );
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get("search") || ""
+  );
   const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
 
   // -------------------------USED FOR MOCK DATA------------------------------------
@@ -124,70 +162,117 @@ const HomePage: React.FC = () => {
   }, []);
 
   // filter listings based on selected category and price range
+  // useEffect(() => {
+  //   const filterListings = async () => {
+  //     var apiUrl = "http://localhost:3232/get-listings?";
+
+  //     if (selectedCategory) {
+  //       apiUrl += "category=" + selectedCategory + "&";
+  //     }
+
+  //     if (selectedPrice) {
+  //       if (selectedPrice.min) {
+  //         apiUrl += "minPrice=" + selectedPrice.min + "&";
+  //       }
+  //       if (selectedPrice.max) {
+  //         apiUrl += "maxPrice=" + selectedPrice.max + "&";
+  //       }
+  //     }
+
+  //     if (priceSort !== "") {
+  //       apiUrl += "sorter=" + priceSort;
+  //     }
+
+  //     console.log("api url:", apiUrl);
+
+  //     try {
+  //       const response = await fetch(apiUrl);
+  //       const data = await response.json();
+  //       console.log(data);
+  //       if (data.response_type === "success") {
+  //         setFilteredListings(data.result);
+  //       } else {
+  //         console.error("Error fetching listings");
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching listings");
+  //     }
+
+  //     setCurrentPage(1);
+  //   };
+
+  //   filterListings();
+  // }, [selectedCategory, selectedPrice, priceSort]);
+
   useEffect(() => {
-    const filterListings = async () => {
-      var apiUrl = "http://localhost:3232/get-listings?";
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set("category", selectedCategory);
+    if (selectedPrice) {
+      params.set("priceLabel", selectedPrice.label || "");
+      if (selectedPrice.min)
+        params.set("priceMin", selectedPrice.min.toString());
+      if (selectedPrice.max)
+        params.set("priceMax", selectedPrice.max.toString());
+    }
+    if (priceSort) params.set("priceSort", priceSort);
+    params.set("page", currentPage.toString());
+    if (searchQuery) params.set("search", searchQuery);
+    setSearchParams(params);
 
-      if (selectedCategory) {
-        apiUrl += "category=" + selectedCategory + "&";
-      }
+    // Apply filters
+    let filtered = allListings;
+    if (selectedCategory) {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+    if (selectedPrice) {
+      filtered = filtered.filter(
+        (item) =>
+          (selectedPrice.min === null || item.price >= selectedPrice.min) &&
+          (selectedPrice.max === null || item.price <= selectedPrice.max)
+      );
+    }
+    if (searchQuery) {
+      filtered = filtered.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    if (priceSort === "PRICE_ASC") {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (priceSort === "PRICE_DESC") {
+      filtered.sort((a, b) => b.price - a.price);
+    }
+    setFilteredListings(filtered);
+  }, [
+    selectedCategory,
+    selectedPrice,
+    priceSort,
+    currentPage,
+    searchQuery,
+    allListings,
+  ]);
 
-      if (selectedPrice) {
-        if (selectedPrice.min) {
-          apiUrl += "minPrice=" + selectedPrice.min + "&";
-        }
-        if (selectedPrice.max) {
-          apiUrl += "maxPrice=" + selectedPrice.max + "&";
-        }
-      }
+  // // searches for title
+  // useEffect(() => {
+  //   const searchListings = async () => {
+  //     var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
 
-      if (priceSort !== "") {
-        apiUrl += "sorter=" + priceSort;
-      }
+  //     try {
+  //       const response = await fetch(apiUrl);
+  //       const data = await response.json();
+  //       console.log(data);
+  //       if (data.response_type === "success") {
+  //         setFilteredListings(data.result);
+  //       } else {
+  //         console.error("Error fetching listings");
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching listings");
+  //     }
 
-      console.log("api url:", apiUrl);
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        console.log(data);
-        if (data.response_type === "success") {
-          setFilteredListings(data.result);
-        } else {
-          console.error("Error fetching listings");
-        }
-      } catch (err) {
-        console.error("Error fetching listings");
-      }
-
-      setCurrentPage(1);
-    };
-
-    filterListings();
-  }, [selectedCategory, selectedPrice, priceSort]);
-
-  // searches for title
-  useEffect(() => {
-    const searchListings = async () => {
-      var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        console.log(data);
-        if (data.response_type === "success") {
-          setFilteredListings(data.result);
-        } else {
-          console.error("Error fetching listings");
-        }
-      } catch (err) {
-        console.error("Error fetching listings");
-      }
-
-      setCurrentPage(1);
-    };
-    searchListings();
-  }, [searchQuery]);
+  //     setCurrentPage(1);
+  //   };
+  //   searchListings();
+  // }, [searchQuery]);
 
   // -------------------------USED FOR MOCK DATA------------------------------------
 
@@ -363,10 +448,9 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
-    navigate(`/product/${id}`);
+    navigate(`/product/${id}?${searchParams.toString()}`);
   };
 
   return (
@@ -443,7 +527,9 @@ const HomePage: React.FC = () => {
             <button
               type="button"
               className="search-btn"
-              onClick={() => setSearchQuery(tempSearchQuery)}
+              onClick={() => {
+                setCurrentPage(1), setSearchQuery(tempSearchQuery);
+              }}
             >
               🔍
             </button>
