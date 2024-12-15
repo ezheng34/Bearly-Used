@@ -458,6 +458,7 @@ const HomePage: React.FC = () => {
             <input
               type="text"
               placeholder="Search listings..."
+              value={tempSearchQuery}
               onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
             />
@@ -470,6 +471,18 @@ const HomePage: React.FC = () => {
             >
               🔍
             </button>
+            {searchQuery && (
+              <button
+                type="button"
+                className="nav-link"
+                onClick={() => {
+                  navigate("/"), setSearchQuery(""), setTempSearchQuery("");
+                }}
+                aria-label="Clear search"
+              >
+                Clear Search
+              </button>
+            )}
           </div>
 
           {/* Create Listing Button */}
