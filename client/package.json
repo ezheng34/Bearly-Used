@@ -13,10 +13,11 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.15.2",
+    "@supabase/supabase-js": "^2.47.7",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "bootstrap": "^5.3.3",
-    "dotenv": "^16.4.4",
+    "dotenv": "^16.4.7",
     "firebase": "^10.14.1",
     "js-cookie": "^3.0.5",
     "mapbox-gl": "^3.2.0",

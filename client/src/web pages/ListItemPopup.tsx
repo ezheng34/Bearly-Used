@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ListItemPopup.css";
 import { Modal } from "bootstrap";
+import { supabase } from "../utils/supabaseClient";
 
 interface ListingForm {
   sellerId: number;
@@ -152,9 +153,30 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     };
     console.log("Ready for backend:", backendData);
     try {
+      // UPLOAD IMAGE TO SUPABASE STORAGE AND GET URL
+      const uploadedImageUrls = await Promise.all(
+        formData.images.map(async (image: File) => {
+          const fileName = `${Date.now()}-${image.name}`;
+          const { data, error } = await supabase.storage
+            .from("images")
+            .upload(fileName, image);
+          if (error) {
+            // TODO: better error checking
+            console.error(
+              `Error uploading image ${image.name}:`,
+              error.message
+            );
+          }
+
+          const res = supabase.storage.from("images").getPublicUrl(fileName);
+          return res.data.publicUrl;
+        })
+      );
+
       const baseUrl = isEditing
         ? `http://localhost:3232/update-listing`
         : "http://localhost:3232/add-listing";
+
       // Add listing_id to query params when editing
       const queryParams = new URLSearchParams({
         seller_id: "1",
@@ -164,7 +186,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         price: backendData.price.toString(),
         category: backendData.category,
         condition: backendData.condition,
-        image_url: backendData.imageUrl,
+        image_url: uploadedImageUrls[0],
         tags: backendData.tags.join(","),
       });
 
