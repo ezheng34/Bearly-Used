@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
@@ -40,19 +39,6 @@ interface Price {
 }
 
 const HomePage: React.FC = () => {
-  // const [selectedCategory, setSelectedCategory] = useState<string>();
-  // const [selectedPrice, setSelectedPrice] = useState<price | null>(null);
-
-  // const [allListings, setAllListings] = useState<ListingItem[]>([]);
-  // const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
-
-  // const [priceSort, setPriceSort] = useState<SortOrder>("");
-  // const [currentPage, setCurrentPage] = useState(1);
-
-  // const [searchQuery, setSearchQuery] = useState<string>("");
-  // const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
-
-  // const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -161,118 +147,62 @@ const HomePage: React.FC = () => {
     fetchListings();
   }, []);
 
-  // filter listings based on selected category and price range
-  // useEffect(() => {
-  //   const filterListings = async () => {
-  //     var apiUrl = "http://localhost:3232/get-listings?";
-
-  //     if (selectedCategory) {
-  //       apiUrl += "category=" + selectedCategory + "&";
-  //     }
-
-  //     if (selectedPrice) {
-  //       if (selectedPrice.min) {
-  //         apiUrl += "minPrice=" + selectedPrice.min + "&";
-  //       }
-  //       if (selectedPrice.max) {
-  //         apiUrl += "maxPrice=" + selectedPrice.max + "&";
-  //       }
-  //     }
-
-  //     if (priceSort !== "") {
-  //       apiUrl += "sorter=" + priceSort;
-  //     }
-
-  //     console.log("api url:", apiUrl);
-
-  //     try {
-  //       const response = await fetch(apiUrl);
-  //       const data = await response.json();
-  //       console.log(data);
-  //       if (data.response_type === "success") {
-  //         setFilteredListings(data.result);
-  //       } else {
-  //         console.error("Error fetching listings");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching listings");
-  //     }
-
-  //     setCurrentPage(1);
-  //   };
-
-  //   filterListings();
-  // }, [selectedCategory, selectedPrice, priceSort]);
-
+  // filter listings based on selected category and price range + search functionality
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedPrice) {
-      params.set("priceLabel", selectedPrice.label || "");
-      if (selectedPrice.min)
-        params.set("priceMin", selectedPrice.min.toString());
-      if (selectedPrice.max)
-        params.set("priceMax", selectedPrice.max.toString());
-    }
-    if (priceSort) params.set("priceSort", priceSort);
-    params.set("page", currentPage.toString());
-    if (searchQuery) params.set("search", searchQuery);
-    setSearchParams(params);
+    const fetchAndFilterListings = async () => {
+      const params = new URLSearchParams();
+      let apiUrl = "http://localhost:3232/get-listings?";
 
-    // Apply filters
-    let filtered = allListings;
-    if (selectedCategory) {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
-    }
-    if (selectedPrice) {
-      filtered = filtered.filter(
-        (item) =>
-          (selectedPrice.min === null || item.price >= selectedPrice.min) &&
-          (selectedPrice.max === null || item.price <= selectedPrice.max)
-      );
-    }
-    if (searchQuery) {
-      filtered = filtered.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    if (priceSort === "PRICE_ASC") {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (priceSort === "PRICE_DESC") {
-      filtered.sort((a, b) => b.price - a.price);
-    }
-    setFilteredListings(filtered);
-  }, [
-    selectedCategory,
-    selectedPrice,
-    priceSort,
-    currentPage,
-    searchQuery,
-    allListings,
-  ]);
+      if (selectedCategory) {
+        params.set("category", selectedCategory);
+        apiUrl += `category=${selectedCategory}&`;
+      }
 
-  // // searches for title
-  // useEffect(() => {
-  //   const searchListings = async () => {
-  //     var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
+      if (selectedPrice) {
+        params.set("priceLabel", selectedPrice.label || "");
+        if (selectedPrice.min) {
+          params.set("priceMin", selectedPrice.min.toString());
+          apiUrl += `minPrice=${selectedPrice.min}&`;
+        }
+        if (selectedPrice.max) {
+          params.set("priceMax", selectedPrice.max.toString());
+          apiUrl += `maxPrice=${selectedPrice.max}&`;
+        }
+      }
 
-  //     try {
-  //       const response = await fetch(apiUrl);
-  //       const data = await response.json();
-  //       console.log(data);
-  //       if (data.response_type === "success") {
-  //         setFilteredListings(data.result);
-  //       } else {
-  //         console.error("Error fetching listings");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching listings");
-  //     }
+      if (priceSort) {
+        params.set("priceSort", priceSort);
+        apiUrl += `sorter=${priceSort}&`;
+      }
 
-  //     setCurrentPage(1);
-  //   };
-  //   searchListings();
-  // }, [searchQuery]);
+      params.set("page", currentPage.toString());
+
+      if (searchQuery) {
+        params.set("search", searchQuery);
+        apiUrl += `title=${searchQuery}&`;
+      }
+
+      setSearchParams(params);
+
+      console.log("API URL:", apiUrl);
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log(data);
+        if (data.response_type === "success") {
+          let filtered = data.result;
+          setFilteredListings(filtered);
+        } else {
+          console.error("Error fetching listings");
+        }
+      } catch (err) {
+        console.error("Error fetching listings:", err);
+      }
+    };
+
+    fetchAndFilterListings();
+  }, [selectedCategory, selectedPrice, priceSort, currentPage, searchQuery]);
 
   // -------------------------USED FOR MOCK DATA------------------------------------
 
@@ -366,7 +296,9 @@ const HomePage: React.FC = () => {
           <li key={range.label}>
             <button
               className="dropdown-item"
-              onClick={() => setSelectedPrice(range)}
+              onClick={() => {
+                setCurrentPage(1), setSelectedPrice(range);
+              }}
             >
               {range.label}
             </button>
@@ -385,7 +317,9 @@ const HomePage: React.FC = () => {
             className={`dropdown-item ${
               priceSort === "PRICE_ASC" ? "active" : ""
             }`}
-            onClick={() => setPriceSort("PRICE_ASC")}
+            onClick={() => {
+              setCurrentPage(1), setPriceSort("PRICE_ASC");
+            }}
           >
             <i className="bi bi-arrow-up"></i> Low to High
           </button>
@@ -395,7 +329,9 @@ const HomePage: React.FC = () => {
             className={`dropdown-item ${
               priceSort === "PRICE_DESC" ? "active" : ""
             }`}
-            onClick={() => setPriceSort("PRICE_DESC")}
+            onClick={() => {
+              setCurrentPage(1), setPriceSort("PRICE_DESC");
+            }}
           >
             <i className="bi bi-arrow-down"></i> High to Low
           </button>
@@ -412,6 +348,7 @@ const HomePage: React.FC = () => {
                 onClick={() => {
                   setSelectedPrice(null);
                   setPriceSort("");
+                  setCurrentPage(1);
                 }}
               >
                 Clear Price Filters
