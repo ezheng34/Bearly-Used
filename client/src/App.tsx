@@ -6,6 +6,7 @@ import SellerProfile from "./web pages/SellerProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ProductPage from "./web pages/ProductPage";
 import "./styles/App.css";
+import { createClient } from "@supabase/supabase-js";
 
 const App: React.FC = () => {
   return (
