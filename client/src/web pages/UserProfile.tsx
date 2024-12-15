@@ -46,7 +46,7 @@ const UserProfile: React.FC = () => {
   // }, [id]);
   // -------------------------USED FOR MOCK DATA------------------------------------
   useEffect(() => {
-    const userId = 1; // Replace with actual user ID
+    const userId = 123; // TODO: replace with the clerk id
     fetchUserData(userId);
     fetchUserListings(userId);
   }, []);
@@ -65,7 +65,7 @@ const UserProfile: React.FC = () => {
   const fetchUserListings = async (userId: number) => {
     try {
       const listingsData = await getUserListings(userId);
-      setListings(listingsData.listings);
+      setListings(listingsData.listings ? listingsData.listings : []);
     } catch (error) {
       console.error("Failed to fetch user listings:", error);
     }
@@ -99,7 +99,7 @@ const UserProfile: React.FC = () => {
     if (modalElement) {
       const modalInstance = Modal.getInstance(modalElement);
       if (modalInstance) {
-        modalInstance.dispose(); 
+        modalInstance.dispose();
       }
 
       document.body.classList.remove("modal-open");
@@ -366,7 +366,6 @@ const UserProfile: React.FC = () => {
                   closeModal();
                   fetchUserListings(userProfile?.id || 1);
                   document.body.style.overflow = "auto";
-
                 }}
               />
             </div>

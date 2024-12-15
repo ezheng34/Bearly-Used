@@ -141,7 +141,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     e.preventDefault();
 
     const backendData = {
-      seller_id: 1,
+      seller_id: 123, // TODO: change to clerk id
       title: formData.title,
       available: formData.available,
       description: formData.description,
@@ -179,7 +179,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
       // Add listing_id to query params when editing
       const queryParams = new URLSearchParams({
-        seller_id: "1",
+        seller_id: "123", // TODO: change to clerk id
         title: backendData.title,
         available: backendData.available.toString(),
         description: backendData.description,

@@ -10,12 +10,13 @@ import java.util.Optional;
 public class MockStorage implements StorageInterface {
 
   @Override
-  public Long createUser(String email, String name, String phoneNumber, String school) {
+  public Long createUser(
+      String clerkId, String email, String name, String phoneNumber, String school) {
     return null;
   }
 
   @Override
-  public boolean updateUser(int userId, User updatedUser) {
+  public boolean updateUser(String clerkId, User updatedUser) {
     return false;
   }
 
@@ -32,7 +33,7 @@ public class MockStorage implements StorageInterface {
 
   @Override
   public Long createListing(
-      Long sellerId,
+      String sellerId,
       String title,
       boolean isAvailable,
       String description,
@@ -65,12 +66,12 @@ public class MockStorage implements StorageInterface {
   }
 
   @Override
-  public Map<String, Object> getUser(long userId) throws Exception {
+  public Map<String, Object> getUser(String clerkId) throws Exception {
     return null;
   }
 
   @Override
-  public List<Map<String, Object>> getListingsBySellerId(long sellerId) throws Exception {
+  public List<Map<String, Object>> getListingsBySellerId(String sellerId) throws Exception {
     return null;
   }
 }

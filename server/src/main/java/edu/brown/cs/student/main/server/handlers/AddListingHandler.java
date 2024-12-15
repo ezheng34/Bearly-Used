@@ -22,8 +22,7 @@ public class AddListingHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
-      // TODO: probably need to take an email instead and convert that to the id
-      Long sellerId = validateSellerId(request.queryParams("seller_id"));
+      String sellerId = validateSellerId(request.queryParams("seller_id")); // should be the clerk id
       String title = validateTitle(request.queryParams("title"));
       boolean available = Boolean.parseBoolean(request.queryParams("available"));
       String description = validateDescription(request.queryParams("description"));
@@ -59,11 +58,11 @@ public class AddListingHandler implements Route {
   }
 
   // handlers to validate user input
-  private Long validateSellerId(String sellerIdStr) {
+  private String validateSellerId(String sellerIdStr) {
     if (sellerIdStr == null || sellerIdStr.isEmpty()) {
       throw new IllegalArgumentException("Seller ID is required");
     }
-    return Long.parseLong(sellerIdStr);
+    return sellerIdStr;
   }
 
   private String validateTitle(String title) {

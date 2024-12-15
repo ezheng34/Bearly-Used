@@ -7,19 +7,19 @@ import "../styles/ProductPage.css";
 interface Seller {
   id: number;
   name: string;
-  rating: number;
-  school: string;
   email: string;
+  phone_number: string;
+  school: string;
 }
 
 interface Product {
+  seller_id: string;
   id: number;
   title: string;
   price: number;
   category: string;
   description: string;
   images: string[];
-  seller: Seller;
 }
 
 const ProductPage: React.FC = () => {
@@ -30,7 +30,8 @@ const ProductPage: React.FC = () => {
   // const [mainImage, setMainImage] = useState(product?.images[0]);
   // -------------------------USED FOR MOCK DATA------------------------------------
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
 
   const handleViewProfile = (sellerId: number) => {
@@ -42,8 +43,8 @@ const ProductPage: React.FC = () => {
   };
 
   const copyEmail = () => {
-    if (product?.seller?.email) {
-      navigator.clipboard.writeText(product.seller.email).then(() => {
+    if (seller?.email) {
+      navigator.clipboard.writeText(seller.email).then(() => {
         alert("Email copied to clipboard!"); // Could be replaced with a nicer toast notification
       });
     }
@@ -68,22 +69,15 @@ const ProductPage: React.FC = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3232/get-listing-by-id?listing_id=${id}` //NOT FUNCTIONAL YET
+          `http://localhost:3232/get-listing-by-id?listing_id=${id}`
         );
         const data = await response.json();
-        console.log("Fetched data:", data);
+        console.log("Fetched listing data:", data);
 
         if (data.response_type === "success") {
-          // const fetchedProduct = data.result[0];
           const fetchedProduct = data.listing;
-          console.log("Fetched product data:", fetchedProduct);
-          console.log("Fetched product image_url:", fetchedProduct.image_url);
-          // setProduct(fetchedProduct);
-          // setMainImage(fetchedProduct.image_url);
-
           setProduct({ ...fetchedProduct });
           setMainImage(fetchedProduct.image_url);
-          console.log("url", fetchedProduct.image_url);
         } else {
           console.error("Error fetching product data");
         }
@@ -96,6 +90,30 @@ const ProductPage: React.FC = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Fetches the seller
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3232/get-user?clerk_id=${product?.seller_id}`
+        );
+        const data = await response.json();
+        console.log("Fetched user:", data);
+        setSeller({ ...data.user_data });
+        if (data.response_type === "success") {
+        } else {
+          console.error("Error fetching seller data");
+        }
+      } catch (err) {
+        console.error("Error fetching seller:", err);
+      }
+    };
+    if (product) {
+      fetchSeller();
+    }
+    console.log("SELLER", seller);
+  }, [product]);
 
   return (
     <div className="product-page">
@@ -152,15 +170,15 @@ const ProductPage: React.FC = () => {
               <div className="seller-details">
                 <div className="seller-detail">
                   <i className="bi bi-person"></i>
-                  <span>{product?.seller?.name || "Anonymous"}</span>
+                  <span>{seller?.name || "Anonymous"}</span>
                 </div>
                 <div className="seller-detail">
                   <i className="bi bi-building"></i>
-                  <span>{product?.seller?.school || "Unknown School"}</span>
+                  <span>{seller?.school || "Unknown School"}</span>
                 </div>
                 <div className="seller-detail">
                   <i className="bi bi-envelope"></i>
-                  <span>{product?.seller?.email || "No email provided"}</span>
+                  <span>{seller?.email || "No email provided"}</span>
                   <button
                     className="copy-email-btn"
                     onClick={copyEmail}
@@ -171,9 +189,7 @@ const ProductPage: React.FC = () => {
                 </div>
                 <button
                   className="view-profile-btn"
-                  onClick={() =>
-                    product?.seller?.id && handleViewProfile(product.seller.id)
-                  }
+                  onClick={() => seller?.id && handleViewProfile(seller.id)}
                 >
                   View Full Profile
                 </button>
@@ -193,4 +209,3 @@ const ProductPage: React.FC = () => {
 };
 
 export default ProductPage;
-

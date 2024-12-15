@@ -24,7 +24,7 @@ public class UpdateListingHandler implements Route {
 
     try {
       Long listingId = validateListingId(request.queryParams("listing_id"));
-
+      String sellerId = request.queryParams("seller_id");
       String title = request.queryParams("title");
       String description = request.queryParams("description");
       String priceStr = request.queryParams("price");
@@ -40,6 +40,7 @@ public class UpdateListingHandler implements Route {
       Listing newList =
           new Listing(
               listingId,
+              sellerId,
               title != null ? validateTitle(title) : null,
               description != null ? validateDescription(description) : null,
               priceStr != null ? validatePrice(priceStr) : null,

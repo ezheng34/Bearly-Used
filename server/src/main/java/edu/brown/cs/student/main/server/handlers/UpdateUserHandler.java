@@ -26,7 +26,7 @@ public class UpdateUserHandler implements Route {
 
     try {
 
-      int userId = validateUserId(request.queryParams("user_id"));
+      String clerkId = validateUserId(request.queryParams("clerk_id"));
 
       String name = request.queryParams("name");
       String phoneNumber = request.queryParams("phone_number");
@@ -37,12 +37,12 @@ public class UpdateUserHandler implements Route {
 
       User newUser =
           new User(
-              userId,
+              clerkId,
               name != null ? validateName(name) : null,
               phoneNumber != null ? validatePhoneNumber(phoneNumber) : null,
               school != null ? validateSchool(school) : null);
 
-      boolean updated = this.dbHandler.updateUser(userId, newUser);
+      boolean updated = this.dbHandler.updateUser(clerkId, newUser);
 
       if (updated) {
         responseMap.put("response_type", "success");
@@ -64,12 +64,12 @@ public class UpdateUserHandler implements Route {
   }
 
   // handlers to validate user input
-  private int validateUserId(String userIdStr) {
+  private String validateUserId(String userIdStr) {
     int userId = Integer.parseInt(userIdStr);
     if (userId < 0) {
       throw new IllegalArgumentException("Invalid user id inputted");
     }
-    return userId;
+    return userIdStr;
   }
 
   private String validateName(String name) {

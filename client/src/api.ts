@@ -13,9 +13,9 @@ export async function getUserListings(userId: number) {
 }
 
 export async function getUserProfile(userId: number) {
-  return fetchFromAPI(`/get-user?id=${userId}`);
+  return fetchFromAPI(`/get-user?clerk_id=${userId}`);
 }
 
 export async function updateUserProfile(userId: number, name: string, phoneNumber : string, school: string) {
-  return fetchFromAPI(`/update-user?user_id=${userId}&name=${name}&phone_number=${phoneNumber}&school=${school}`);
+  return fetchFromAPI(`/update-user?clerk_id=${userId}&name=${name}&phone_number=${phoneNumber}&school=${school}`);
 }
