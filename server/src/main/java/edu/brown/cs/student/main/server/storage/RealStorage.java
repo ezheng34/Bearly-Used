@@ -137,7 +137,7 @@ public class RealStorage implements StorageInterface {
   /* LISTING FUNCTIONS */
   @Override
   public List<Listing> getListings(
-      String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
+      String title, String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
 
     try {
       List<Listing> listings = new ArrayList<>();
@@ -146,8 +146,12 @@ public class RealStorage implements StorageInterface {
       StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM listings WHERE 1=1");
       List<Object> params = new ArrayList<>();
 
-      System.out.println("1");
       // Apply filters dynamically
+      if (title != null && !title.trim().isEmpty()) {
+        sqlBuilder.append(" AND LOWER(title) LIKE ?");
+        params.add("%" + title.trim().toLowerCase() + "%");
+      }
+
       if (category != null) {
         sqlBuilder.append(" AND category = ?");
         params.add(category);
@@ -193,7 +197,7 @@ public class RealStorage implements StorageInterface {
       try (Connection connection = DriverManager.getConnection(this.JDBC);
           PreparedStatement statement = connection.prepareStatement(sqlBuilder.toString())) {
 
-        System.out.println("STATEMENT: " + sqlBuilder.toString());
+        System.out.println("SQL QUERY: " + sqlBuilder.toString());
 
         // Set query parameters
         for (int i = 0; i < params.size(); i++) {

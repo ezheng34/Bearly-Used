@@ -24,6 +24,7 @@ public class GetListingsHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
+      String title = request.queryParams("title");
       String category = request.queryParams("category");
       String minPrice = request.queryParams("minPrice");
       String maxPrice = request.queryParams("maxPrice");
@@ -52,6 +53,7 @@ public class GetListingsHandler implements Route {
 
       List<Listing> res =
           this.dbHandler.getListings(
+              title,
               category,
               (minPrice == null ? null : Float.valueOf(minPrice)),
               (maxPrice == null ? null : Float.valueOf(maxPrice)),
