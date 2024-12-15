@@ -137,7 +137,12 @@ public class RealStorage implements StorageInterface {
   /* LISTING FUNCTIONS */
   @Override
   public List<Listing> getListings(
-      String title, String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter) {
+      String title,
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter) {
 
     try {
       List<Listing> listings = new ArrayList<>();

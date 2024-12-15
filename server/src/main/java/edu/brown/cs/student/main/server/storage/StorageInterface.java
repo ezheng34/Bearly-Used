@@ -14,7 +14,12 @@ public interface StorageInterface {
 
   // all-purpose to get either all listings or filtered listings
   List<Listing> getListings(
-      String title, String category, Float minPrice, Float maxPrice, List<String> tags, Sorter sorter);
+      String title,
+      String category,
+      Float minPrice,
+      Float maxPrice,
+      List<String> tags,
+      Sorter sorter);
 
   Long createListing(
       Long sellerId,

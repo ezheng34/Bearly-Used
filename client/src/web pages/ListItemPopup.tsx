@@ -224,14 +224,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   return (
     <div>
+      <button
+        type="button"
+        className="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      ></button>
       <h2 className="text-center mb-4">
         {isEditing ? "Edit Listing" : "Create Listing"}
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
       </h2>
 
       <form onSubmit={handleSubmit}>
@@ -269,11 +269,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
               onChange={(e) => {
                 const value = e.target.value;
                 // got regex thingy from Claude
-                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                if (value === "" || /^\d*\.?\d{0,2}$/.test(value)) {
                   setPriceInput(value);
                   setFormData({
                     ...formData,
-                    price: value === "" ? 0 : parseFloat(value),
+                    price:
+                      value === ""
+                        ? 0
+                        : parseFloat(parseFloat(value).toFixed(2)),
                   });
                 }
               }}

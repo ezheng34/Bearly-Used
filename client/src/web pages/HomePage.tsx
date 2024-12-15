@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
@@ -10,8 +9,10 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useSearchParams,
   useNavigate,
 } from "react-router-dom";
+import { l } from "@clerk/clerk-react/dist/useAuth-DT1ot2zi";
 
 const ITEMS_PER_PAGE = 8; // TODO change later
 
@@ -31,23 +32,46 @@ interface ListingItem {
 }
 
 // price interface
-interface price {
+interface Price {
   label: string | null;
   min: number | null;
   max: number | null;
 }
 
 const HomePage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [selectedPrice, setSelectedPrice] = useState<price | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get("category") || ""
+  );
+  const [selectedPrice, setSelectedPrice] = useState<Price | null>(
+    searchParams.get("priceLabel")
+      ? {
+          label: searchParams.get("priceLabel"),
+          min: searchParams.get("priceMin")
+            ? Number(searchParams.get("priceMin"))
+            : null,
+          max: searchParams.get("priceMax")
+            ? Number(searchParams.get("priceMax"))
+            : null,
+        }
+      : null
+  );
 
   const [allListings, setAllListings] = useState<ListingItem[]>([]);
   const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
 
-  const [priceSort, setPriceSort] = useState<SortOrder>("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [priceSort, setPriceSort] = useState<SortOrder>(
+    (searchParams.get("priceSort") as SortOrder) || ""
+  );
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get("search") || ""
+  );
   const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
 
   // -------------------------USED FOR MOCK DATA------------------------------------
@@ -123,71 +147,62 @@ const HomePage: React.FC = () => {
     fetchListings();
   }, []);
 
-  // filter listings based on selected category and price range
+  // filter listings based on selected category and price range + search functionality
   useEffect(() => {
-    const filterListings = async () => {
-      var apiUrl = "http://localhost:3232/get-listings?";
+    const fetchAndFilterListings = async () => {
+      const params = new URLSearchParams();
+      let apiUrl = "http://localhost:3232/get-listings?";
 
       if (selectedCategory) {
-        apiUrl += "category=" + selectedCategory + "&";
+        params.set("category", selectedCategory);
+        apiUrl += `category=${selectedCategory}&`;
       }
 
       if (selectedPrice) {
+        params.set("priceLabel", selectedPrice.label || "");
         if (selectedPrice.min) {
-          apiUrl += "minPrice=" + selectedPrice.min + "&";
+          params.set("priceMin", selectedPrice.min.toString());
+          apiUrl += `minPrice=${selectedPrice.min}&`;
         }
         if (selectedPrice.max) {
-          apiUrl += "maxPrice=" + selectedPrice.max + "&";
+          params.set("priceMax", selectedPrice.max.toString());
+          apiUrl += `maxPrice=${selectedPrice.max}&`;
         }
       }
 
-      if (priceSort !== "") {
-        apiUrl += "sorter=" + priceSort;
+      if (priceSort) {
+        params.set("priceSort", priceSort);
+        apiUrl += `sorter=${priceSort}&`;
       }
 
-      console.log("api url:", apiUrl);
+      params.set("page", currentPage.toString());
+
+      if (searchQuery) {
+        params.set("search", searchQuery);
+        apiUrl += `title=${searchQuery}&`;
+      }
+
+      setSearchParams(params);
+
+      console.log("API URL:", apiUrl);
 
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
         console.log(data);
         if (data.response_type === "success") {
-          setFilteredListings(data.result);
+          let filtered = data.result;
+          setFilteredListings(filtered);
         } else {
           console.error("Error fetching listings");
         }
       } catch (err) {
-        console.error("Error fetching listings");
+        console.error("Error fetching listings:", err);
       }
-
-      setCurrentPage(1);
     };
 
-    filterListings();
-  }, [selectedCategory, selectedPrice, priceSort]);
-
-  // searches for title
-  useEffect(() => {
-    const searchListings = async () => {
-      var apiUrl = "http://localhost:3232/get-listings?title=" + searchQuery;
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        console.log(data);
-        if (data.response_type === "success") {
-          setFilteredListings(data.result);
-        } else {
-          console.error("Error fetching listings");
-        }
-      } catch (err) {
-        console.error("Error fetching listings");
-      }
-
-      setCurrentPage(1);
-    };
-    searchListings();
-  }, [searchQuery]);
+    fetchAndFilterListings();
+  }, [selectedCategory, selectedPrice, priceSort, currentPage, searchQuery]);
 
   // -------------------------USED FOR MOCK DATA------------------------------------
 
@@ -281,7 +296,9 @@ const HomePage: React.FC = () => {
           <li key={range.label}>
             <button
               className="dropdown-item"
-              onClick={() => setSelectedPrice(range)}
+              onClick={() => {
+                setCurrentPage(1), setSelectedPrice(range);
+              }}
             >
               {range.label}
             </button>
@@ -300,7 +317,9 @@ const HomePage: React.FC = () => {
             className={`dropdown-item ${
               priceSort === "PRICE_ASC" ? "active" : ""
             }`}
-            onClick={() => setPriceSort("PRICE_ASC")}
+            onClick={() => {
+              setCurrentPage(1), setPriceSort("PRICE_ASC");
+            }}
           >
             <i className="bi bi-arrow-up"></i> Low to High
           </button>
@@ -310,7 +329,9 @@ const HomePage: React.FC = () => {
             className={`dropdown-item ${
               priceSort === "PRICE_DESC" ? "active" : ""
             }`}
-            onClick={() => setPriceSort("PRICE_DESC")}
+            onClick={() => {
+              setCurrentPage(1), setPriceSort("PRICE_DESC");
+            }}
           >
             <i className="bi bi-arrow-down"></i> High to Low
           </button>
@@ -327,6 +348,7 @@ const HomePage: React.FC = () => {
                 onClick={() => {
                   setSelectedPrice(null);
                   setPriceSort("");
+                  setCurrentPage(1);
                 }}
               >
                 Clear Price Filters
@@ -363,10 +385,9 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
-    navigate(`/product/${id}`);
+    navigate(`/product/${id}?${searchParams.toString()}`);
   };
 
   return (
@@ -437,16 +458,31 @@ const HomePage: React.FC = () => {
             <input
               type="text"
               placeholder="Search listings..."
+              value={tempSearchQuery}
               onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
             />
             <button
               type="button"
               className="search-btn"
-              onClick={() => setSearchQuery(tempSearchQuery)}
+              onClick={() => {
+                setCurrentPage(1), setSearchQuery(tempSearchQuery);
+              }}
             >
               🔍
             </button>
+            {searchQuery && (
+              <button
+                type="button"
+                className="nav-link"
+                onClick={() => {
+                  navigate("/"), setSearchQuery(""), setTempSearchQuery("");
+                }}
+                aria-label="Clear search"
+              >
+                Clear Search
+              </button>
+            )}
           </div>
 
           {/* Create Listing Button */}
