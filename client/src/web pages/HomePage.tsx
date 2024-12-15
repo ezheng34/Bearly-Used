@@ -442,10 +442,10 @@ const HomePage: React.FC = () => {
             />
             <button
               type="button"
-              className="btn btn-light"
+              className="search-btn"
               onClick={() => setSearchQuery(tempSearchQuery)}
             >
-              Search
+              🔍
             </button>
           </div>
 
