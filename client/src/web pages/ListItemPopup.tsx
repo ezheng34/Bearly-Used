@@ -269,11 +269,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
               onChange={(e) => {
                 const value = e.target.value;
                 // got regex thingy from Claude
-                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                if (value === "" || /^\d*\.?\d{0,2}$/.test(value)) {
                   setPriceInput(value);
                   setFormData({
                     ...formData,
-                    price: value === "" ? 0 : parseFloat(value),
+                    price:
+                      value === ""
+                        ? 0
+                        : parseFloat(parseFloat(value).toFixed(2)),
                   });
                 }
               }}
