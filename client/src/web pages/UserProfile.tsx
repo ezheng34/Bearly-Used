@@ -98,7 +98,15 @@ const UserProfile: React.FC = () => {
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
       const modalInstance = Modal.getInstance(modalElement);
-      modalInstance?.hide();
+      if (modalInstance) {
+        modalInstance.dispose(); 
+      }
+
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("padding-right");
+      document.body.style.overflow = "initial";
+      const backdrops = document.querySelectorAll(".modal-backdrop");
+      backdrops.forEach((backdrop) => backdrop.remove());
     }
   };
 
@@ -123,7 +131,6 @@ const UserProfile: React.FC = () => {
   //   };
   //   setUpdateProfile(newProfile);
   // };
-
 
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
 
@@ -168,13 +175,13 @@ const UserProfile: React.FC = () => {
     }
   }, []);
 
-  //trying to set this up to redirect not to /user but to /user/userid. 
-  //cuz we need the id for the backend handlers to grab user specific data 
+  //trying to set this up to redirect not to /user but to /user/userid.
+  //cuz we need the id for the backend handlers to grab user specific data
   //for some reason its only going to /user.
   const navigate = useNavigate();
   const handleUserClick = (id: number) => {
-     navigate(`/user/${id}`);
-   };
+    navigate(`/user/${id}`);
+  };
 
   return (
     <div className="user-profile-container">
@@ -232,7 +239,10 @@ const UserProfile: React.FC = () => {
                   <button
                     type="button"
                     className="btn-close"
-                    onClick={() => setEditingListing(null)}
+                    onClick={() => {
+                      setEditingListing(null);
+                      document.body.style.overflow = "auto";
+                    }}
                   ></button>
                 </div>
                 <div className="modal-body">
@@ -254,6 +264,7 @@ const UserProfile: React.FC = () => {
                     onSubmit={() => {
                       setEditingListing(null);
                       fetchUserListings(userProfile?.id || 1);
+                      document.body.style.overflow = "auto";
                     }}
                   />
                 </div>
@@ -358,7 +369,14 @@ const UserProfile: React.FC = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <ListItemPopup onSubmit={closeModal} />
+              <ListItemPopup
+                onSubmit={() => {
+                  closeModal();
+                  fetchUserListings(userProfile?.id || 1);
+                  document.body.style.overflow = "auto";
+
+                }}
+              />
             </div>
           </div>
         </div>

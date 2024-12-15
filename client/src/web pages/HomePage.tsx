@@ -274,26 +274,22 @@ const HomePage: React.FC = () => {
   }, []);
 
   const closeModal = () => {
-    // Get the modal element
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
-      // Hide the modal using Bootstrap's Modal instance . bc wtf
-      const modal = Modal.getInstance(modalElement);
-      modal?.hide();
+      const modalInstance = Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.dispose(); // erm idk if this actually is good
+      }
 
-      // remove all modal-related effects??? todo this DOESNT WORK SJDFKJDSF
-      modalElement.classList.remove("show");
-      modalElement.style.display = "none";
-      modalElement.setAttribute("aria-hidden", "true");
-      const backdrops = document.querySelectorAll(".modal-backdrop");
-      backdrops.forEach((backdrop) => backdrop.remove());
       document.body.classList.remove("modal-open");
       document.body.style.removeProperty("padding-right");
-      document.body.style.removeProperty("overflow");
-      document.body.style.removeProperty("height");
+      document.body.style.overflow = "initial";
+
+      const backdrops = document.querySelectorAll(".modal-backdrop");
+      backdrops.forEach((backdrop) => backdrop.remove());
     }
   };
-
+  
   const navigate = useNavigate();
   //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
@@ -463,6 +459,51 @@ const HomePage: React.FC = () => {
           </ul>
         </nav>
       )}
+
+      {/* Add Modal markup */}
+      <div
+        className="modal fade"
+        id="addListingModal"
+        tabIndex={-1}
+        aria-labelledby="addListingModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-0">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <ListItemPopup
+                onSubmit={() => {
+                  closeModal();
+                  // Refresh listings after submission
+                  const fetchListings = async () => {
+                    try {
+                      const response = await fetch(
+                        "http://localhost:3232/get-listings"
+                      );
+                      const data = await response.json();
+                      if (data.response_type === "success") {
+                        setAllListings(data.result);
+                        setFilteredListings(data.result);
+                      }
+                    } catch (err) {
+                      console.error("Error fetching listings");
+                    }
+                  };
+                  fetchListings();
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

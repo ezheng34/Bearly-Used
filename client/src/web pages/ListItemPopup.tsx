@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ListItemPopup.css";
+import { Modal } from "bootstrap";
 
 interface ListingForm {
   sellerId: number;
@@ -137,6 +138,8 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    
     const backendData = {
       seller_id: 1,
       title: formData.title,
@@ -187,6 +190,13 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         result
       );
 
+      const modalElement = document.getElementById("addListingModal");
+      if (modalElement) {
+        const modalInstance = Modal.getInstance(modalElement);
+        if (modalInstance) {
+          modalInstance.hide(); // Use hide() instead of dispose()
+        }
+      }
       // dont think we need this
       // const modalElement = document.getElementById("addListingModal");
       // if (modalElement) {
@@ -382,7 +392,8 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
-        <button type="submit" className="btn btn-secondary w-100">
+        <button type="submit" className="btn btn-secondary w-100" >
+          
           {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>
