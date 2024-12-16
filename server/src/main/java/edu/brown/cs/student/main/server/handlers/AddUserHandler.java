@@ -21,7 +21,7 @@ public class AddUserHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
-      String clerkId = validateUserId(request.queryParams("clerk_id"));
+      String clerkId = request.queryParams("clerk_id");
       String email = validateEmail(request.queryParams("email"));
       String name = validateName(request.queryParams("name"));
       String phoneNumber = validatePhoneNumber(request.queryParams("phone_number"));
@@ -62,13 +62,13 @@ public class AddUserHandler implements Route {
     return email.trim();
   }
 
-  private String validateUserId(String userIdStr) {
-    int userId = Integer.parseInt(userIdStr);
-    if (userId < 0) {
-      throw new IllegalArgumentException("Invalid user id inputted");
-    }
-    return userIdStr;
-  }
+//  private String validateUserId(String userIdStr) {
+//    int userId = Integer.parseInt(userIdStr);
+//    if (userId < 0) {
+//      throw new IllegalArgumentException("Invalid user id inputted");
+//    }
+//    return userIdStr;
+//  }
 
   private String validateName(String name) {
     if (name == null || name.trim().isEmpty()) {
