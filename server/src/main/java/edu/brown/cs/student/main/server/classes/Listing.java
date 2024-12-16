@@ -39,8 +39,16 @@ public class Listing {
     this.available = avail;
   }
 
+  public Long getId() {
+    return id;
+  }
+
   public Float getPrice() {
     return this.price;
+  }
+
+  public void setPrice(Float price) {
+    this.price = price;
   }
 
   public String getSellerId() {
@@ -51,27 +59,55 @@ public class Listing {
     return this.title;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   public String getDescription() {
     return this.description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public String getCategory() {
     return this.category;
   }
 
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
   public String getCondition() {
     return this.condition;
+  }
+
+  public void setCondition(String condition) {
+    this.condition = condition;
   }
 
   public String getImageUrl() {
     return this.image_url;
   }
 
+  public void setImageUrl(String image_url) {
+    this.image_url = image_url;
+  }
+
   public boolean getAvailable() {
     return this.available;
   }
 
+  public void setAvailable(boolean available) {
+    this.available = available;
+  }
+
   public List<String> getTags() {
     return this.tags;
+  }
+
+  public void setTags(List<String> tags) {
+    this.tags = tags;
   }
 }
