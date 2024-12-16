@@ -255,12 +255,15 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   return (
     <div>
-      <button
+      {/* INSTEAD OF CREATING A CLOSE BUTTON HERE, I CREATE A CLOSE BUTTON IN THE RETURN BODY OF THE TSX. FILE THAT WANTS TO USE A LISTITEMPOPUP MODAL. 
+      if the close button is rendered here it is non functional sometimes and its super weird. rendering it elsewhere guarantees that it works */}
+
+      {/* <button
         type="button"
         className="btn-close"
         data-bs-dismiss="modal"
         aria-label="Close"
-      ></button>
+      ></button> */}
       <h2 className="text-center mb-4">
         {isEditing ? "Edit Listing" : "Create Listing"}
       </h2>

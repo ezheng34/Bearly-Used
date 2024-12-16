@@ -144,7 +144,7 @@ const UserProfile: React.FC = () => {
       price: listing.price,
       category: listing.category,
       condition: listing.condition,
-      imageUrl: listing.image_url,
+      imageUrl: listing.image_url, 
       tags: listing.tags,
       images: [], // TODO figure out how to handle existing images
     };
@@ -177,6 +177,13 @@ const UserProfile: React.FC = () => {
     }
   }, []);
 
+   useEffect(() => {
+     const modalElement = document.getElementById("editListingModal");
+     if (modalElement) {
+       new Modal(modalElement);
+     }
+   }, []);
+
   //trying to set this up to redirect not to /user but to /user/userid.
   //cuz we need the id for the backend handlers to grab user specific data
   //for some reason its only going to /user.
@@ -184,8 +191,6 @@ const UserProfile: React.FC = () => {
   const handleUserClick = (id: number) => {
     navigate(`/user/${id}`);
   };
-
-  
 
   return (
     <div className="user-profile-container">
@@ -231,7 +236,9 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <button className="edit-profile">Edit Profile</button>
-        {/* updateProfile */}
+        updateProfile
+
+        {/* ListItemPopup to Edit Listing */}
         {editingListing && (
           <div
             className="modal fade show"
@@ -239,17 +246,19 @@ const UserProfile: React.FC = () => {
           >
             <div className="modal-dialog modal-lg modal-dialog-centered">
               <div className="modal-content">
-                <div className="modal-header border-0">
-                  {/* this creates another closing button in edit listing pop up*/}
-                  {/* <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => {
-                      setEditingListing(null);
-                      document.body.style.overflow = "auto";
-                    }}
-                  ></button> */}
-                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  style={{
+                    fontSize: "0.75rem",
+                    padding: "0.25rem",
+                  }}
+                  onClick={() => {
+                    setEditingListing(null);
+                    document.body.style.overflow = "auto";
+                  }}
+                ></button>
+
                 <div className="modal-body">
                   <ListItemPopup
                     isEditing={true}
@@ -367,6 +376,17 @@ const UserProfile: React.FC = () => {
       >
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              style={{
+                fontSize: "0.75rem",
+                padding: "0.25rem",
+              }}
+            ></button>
+
             <div className="modal-body">
               <ListItemPopup
                 onSubmit={() => {
