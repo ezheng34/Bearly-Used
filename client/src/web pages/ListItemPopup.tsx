@@ -3,6 +3,7 @@ import "../styles/ListItemPopup.css";
 import { Modal } from "bootstrap";
 import { supabase } from "../utils/supabaseClient";
 import { useUser } from "@clerk/clerk-react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 interface ListingForm {
   sellerId: number;
@@ -49,6 +50,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
+  const navigate = useNavigate();
 
   const categories = [
     "Electronics",
@@ -234,6 +236,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
       }
 
       onSubmit?.();
+      navigate(-1);
     } catch (error) {
       console.error(
         isEditing ? "Error updating listing:" : "Error adding listing:",
