@@ -16,7 +16,7 @@ import {
   useUser,
 } from "@clerk/clerk-react";
 import SetupProfile from "./web pages/SetupProfile";
-import SignUp from "./web pages/Signup";
+import SignUp from "./web pages/SignUp";
 
 type userInfo = {
   id: number;

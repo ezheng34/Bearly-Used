@@ -11,10 +11,7 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  // const [interests, setInterests] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  const navigate = useNavigate();
 
   const { user } = useUser();
 
