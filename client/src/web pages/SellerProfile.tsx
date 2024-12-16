@@ -58,7 +58,7 @@ const SellerProfile: React.FC = () => {
   };
 
   useEffect(() => {
-    const userId = user?.id || "";
+    const userId = sellerId || "";
     fetchUserData(userId);
     fetchUserListings(userId);
   }, []);

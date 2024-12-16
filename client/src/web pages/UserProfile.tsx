@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getUserListings, getUserProfile, updateUserProfile } from "../api";
 import { useUser } from "@clerk/clerk-react";
+import EditProfilePopup from "./EditProfilePopup";
 
 type Listing = {
   id: number;
@@ -114,61 +115,56 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  // const [updateUserProfile, setUpdateUserProfile] = useState<UserProfile | null>(null);
-  // //fetch updated user profile data
-  // useEffect(() => {
-  //   const newUserProfile = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `http://localhost:3232/update-user?user_id=${id}&name=robbie&phone_number=123-444-3333&school=risd`
-  //       );
-  //       const data = await response.json();
-  //       console.log(data);
-  //   }
-  //     df,
-  //   };
-  // }, []);
-
-  // const handleUpdatingUserProfile = () => {
-  //   const newUserProfile = {
-  //     df,
-  //   };
-  //   setUpdateProfile(newProfile);
-  // };
-
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [editingProfile, setEditingProfile] = useState<UserProfile | null>(
+    null
+  );
+
+  const handleEditProfile = () => {
+    setEditingProfile(userProfile);
+  };
 
   const handleEditListing = (listing: Listing) => {
-    const initialData = {
-      title: listing.title,
-      available: listing.available,
-      description: listing.description,
-      price: listing.price,
-      category: listing.category,
-      condition: listing.condition,
-      imageUrl: listing.image_url,
-      tags: listing.tags,
-      images: [], // TODO figure out how to handle existing images
-    };
     setEditingListing(listing);
   };
 
-  // const handleSaveListing = async (id: number, updates: Partial<Listing>) => {
-  //   // TODO: Integrate with backend
-  //   setListings(
-  //     listings.map((listing) =>
-  //       listing.id === id ? { ...listing, ...updates } : listing
-  //     )
-  //   );
-  // };
+  const handleUpdateUserProfile = async (formData: UserProfile) => {
+    try {
+      console.log("formData", formData);
+      const response = await fetch(
+        `http://localhost:3232/update-user?clerk_id=${user?.id}&name=${formData.name}&phone_number=${formData.phone_number}&school=${formData.school}`
+      );
+      const data = await response.json();
+      console.log("bbbb", data);
+      if (data.response_type === "success") {
+        alert("Profile succesfully updated. Refresh to see changes!");
+        navigate("/user");
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Error: " + error);
+    }
+  };
 
-  const handleMarkAsSold = async (id: number, isSold: boolean) => {
-    // TODO: Integrate with backend
-    setListings(
-      listings.map((listing) =>
-        listing.id === id ? { ...listing, isSold: isSold } : listing
-      )
-    );
+  const handleMarkAsSold = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3232/update-listing?listing_id=${id}&available=false`
+      );
+      const data = await response.json();
+      console.log("bbbb", data);
+      if (data.response_type === "success") {
+        alert("Listing successfully marked as unavailable.");
+        navigate("/");
+      } else {
+        alert("Failed to mark as sold.");
+      }
+    } catch (error) {
+      console.error("Error marking as sold:", error);
+      alert("An error occurred while trying to mark the listing as sold");
+    }
   };
 
   // Initialize modal
@@ -217,7 +213,7 @@ const UserProfile: React.FC = () => {
 
       <div className="profile-container">
         <div className="profile">
-          <img className="profile-picture" src={user?.imageUrl}></img>
+          <img className="user-page-profile-picture" src={user?.imageUrl}></img>
           <div className="profile-info">
             <h2 className="name">{userProfile?.name || "Loading..."}</h2>
             <p className="school">
@@ -227,17 +223,59 @@ const UserProfile: React.FC = () => {
             <p className="phone">
               Phone Number: {userProfile?.phone_number || "Loading..."}
             </p>
-            <div className="tags">
+            {/* <div className="tags">
               Interests:
               {userProfile?.tags?.map((tag: string) => (
                 <span key={tag} className="tag">
                   {tag}
                 </span>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
-        <button className="edit-profile">Edit Profile</button>
+        <button className="edit-profile" onClick={handleEditProfile}>
+          Edit Profile
+        </button>
+
+        {/* EditProfilePopup to Edit Profile */}
+        {editingProfile && (
+          <div
+            className="modal fade show"
+            style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog modal-lg modal-dialog-centered">
+              <div className="modal-content">
+                <button
+                  type="button"
+                  className="btn-close"
+                  style={{
+                    fontSize: "0.75rem",
+                    padding: "0.25rem",
+                  }}
+                  onClick={() => {
+                    setEditingProfile(null);
+                    document.body.style.overflow = "auto";
+                  }}
+                ></button>
+
+                <div className="modal-body">
+                  {userProfile ? (
+                    <EditProfilePopup
+                      initialData={userProfile}
+                      onSubmit={(formData) => {
+                        setEditingProfile(null);
+                        handleUpdateUserProfile(formData);
+                        fetchUserData(userProfile?.clerk_id || "123");
+                        document.body.style.overflow = "auto";
+                      }}
+                    />
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ListItemPopup to Edit Listing */}
         {editingListing && (
           <div
@@ -314,10 +352,7 @@ const UserProfile: React.FC = () => {
                 {listing.available && (
                   <button
                     className="btn btn-sm btn-outline-success"
-                    onClick={() =>
-                      handleMarkAsSold(listing.id, listing.available)
-                    }
-                    // TODO idk if any of this actualy works
+                    onClick={() => handleMarkAsSold()}
                   >
                     {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
                   </button>

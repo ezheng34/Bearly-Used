@@ -3,6 +3,7 @@ import "../styles/ListItemPopup.css";
 import { Modal } from "bootstrap";
 import { supabase } from "../utils/supabaseClient";
 import { useUser } from "@clerk/clerk-react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 interface ListingForm {
   sellerId: number;
@@ -49,6 +50,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
+  const navigate = useNavigate();
 
   const categories = [
     "Electronics",
@@ -74,7 +76,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     const objectUrls = formData.images.map((image) =>
       URL.createObjectURL(image)
     );
-    setImagePreviews(objectUrls);
+    console.log("objectUrls", objectUrls);
 
     if (formData.images.length > 0) {
       setFormData((prev) => ({
@@ -151,10 +153,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     e.preventDefault();
 
     try {
-      // UPLOAD IMAGE TO SUPABASE STORAGE AND GET URL
-      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734293853440-Untitled_Artwork%204.png
-      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/storage/v1/object/public/images/1734328002236-Frame%202.png
-      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/storage/v1/object/public/images/1734328002236-Frame%202.png
+      // upload image to supabase storage and get the url
       const uploadedImageUrls = await Promise.all(
         formData.images.map(async (image: File) => {
           const fileName = `${Date.now()}-${image.name}`;
@@ -169,6 +168,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           }
 
           const res = supabase.storage.from("images").getPublicUrl(fileName);
+
           return res.data.publicUrl;
         })
       );
@@ -185,7 +185,10 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         price: formData.price,
         category: formData.category,
         condition: formData.condition,
-        imageUrl: uploadedImageUrls[0],
+        imageUrl:
+          uploadedImageUrls[0] != null
+            ? uploadedImageUrls[0]
+            : formData.imageUrl,
         tags: formData.tags,
       };
       console.log("Ready for backend:", backendData);
@@ -233,6 +236,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
       }
 
       onSubmit?.();
+      navigate(-1);
     } catch (error) {
       console.error(
         isEditing ? "Error updating listing:" : "Error adding listing:",
@@ -348,10 +352,11 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         <div className="mb-3">
           <label className="form-label">Tags</label>
           <div className="tag-container">
-            {formData.tags.map((tag) => (
-              <span key={tag} className="badge bg-secondary me-2">
+            {formData.tags.map((tag, i) => (
+              <span key={i} className="badge bg-secondary me-2">
                 {tag}
                 <button
+                  key={i}
                   type="button"
                   onClick={() => removeTag(tag)}
                   className="btn-close btn-close-white ms-2"
@@ -372,33 +377,54 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
         <div className="mb-3">
           <label className="form-label">Images</label>
+
+          {/* Show existing image preview if editing and imageUrl exists */}
+          {isEditing && formData.imageUrl && (
+            <div className="image-preview-container">
+              <img
+                src={formData.imageUrl}
+                alt="Existing Image"
+                className="img-thumbnail mb-2"
+                style={{ maxWidth: "200px", maxHeight: "200px" }}
+              />
+              <button
+                type="button"
+                className="btn btn-danger btn-sm"
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, imageUrl: "", images: [] }))
+                }
+              >
+                Remove Image
+              </button>
+            </div>
+          )}
+
+          {/* File input for uploading new images */}
           <input
             type="file"
             accept="image/*"
             multiple
             onChange={handleImageUpload}
             className="form-control"
-            required
+            required={!isEditing || !formData.imageUrl} // Only required if not editing or no imageUrl exists
           />
+
+          {/* Preview newly uploaded images */}
           <div className="image-preview-container d-flex flex-wrap gap-2 mt-2">
-            {imagePreviews.map((imageUrl, index) => (
+            {formData.images.map((image, index) => (
               <div key={index} className="position-relative">
                 <img
-                  src={imageUrl}
-                  alt={`Upload ${index + 1}`}
+                  src={URL.createObjectURL(image)}
+                  alt={`Preview ${index}`}
                   className="img-thumbnail"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover",
-                  }}
+                  style={{ maxWidth: "200px", maxHeight: "200px" }}
                 />
                 <button
                   type="button"
-                  onClick={() => removeImage(index)}
-                  className="btn-close position-absolute top-0 end-0 bg-light"
+                  className="btn-close position-absolute top-0 end-0"
                   aria-label="Remove image"
-                />
+                  onClick={() => removeImage(index)}
+                ></button>
               </div>
             ))}
           </div>

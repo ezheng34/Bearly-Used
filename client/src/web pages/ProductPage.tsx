@@ -138,7 +138,7 @@ const ProductPage: React.FC = () => {
       // delete the image from storage first
       if (product?.image_url) {
         const { error } = await supabase.storage
-          .from("images") // Replace with your actual storage bucket name
+          .from("images")
           .remove([product.image_url]);
         if (error) {
           console.error("Error removing image from storage", error.message);
@@ -177,6 +177,25 @@ const ProductPage: React.FC = () => {
       images: [], // TODO figure out how to handle existing images
     };
     setEditingListing(listing);
+  };
+
+  const handleMarkAsSold = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3232/update-listing?listing_id=${id}&available=false`
+      );
+      const data = await response.json();
+      console.log("bbbb", data);
+      if (data.response_type === "success") {
+        alert("Listing successfully marked as unavailable.");
+        navigate("/");
+      } else {
+        alert("Failed to mark as sold.");
+      }
+    } catch (error) {
+      console.error("Error marking as sold:", error);
+      alert("An error occurred while trying to mark the listing as sold");
+    }
   };
 
   useEffect(() => {
@@ -235,6 +254,13 @@ const ProductPage: React.FC = () => {
           <div className="col-md-6 product-info">
             <h1 className="product-title">{product?.title}</h1>
             <div className="product-price">${product?.price}</div>
+            <div className="tag-container">
+              {product?.tags.map((tag, index) => (
+                <span key="tag" className="badge bg-secondary me-2">
+                  {tag}
+                </span>
+              ))}
+            </div>
             <p className="product-description">{product?.description}</p>
 
             {/* Seller Information Section */}
@@ -279,8 +305,12 @@ const ProductPage: React.FC = () => {
                 >
                   Delete listing
                 </button>
-                {/* TODO: make the handlers for these actions */}
-                <button className="btn btn-primary">Mark as sold</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleMarkAsSold()}
+                >
+                  Mark as sold
+                </button>
                 <button
                   className="btn btn-primary"
                   onClick={() => handleEditListing(product)}
