@@ -12,7 +12,7 @@ const mockUsers = {
     {
       id: 2,
       name: "rob night",
-      email: "rob_night@risd",
+      email: "rob_night@risd.edu",
       phone_number: 444 - 444 - 4444,
       school: "risd",
       interests: ["lamps", "ramen", "scooter", "shoes"],
