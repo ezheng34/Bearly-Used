@@ -217,7 +217,7 @@ const UserProfile: React.FC = () => {
 
       <div className="profile-container">
         <div className="profile">
-          <img className="profile-picture" src={user.imageUrl}></img>
+          <img className="profile-picture" src={user?.imageUrl}></img>
           <div className="profile-info">
             <h2 className="name">{userProfile?.name || "Loading..."}</h2>
             <p className="school">

@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/SetupProfile.css"; // Make sure you reuse this for the styles
+import "../styles/Signup.css"; // Make sure you reuse this for the styles
 import { SignInButton } from "@clerk/clerk-react";
 
 // TODO: MAKE THIS CUTE
