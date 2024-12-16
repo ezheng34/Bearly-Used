@@ -14,6 +14,18 @@ import {
 } from "react-router-dom";
 import { l } from "@clerk/clerk-react/dist/useAuth-DT1ot2zi";
 
+type Listing = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  condition: string;
+  image_url: string;
+  tags: string[];
+  available: boolean;
+};
+
 const ITEMS_PER_PAGE = 8; // TODO change later
 
 type SortOrder = "" | "PRICE_ASC" | "PRICE_DESC";
@@ -615,6 +627,17 @@ const HomePage: React.FC = () => {
       >
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              style={{
+                fontSize: "0.75rem",
+                padding: "0.25rem",
+              }}
+            ></button>
+
             <div className="modal-body">
               <ListItemPopup
                 onSubmit={() => {

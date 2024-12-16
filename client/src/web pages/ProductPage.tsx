@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-
 import mockProducts from "../data/product";
+import ListItemPopup from "./ListItemPopup";
 import "../styles/ProductPage.css";
-// Update the interface to include seller information
+import { Modal } from "bootstrap";
+import { getUserListings, getUserProfile, updateUserProfile } from "../api";
+
+type UserProfile = {
+  id: number;
+  clerk_id: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  school: string;
+  tags: string[];
+};
+
+type Listing = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  condition: string;
+  image_url: string;
+  tags: string[];
+  available: boolean;
+};
+
 interface Seller {
   clerk_id: string;
   id: number;
@@ -11,16 +35,6 @@ interface Seller {
   email: string;
   phone_number: string;
   school: string;
-}
-
-interface Product {
-  seller_id: string;
-  id: number;
-  title: string;
-  price: number;
-  category: string;
-  description: string;
-  images: string[];
 }
 
 const ProductPage: React.FC = () => {
@@ -31,7 +45,7 @@ const ProductPage: React.FC = () => {
   // const [mainImage, setMainImage] = useState(product?.images[0]);
   // -------------------------USED FOR MOCK DATA------------------------------------
 
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
 
@@ -65,7 +79,6 @@ const ProductPage: React.FC = () => {
     });
   };
   
-
   // Fetch the product data based on the ID
   useEffect(() => {
     if (!id) return;
@@ -135,33 +148,59 @@ const ProductPage: React.FC = () => {
     }
   };
 
-  return (
-      <div className="product-page">
-        <div className="header">
-          <button onClick={handleBack} className="back-link">
-            <svg
-              className="back-icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
-        </div>
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
 
-        <div className="product-container">
-          <div className="row">
-            {/* Product Images */}
-            <div className="col-md-6">
-              <div className="main-image-container">
-                <img
-                  src={mainImage}
-                  alt={product?.title}
-                  className="product-image"
-                />
-              </div>
-              {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
-              {/* <div className="thumbnail-container">
+  const handleEditListing = (listing: Listing) => {
+    const initialData = {
+      title: listing.title,
+      available: listing.available,
+      description: listing.description,
+      price: listing.price,
+      category: listing.category,
+      condition: listing.condition,
+      imageUrl: listing.image_url,
+      tags: listing.tags,
+      images: [], // TODO figure out how to handle existing images
+    };
+    setEditingListing(listing);
+  };
+  
+  useEffect(() => {
+    const modalElement = document.getElementById("editListingModal");
+    if (modalElement) {
+      new Modal(modalElement);
+    }
+  }, []);
+
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  return (
+    <div className="product-page">
+      <div className="header">
+        <button onClick={handleBack} className="back-link">
+          <svg
+            className="back-icon"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="product-container">
+        <div className="row">
+          {/* Product Images */}
+          <div className="col-md-6">
+            <div className="main-image-container">
+              <img
+                src={mainImage}
+                alt={product?.title}
+                className="product-image"
+              />
+            </div>
+            {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
+            {/* <div className="thumbnail-container">
               <div className="d-flex gap-3">
                 {product?.images.map((image, index) => (
                   <img
@@ -176,74 +215,124 @@ const ProductPage: React.FC = () => {
                 ))}
               </div>
             </div> */}
+          </div>
+
+          {/* Product Info */}
+          <div className="col-md-6 product-info">
+            <h1 className="product-title">{product?.title}</h1>
+            <div className="product-price">${product?.price}</div>
+            <p className="product-description">{product?.description}</p>
+
+            {/* Seller Information Section */}
+            <div className="seller-info-section">
+              <h3>Seller Information</h3>
+              <div className="seller-details">
+                <div className="seller-detail">
+                  <i className="bi bi-person"></i>
+                  <span>{seller?.name || "Anonymous"}</span>
+                </div>
+                <div className="seller-detail">
+                  <i className="bi bi-building"></i>
+                  <span>{seller?.school || "Unknown School"}</span>
+                </div>
+                <div className="seller-detail">
+                  <i className="bi bi-envelope"></i>
+                  <span>{seller?.email || "No email provided"}</span>
+                  <button
+                    className="copy-email-btn"
+                    onClick={copyEmail}
+                    title="Copy email address"
+                  >
+                    <i className="bi bi-clipboard"></i>
+                  </button>
+                </div>
+                <button
+                  className="view-profile-btn"
+                  onClick={() =>
+                    seller?.clerk_id && handleViewProfile(seller.clerk_id)
+                  }
+                >
+                  View Full Profile
+                </button>
+              </div>
             </div>
 
-            {/* Product Info */}
-            <div className="col-md-6 product-info">
-              <h1 className="product-title">{product?.title}</h1>
-              <div className="product-price">${product?.price}</div>
-              <p className="product-description">{product?.description}</p>
+            {seller?.clerk_id === "123" ? (
+              <div className="action-buttons">
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteListing}
+                >
+                  Delete listing
+                </button>
+                {/* TODO: make the handlers for these actions */}
+                <button className="btn btn-primary">Mark as sold</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleEditListing(product)}
+                >
+                  Edit
+                </button>
+              </div>
+            ) : (
+              <div className="action-buttons">
+                <button className="btn btn-primary" onClick={copyEmailTemplate}>
+                  <i className="bi bi-clipboard"></i> Copy Email Template
+                </button>
+              </div>
+            )}
+          </div>
 
-              {/* Seller Information Section */}
-              <div className="seller-info-section">
-                <h3>Seller Information</h3>
-                <div className="seller-details">
-                  <div className="seller-detail">
-                    <i className="bi bi-person"></i>
-                    <span>{seller?.name || "Anonymous"}</span>
-                  </div>
-                  <div className="seller-detail">
-                    <i className="bi bi-building"></i>
-                    <span>{seller?.school || "Unknown School"}</span>
-                  </div>
-                  <div className="seller-detail">
-                    <i className="bi bi-envelope"></i>
-                    <span>{seller?.email || "No email provided"}</span>
-                    <button
-                      className="copy-email-btn"
-                      onClick={copyEmail}
-                      title="Copy email address"
-                    >
-                      <i className="bi bi-clipboard"></i>
-                    </button>
-                  </div>
+          {/* ListItemPopup to Edit Listing */}
+          {editingListing && (
+            <div
+              className="modal fade show"
+              style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+            >
+              <div className="modal-dialog modal-lg modal-dialog-centered">
+                <div className="modal-content">
                   <button
-                    className="view-profile-btn"
-                    onClick={() =>
-                      seller?.clerk_id && handleViewProfile(seller.clerk_id)
-                    }
-                  >
-                    View Full Profile
-                  </button>
+                    type="button"
+                    className="btn-close"
+                    style={{
+                      fontSize: "0.75rem",
+                      padding: "0.25rem",
+                    }}
+                    onClick={() => {
+                      setEditingListing(null);
+                      document.body.style.overflow = "auto";
+                    }}
+                  ></button>
+                  <div className="modal-body">
+                    <ListItemPopup
+                      isEditing={true}
+                      initialData={{
+                        sellerId: userProfile?.id || 1,
+                        title: product.title,
+                        available: product.available,
+                        description: product.description,
+                        price: product.price,
+                        category: product.category,
+                        condition: product.condition,
+                        imageUrl: product.image_url,
+                        tags: product.tags,
+                        images: [],
+                      }}
+                      editId={product.id}
+                      onSubmit={() => {
+                        setEditingListing(null);
+                        fetchUserListings(userProfile?.id || 1);
+                        document.body.style.overflow = "auto";
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-
-              {seller?.clerk_id === "123" ? (
-                <div className="action-buttons">
-                  <button
-                    className="btn btn-danger"
-                    onClick={handleDeleteListing}
-                  >
-                    Delete listing
-                  </button>
-                  {/* TODO: make the handlers for these actions */}
-                  <button className="btn btn-primary">Mark as sold</button>
-                  <button className="btn btn-primary">Edit</button>
-                </div>
-              ) : (
-                <div className="action-buttons">
-                  <button
-                    className="btn btn-primary"
-                    onClick={copyEmailTemplate}
-                  >
-                    <i className="bi bi-clipboard"></i> Copy Email Template
-                  </button>
-                </div>
-              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
+    </div>
   );
 };
 
