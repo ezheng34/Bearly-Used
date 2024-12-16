@@ -22,7 +22,8 @@ public class AddListingHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
-      String sellerId = validateSellerId(request.queryParams("seller_id")); // should be the clerk id
+      String sellerId =
+          validateSellerId(request.queryParams("seller_id")); // should be the clerk id
       String title = validateTitle(request.queryParams("title"));
       boolean available = Boolean.parseBoolean(request.queryParams("available"));
       String description = validateDescription(request.queryParams("description"));

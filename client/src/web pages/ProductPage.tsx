@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import mockProducts from "../data/product";
 import "../styles/ProductPage.css";
@@ -64,10 +64,13 @@ const ProductPage: React.FC = () => {
       alert("Email template copied to clipboard!");
     });
   };
+  
 
   // Fetch the product data based on the ID
   useEffect(() => {
+    if (!id) return;
     const fetchProduct = async () => {
+
       try {
         const response = await fetch(
           `http://localhost:3232/get-listing-by-id?listing_id=${id}`
@@ -84,12 +87,9 @@ const ProductPage: React.FC = () => {
         }
       } catch (err) {
         console.error("Error fetching product data:", err);
-      }
+      } 
     };
-
-    if (id) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [id]);
 
   // Fetches the seller
@@ -136,32 +136,32 @@ const ProductPage: React.FC = () => {
   };
 
   return (
-    <div className="product-page">
-      <div className="header">
-        <button onClick={handleBack} className="back-link">
-          <svg
-            className="back-icon"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-        </button>
-      </div>
+      <div className="product-page">
+        <div className="header">
+          <button onClick={handleBack} className="back-link">
+            <svg
+              className="back-icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+        </div>
 
-      <div className="product-container">
-        <div className="row">
-          {/* Product Images */}
-          <div className="col-md-6">
-            <div className="main-image-container">
-              <img
-                src={mainImage}
-                alt={product?.title}
-                className="product-image"
-              />
-            </div>
-            {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
-            {/* <div className="thumbnail-container">
+        <div className="product-container">
+          <div className="row">
+            {/* Product Images */}
+            <div className="col-md-6">
+              <div className="main-image-container">
+                <img
+                  src={mainImage}
+                  alt={product?.title}
+                  className="product-image"
+                />
+              </div>
+              {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
+              {/* <div className="thumbnail-container">
               <div className="d-flex gap-3">
                 {product?.images.map((image, index) => (
                   <img
@@ -176,71 +176,74 @@ const ProductPage: React.FC = () => {
                 ))}
               </div>
             </div> */}
-          </div>
-
-          {/* Product Info */}
-          <div className="col-md-6 product-info">
-            <h1 className="product-title">{product?.title}</h1>
-            <div className="product-price">${product?.price}</div>
-            <p className="product-description">{product?.description}</p>
-
-            {/* Seller Information Section */}
-            <div className="seller-info-section">
-              <h3>Seller Information</h3>
-              <div className="seller-details">
-                <div className="seller-detail">
-                  <i className="bi bi-person"></i>
-                  <span>{seller?.name || "Anonymous"}</span>
-                </div>
-                <div className="seller-detail">
-                  <i className="bi bi-building"></i>
-                  <span>{seller?.school || "Unknown School"}</span>
-                </div>
-                <div className="seller-detail">
-                  <i className="bi bi-envelope"></i>
-                  <span>{seller?.email || "No email provided"}</span>
-                  <button
-                    className="copy-email-btn"
-                    onClick={copyEmail}
-                    title="Copy email address"
-                  >
-                    <i className="bi bi-clipboard"></i>
-                  </button>
-                </div>
-                <button
-                  className="view-profile-btn"
-                  onClick={() =>
-                    seller?.clerk_id && handleViewProfile(seller.clerk_id)
-                  }
-                >
-                  View Full Profile
-                </button>
-              </div>
             </div>
 
-            {seller?.clerk_id === "123" ? (
-              <div className="action-buttons">
-                <button
-                  className="btn btn-danger"
-                  onClick={handleDeleteListing}
-                >
-                  Delete listing
-                </button>
-                {/* TODO: make the handlers for these actions */}
-                <button className="btn btn-primary">Mark as sold</button>
-                <button className="btn btn-primary">Edit</button>
+            {/* Product Info */}
+            <div className="col-md-6 product-info">
+              <h1 className="product-title">{product?.title}</h1>
+              <div className="product-price">${product?.price}</div>
+              <p className="product-description">{product?.description}</p>
+
+              {/* Seller Information Section */}
+              <div className="seller-info-section">
+                <h3>Seller Information</h3>
+                <div className="seller-details">
+                  <div className="seller-detail">
+                    <i className="bi bi-person"></i>
+                    <span>{seller?.name || "Anonymous"}</span>
+                  </div>
+                  <div className="seller-detail">
+                    <i className="bi bi-building"></i>
+                    <span>{seller?.school || "Unknown School"}</span>
+                  </div>
+                  <div className="seller-detail">
+                    <i className="bi bi-envelope"></i>
+                    <span>{seller?.email || "No email provided"}</span>
+                    <button
+                      className="copy-email-btn"
+                      onClick={copyEmail}
+                      title="Copy email address"
+                    >
+                      <i className="bi bi-clipboard"></i>
+                    </button>
+                  </div>
+                  <button
+                    className="view-profile-btn"
+                    onClick={() =>
+                      seller?.clerk_id && handleViewProfile(seller.clerk_id)
+                    }
+                  >
+                    View Full Profile
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="action-buttons">
-                <button className="btn btn-primary" onClick={copyEmailTemplate}>
-                  <i className="bi bi-clipboard"></i> Copy Email Template
-                </button>
-              </div>
-            )}
+
+              {seller?.clerk_id === "123" ? (
+                <div className="action-buttons">
+                  <button
+                    className="btn btn-danger"
+                    onClick={handleDeleteListing}
+                  >
+                    Delete listing
+                  </button>
+                  {/* TODO: make the handlers for these actions */}
+                  <button className="btn btn-primary">Mark as sold</button>
+                  <button className="btn btn-primary">Edit</button>
+                </div>
+              ) : (
+                <div className="action-buttons">
+                  <button
+                    className="btn btn-primary"
+                    onClick={copyEmailTemplate}
+                  >
+                    <i className="bi bi-clipboard"></i> Copy Email Template
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

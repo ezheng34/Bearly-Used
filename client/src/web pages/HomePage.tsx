@@ -74,6 +74,14 @@ const HomePage: React.FC = () => {
   );
   const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
 
+  // Trigger the search when Enter is pressed
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setCurrentPage(1);
+      setSearchQuery(tempSearchQuery);
+    }
+  };
+
   // -------------------------USED FOR MOCK DATA------------------------------------
   // const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
   //   mockProducts.mockProducts
@@ -159,14 +167,24 @@ const HomePage: React.FC = () => {
       }
 
       if (selectedPrice) {
-        params.set("priceLabel", selectedPrice.label || "");
-        if (selectedPrice.min) {
-          params.set("priceMin", selectedPrice.min.toString());
-          apiUrl += `minPrice=${selectedPrice.min}&`;
-        }
-        if (selectedPrice.max) {
-          params.set("priceMax", selectedPrice.max.toString());
-          apiUrl += `maxPrice=${selectedPrice.max}&`;
+        const { label, min, max } = selectedPrice;
+
+      // Handle the "Free" case explicitly
+      if (label === "Free") {
+        // If it's "Free", we only want listings with price 0
+        params.set("priceMin", "0");
+        params.set("priceMax", "0");
+        apiUrl += `minPrice=0&maxPrice=0&`;
+      } else {
+          params.set("priceLabel", selectedPrice.label || "");
+          if (selectedPrice.min) {
+            params.set("priceMin", selectedPrice.min.toString());
+            apiUrl += `minPrice=${selectedPrice.min}&`;
+          }
+          if (selectedPrice.max) {
+            params.set("priceMax", selectedPrice.max.toString());
+            apiUrl += `maxPrice=${selectedPrice.max}&`;
+          }
         }
       }
 
@@ -461,6 +479,7 @@ const HomePage: React.FC = () => {
               value={tempSearchQuery}
               onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
+              onKeyDown={handleKeyDown}
             />
             <button
               type="button"
