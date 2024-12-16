@@ -62,13 +62,13 @@ public class AddUserHandler implements Route {
     return email.trim();
   }
 
-//  private String validateUserId(String userIdStr) {
-//    int userId = Integer.parseInt(userIdStr);
-//    if (userId < 0) {
-//      throw new IllegalArgumentException("Invalid user id inputted");
-//    }
-//    return userIdStr;
-//  }
+  //  private String validateUserId(String userIdStr) {
+  //    int userId = Integer.parseInt(userIdStr);
+  //    if (userId < 0) {
+  //      throw new IllegalArgumentException("Invalid user id inputted");
+  //    }
+  //    return userIdStr;
+  //  }
 
   private String validateName(String name) {
     if (name == null || name.trim().isEmpty()) {
