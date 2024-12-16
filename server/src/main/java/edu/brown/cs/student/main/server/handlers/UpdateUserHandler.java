@@ -26,7 +26,7 @@ public class UpdateUserHandler implements Route {
 
     try {
 
-      String clerkId = validateUserId(request.queryParams("clerk_id"));
+      String clerkId = request.queryParams("clerk_id");
 
       String name = request.queryParams("name");
       String phoneNumber = request.queryParams("phone_number");
@@ -64,13 +64,13 @@ public class UpdateUserHandler implements Route {
   }
 
   // handlers to validate user input
-  private String validateUserId(String userIdStr) {
-    int userId = Integer.parseInt(userIdStr);
-    if (userId < 0) {
-      throw new IllegalArgumentException("Invalid user id inputted");
-    }
-    return userIdStr;
-  }
+  //  private String validateUserId(String userIdStr) {
+  //    int userId = Integer.parseInt(userIdStr);
+  //    if (userId < 0) {
+  //      throw new IllegalArgumentException("Invalid user id inputted");
+  //    }
+  //    return userIdStr;
+  //  }
 
   private String validateName(String name) {
     if (name == null || name.trim().isEmpty()) {

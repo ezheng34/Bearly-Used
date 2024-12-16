@@ -6,6 +6,7 @@ import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getUserListings, getUserProfile, updateUserProfile } from "../api";
+import { useUser } from "@clerk/clerk-react";
 
 type Listing = {
   id: number;
@@ -30,6 +31,7 @@ type UserProfile = {
 };
 
 const UserProfile: React.FC = () => {
+  const { user } = useUser();
   const [listings, setListings] = useState<Listing[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [listingsPage, setListingsPage] = useState(0);
@@ -47,13 +49,13 @@ const UserProfile: React.FC = () => {
   // }, [id]);
   // -------------------------USED FOR MOCK DATA------------------------------------
   useEffect(() => {
-    const userId = 123; // TODO: replace with the clerk id
+    const userId = user?.id || "";
     fetchUserData(userId);
     fetchUserListings(userId);
   }, []);
   // -------------------------USED FOR MOCK DATA------------------------------------
 
-  const fetchUserData = async (userId: number) => {
+  const fetchUserData = async (userId: string) => {
     try {
       const userData = await getUserProfile(userId);
       console.log("User data received:", userData);
@@ -63,7 +65,7 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  const fetchUserListings = async (userId: number) => {
+  const fetchUserListings = async (userId: string) => {
     try {
       const listingsData = await getUserListings(userId);
       console.log("listing data", listingsData);
@@ -144,7 +146,7 @@ const UserProfile: React.FC = () => {
       price: listing.price,
       category: listing.category,
       condition: listing.condition,
-      imageUrl: listing.image_url, 
+      imageUrl: listing.image_url,
       tags: listing.tags,
       images: [], // TODO figure out how to handle existing images
     };
@@ -177,12 +179,12 @@ const UserProfile: React.FC = () => {
     }
   }, []);
 
-   useEffect(() => {
-     const modalElement = document.getElementById("editListingModal");
-     if (modalElement) {
-       new Modal(modalElement);
-     }
-   }, []);
+  useEffect(() => {
+    const modalElement = document.getElementById("editListingModal");
+    if (modalElement) {
+      new Modal(modalElement);
+    }
+  }, []);
 
   //trying to set this up to redirect not to /user but to /user/userid.
   //cuz we need the id for the backend handlers to grab user specific data
@@ -215,7 +217,7 @@ const UserProfile: React.FC = () => {
 
       <div className="profile-container">
         <div className="profile">
-          <div className="profile-picture"></div>
+          <img className="profile-picture" src={user.imageUrl}></img>
           <div className="profile-info">
             <h2 className="name">{userProfile?.name || "Loading..."}</h2>
             <p className="school">
@@ -236,8 +238,6 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <button className="edit-profile">Edit Profile</button>
-        updateProfile
-
         {/* ListItemPopup to Edit Listing */}
         {editingListing && (
           <div
@@ -277,7 +277,7 @@ const UserProfile: React.FC = () => {
                     editId={editingListing.id}
                     onSubmit={() => {
                       setEditingListing(null);
-                      fetchUserListings(userProfile?.id || 1);
+                      fetchUserListings(userProfile?.clerk_id || "123");
                       document.body.style.overflow = "auto";
                     }}
                   />
@@ -391,7 +391,7 @@ const UserProfile: React.FC = () => {
               <ListItemPopup
                 onSubmit={() => {
                   closeModal();
-                  fetchUserListings(userProfile?.id || 1);
+                  fetchUserListings(userProfile?.clerk_id || "123");
                   document.body.style.overflow = "auto";
                 }}
               />
