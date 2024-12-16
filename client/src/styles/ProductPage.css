@@ -236,7 +236,7 @@
 .btn-danger { 
   background-color: var(--accent-coral);
   border: none;
-  padding: 1rem 2rem;
+  padding: 1rem 2rem; 
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   transition: all 0.2s ease;
