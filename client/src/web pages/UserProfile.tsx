@@ -162,13 +162,32 @@ const UserProfile: React.FC = () => {
   //   );
   // };
 
-  const handleMarkAsSold = async (id: number, isSold: boolean) => {
-    // TODO: Integrate with backend
-    setListings(
-      listings.map((listing) =>
-        listing.id === id ? { ...listing, isSold: isSold } : listing
-      )
-    );
+  // const handleMarkAsSold = async (id: number, isSold: boolean) => {
+  //   // TODO: Integrate with backend
+  //   setListings(
+  //     listings.map((listing) =>
+  //       listing.id === id ? { ...listing, isSold: isSold } : listing
+  //     )
+  //   );
+  // };
+
+  const handleMarkAsSold = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3232/update-listing?listing_id=${id}&available=false`
+      );
+      const data = await response.json();
+      console.log("bbbb", data);
+      if (data.response_type === "success") {
+        alert("Listing successfully marked as unavailable.");
+        navigate("/");
+      } else {
+        alert("Failed to mark as sold.");
+      }
+    } catch (error) {
+      console.error("Error marking as sold:", error);
+      alert("An error occurred while trying to mark the listing as sold");
+    }
   };
 
   // Initialize modal
