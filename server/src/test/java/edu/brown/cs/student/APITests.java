@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,13 +98,22 @@ public class APITests {
     // sellerId, title, available, description, price, category, condition, imageUrl, tags)
     HttpURLConnection loadConnection =
         tryRequest(
-            "add-listing?seller_id=100&title=pencil&available=true&description=yellow+pencil&price=0.01&category=other&condition=New&image_url=book.jpg&tags=fiction,thriller");
+            "add-listing?seller_id=100&title=pencil&available=true&description=yellow+pencil&price=0.01&category=Other&condition=New&image_url=pencil.jpg&tags=fiction,thriller");
 
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseBody =
         adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assert responseBody != null;
     assertEquals("success", responseBody.get("response_type"));
+    assertEquals("100", responseBody.get("sellerId"));
+    assertEquals("pencil", responseBody.get("title"));
+    assertEquals(true, responseBody.get("available"));
+    assertEquals("yellow pencil", responseBody.get("description"));
+    assertEquals(0.01, responseBody.get("price"));
+    assertEquals("Other", responseBody.get("category"));
+    assertEquals("pencil.jpg", responseBody.get("imageUrl"));
+    assertEquals(Arrays.asList("fiction", "thriller"), responseBody.get("tags"));
+    assertEquals("New", responseBody.get("condition"));
   }
 
   // testing unsuccessful api call for AddListing endpoint bc params blank
@@ -137,4 +147,6 @@ public class APITests {
     assertEquals("failure", responseBody.get("response_type"));
     assertEquals("Invalid input: For input string: \"s\"", responseBody.get("error"));
   }
+
+  /* =================================== AddUserHandler tests ==============================================*/
 }

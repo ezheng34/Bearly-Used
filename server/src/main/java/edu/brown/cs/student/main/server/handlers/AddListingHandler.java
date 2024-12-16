@@ -31,7 +31,6 @@ public class AddListingHandler implements Route {
       String category = validateCategory(request.queryParams("category"));
       String condition = validateCondition(request.queryParams("condition"));
       String imageUrl = validateImageUrl(request.queryParams("image_url"));
-
       // parse tags
       List<String> tags = parseTags(request.queryParams("tags"));
       System.out.println("TAGS AFTER PARSING " + tags);
@@ -46,6 +45,15 @@ public class AddListingHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("listing_id", listingId);
+      responseMap.put("sellerId", sellerId);
+      responseMap.put("title", title);
+      responseMap.put("available", available);
+      responseMap.put("description", description);
+      responseMap.put("price", price);
+      responseMap.put("category", category);
+      responseMap.put("condition", condition);
+      responseMap.put("imageUrl", imageUrl);
+      responseMap.put("tags", tags);
     } catch (IllegalArgumentException e) {
       // Handle input validation errors
       responseMap.put("response_type", "failure");

@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.server.storage;
 
 import edu.brown.cs.student.main.server.classes.Listing;
 import edu.brown.cs.student.main.server.classes.User;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +43,22 @@ public class MockStorage implements StorageInterface {
       String condition,
       String imageUrl,
       List<String> tags) {
-    return null;
+    Map<String, Object> responseMap = new HashMap<>();
+    responseMap.put("response_type", "success");
+    responseMap.put("sellerId", sellerId);
+    responseMap.put("title", title);
+    responseMap.put("available", isAvailable);
+    responseMap.put("description", description);
+    responseMap.put("price", price);
+    responseMap.put("category", category);
+    responseMap.put("condition", condition);
+    responseMap.put("imageUrl", imageUrl);
+    responseMap.put("tags", tags);
+
+    Long listingId =
+        Long(sellerId, title, isAvailable, description, price, category, condition, imageUrl, tags);
+
+    return responseMap;
   }
 
   @Override
