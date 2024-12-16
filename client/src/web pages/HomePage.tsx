@@ -4,6 +4,7 @@ import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useUser } from "@clerk/clerk-react";
 import mockProducts from "../data/product";
 import {
   BrowserRouter as Router,
@@ -12,7 +13,6 @@ import {
   useSearchParams,
   useNavigate,
 } from "react-router-dom";
-import { l } from "@clerk/clerk-react/dist/useAuth-DT1ot2zi";
 
 type Listing = {
   id: number;
@@ -51,6 +51,8 @@ interface Price {
 }
 
 const HomePage: React.FC = () => {
+  const { user } = useUser();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -181,13 +183,13 @@ const HomePage: React.FC = () => {
       if (selectedPrice) {
         const { label, min, max } = selectedPrice;
 
-      // Handle the "Free" case explicitly
-      if (label === "Free") {
-        // If it's "Free", we only want listings with price 0
-        params.set("priceMin", "0");
-        params.set("priceMax", "0");
-        apiUrl += `minPrice=0&maxPrice=0&`;
-      } else {
+        // Handle the "Free" case explicitly
+        if (label === "Free") {
+          // If it's "Free", we only want listings with price 0
+          params.set("priceMin", "0");
+          params.set("priceMax", "0");
+          apiUrl += `minPrice=0&maxPrice=0&`;
+        } else {
           params.set("priceLabel", selectedPrice.label || "");
           if (selectedPrice.min) {
             params.set("priceMin", selectedPrice.min.toString());

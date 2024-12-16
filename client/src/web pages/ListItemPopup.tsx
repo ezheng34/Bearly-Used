@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/ListItemPopup.css";
 import { Modal } from "bootstrap";
 import { supabase } from "../utils/supabaseClient";
+import { useUser } from "@clerk/clerk-react";
 
 interface ListingForm {
   sellerId: number;
@@ -29,6 +30,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   initialData,
   editId,
 }) => {
+  const { user } = useUser();
   const [formData, setFormData] = useState<ListingForm>(
     initialData || {
       sellerId: 0,
@@ -75,10 +77,9 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     setImagePreviews(objectUrls);
 
     if (formData.images.length > 0) {
-      const firstImageUrl = objectUrls[0];
       setFormData((prev) => ({
         ...prev,
-        imageUrl: firstImageUrl,
+        imageUrl: objectUrls[0],
       }));
     }
     return () => {
@@ -149,20 +150,11 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const backendData = {
-      seller_id: 123, // TODO: change to clerk id
-      title: formData.title,
-      available: formData.available,
-      description: formData.description,
-      price: formData.price,
-      category: formData.category,
-      condition: formData.condition,
-      imageUrl: formData.imageUrl,
-      tags: formData.tags,
-    };
-    console.log("Ready for backend:", backendData);
     try {
       // UPLOAD IMAGE TO SUPABASE STORAGE AND GET URL
+      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734293853440-Untitled_Artwork%204.png
+      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/storage/v1/object/public/images/1734328002236-Frame%202.png
+      // https://qguaazfosybrxefngxta.supabase.co/storage/v1/storage/v1/object/public/images/1734328002236-Frame%202.png
       const uploadedImageUrls = await Promise.all(
         formData.images.map(async (image: File) => {
           const fileName = `${Date.now()}-${image.name}`;
@@ -170,7 +162,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             .from("images")
             .upload(fileName, image);
           if (error) {
-            // TODO: better error checking
             console.error(
               `Error uploading image ${image.name}:`,
               error.message
@@ -186,16 +177,29 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         ? `http://localhost:3232/update-listing`
         : "http://localhost:3232/add-listing";
 
+      const backendData = {
+        seller_id: user?.id,
+        title: formData.title,
+        available: formData.available,
+        description: formData.description,
+        price: formData.price,
+        category: formData.category,
+        condition: formData.condition,
+        imageUrl: uploadedImageUrls[0],
+        tags: formData.tags,
+      };
+      console.log("Ready for backend:", backendData);
+
       // Add listing_id to query params when editing
       const queryParams = new URLSearchParams({
-        seller_id: "123", // TODO: change to clerk id
+        seller_id: user?.id || "",
         title: backendData.title,
         available: backendData.available.toString(),
         description: backendData.description,
         price: backendData.price.toString(),
         category: backendData.category,
         condition: backendData.condition,
-        image_url: uploadedImageUrls[0],
+        image_url: backendData.imageUrl,
         tags: backendData.tags.join(","),
       });
 
@@ -224,25 +228,9 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
       if (modalElement) {
         const modalInstance = Modal.getInstance(modalElement);
         if (modalInstance) {
-          modalInstance.hide(); // Use hide() instead of dispose()
+          modalInstance.hide();
         }
       }
-      // dont think we need this
-      // const modalElement = document.getElementById("addListingModal");
-      // if (modalElement) {
-      //   // hide modal stuff TODO this might be a duplicate
-      //   modalElement.classList.remove("show");
-      //   modalElement.style.display = "none";
-      //   modalElement.setAttribute("aria-hidden", "true");
-
-      //   const backdrops = document.querySelectorAll(".modal-backdrop");
-      //   backdrops.forEach((backdrop) => backdrop.remove());
-
-      //   document.body.classList.remove("modal-open");
-      //   document.body.style.removeProperty("padding-right");
-      //   document.body.style.removeProperty("overflow");
-      //   document.body.style.removeProperty("height");
-      // }
 
       onSubmit?.();
     } catch (error) {

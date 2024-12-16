@@ -1,50 +1,90 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "../styles/UserProfile.css"; // Can reuse the same styles
+import { useUser } from "@clerk/clerk-react";
+import { getUserListings, getUserProfile } from "../api";
 
 type Listing = {
   id: number;
   title: string;
   price: number;
+  description: string;
+  category: string;
+  condition: string;
+  image_url: string;
+  tags: string[];
+  available: boolean;
 };
 
 type SellerProfile = {
   id: number;
+  clerk_id: string;
   name: string;
-  school: string;
-  rating: number;
   email: string;
-  soldListings: Listing[];
+  phone_number: string;
+  school: string;
+  tags: string[];
 };
 
 const SellerProfile: React.FC = () => {
+  const { user } = useUser();
   const { sellerId } = useParams();
   const navigate = useNavigate();
   const [listingsPage, setListingsPage] = useState(0);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(
+    null
+  );
   const ITEMS_PER_PAGE = 4;
 
-  // TODO placeholder seller data - replace with actual API call
-  const [seller, setSeller] = useState<SellerProfile>({
-    id: 1,
-    name: "Bob Smith",
-    school: "Brown University",
-    rating: 4.5,
-    email: "bob_smith@brown.edu",
-    soldListings: [
-      {
-        id: 101,
-        title: "old textbook",
-        price: 25,
-      },
-      {
-        id: 102,
-        title: "broken lamp",
-        price: 5,
-      },
-      // ... more sold items
-    ],
-    // replace with actual sold listings
-  });
+  const fetchUserData = async (userId: string) => {
+    try {
+      const userData = await getUserProfile(userId);
+      console.log("User data received:", userData);
+      setSellerProfile(userData.user_data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const fetchUserListings = async (userId: string) => {
+    try {
+      const listingsData = await getUserListings(userId);
+      console.log("listing data", listingsData);
+      setListings(listingsData.listings ? listingsData.listings : []);
+    } catch (error) {
+      console.error("Failed to fetch user listings:", error);
+    }
+  };
+
+  useEffect(() => {
+    const userId = user?.id || "";
+    fetchUserData(userId);
+    fetchUserListings(userId);
+  }, []);
+
+  // // TODO placeholder seller data - replace with actual API call
+  // const [seller, setSeller] = useState<SellerProfile>({
+  //   id: 1,
+  //   name: "Bob Smith",
+  //   school: "Brown University",
+  //   rating: 4.5,
+  //   email: "bob_smith@brown.edu",
+  //   soldListings: [
+  //     {
+  //       id: 101,
+  //       title: "old textbook",
+  //       price: 25,
+  //     },
+  //     {
+  //       id: 102,
+  //       title: "broken lamp",
+  //       price: 5,
+  //     },
+  //     // ... more sold items
+  //   ],
+  //   // replace with actual sold listings
+  // });
 
   // same pagination logic as UserProfile
   const paginate = (items: Listing[], page: number): Listing[] =>
@@ -65,7 +105,7 @@ const SellerProfile: React.FC = () => {
     if (page > 0) setPage(page - 1);
   };
 
-  const visibleListings = paginate(seller.soldListings, listingsPage);
+  const visibleListings = paginate(listings, listingsPage);
 
   return (
     <div className="user-profile-container">
@@ -85,12 +125,9 @@ const SellerProfile: React.FC = () => {
         <div className="profile">
           <div className="profile-picture"></div>
           <div className="profile-info">
-            <h2 className="name">{seller.name}</h2>
-            <p className="school">School: {seller.school}</p>
-            <p className="email">Email: {seller.email} 💌 </p>
-
-            <p className="rating">Rating: {seller.rating} ⭐</p>
-            {/*TODO ADD OTHER INFO HERE!!! INTEGRATE!!*/}
+            <h2 className="name">{sellerProfile?.name}</h2>
+            <p className="school">School: {sellerProfile?.school}</p>
+            <p className="email">Email: {sellerProfile?.email} 💌 </p>
           </div>
         </div>
       </div>
@@ -107,7 +144,7 @@ const SellerProfile: React.FC = () => {
         <div className="listings">
           {visibleListings.map((listing: Listing) => (
             <div key={listing.id} className="listing">
-              <div className="listing-image"></div>
+              <img src={listing.image_url} className="listing-image" />
               <p className="listing-price">${listing.price.toFixed(2)}</p>
               <p className="listing-name">{listing.title}</p>
             </div>
@@ -116,11 +153,9 @@ const SellerProfile: React.FC = () => {
         <button
           className="arrow-btn"
           onClick={() =>
-            handleNextPage(listingsPage, setListingsPage, seller.soldListings)
+            handleNextPage(listingsPage, setListingsPage, listings)
           }
-          disabled={
-            (listingsPage + 1) * ITEMS_PER_PAGE >= seller.soldListings.length
-          }
+          disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= listings.length}
         >
           &#8594;
         </button>

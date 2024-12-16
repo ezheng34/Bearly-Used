@@ -8,11 +8,11 @@ export async function fetchFromAPI(endpoint: string, options = {}) {
   return response.json();
 }
 
-export async function getUserListings(userId: number) {
+export async function getUserListings(userId: string) {
   return fetchFromAPI(`/get-user-listings?seller_id=${userId}`);
 }
 
-export async function getUserProfile(userId: number) {
+export async function getUserProfile(userId: string) {
   return fetchFromAPI(`/get-user?clerk_id=${userId}`);
 }
 
