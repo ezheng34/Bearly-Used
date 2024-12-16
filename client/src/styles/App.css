@@ -66,6 +66,25 @@
   object-fit: cover;
 }
 
+.btn-signout { 
+  background-color: var(--primary-dark);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+.btn-signout:hover {
+  background-color: var(--accent-coral);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0.5rem;

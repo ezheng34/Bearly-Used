@@ -5,6 +5,8 @@ import ListItemPopup from "./ListItemPopup";
 import "../styles/ProductPage.css";
 import { Modal } from "bootstrap";
 import { getUserListings, getUserProfile, updateUserProfile } from "../api";
+import { useUser } from "@clerk/clerk-react";
+import { supabase } from "../utils/supabaseClient";
 
 type UserProfile = {
   id: number;
@@ -18,6 +20,7 @@ type UserProfile = {
 
 type Listing = {
   id: number;
+  seller_id: string;
   title: string;
   price: number;
   description: string;
@@ -38,6 +41,7 @@ interface Seller {
 }
 
 const ProductPage: React.FC = () => {
+  const { user } = useUser();
   const { id } = useParams();
   const navigate = useNavigate();
   // -------------------------USED FOR MOCK DATA------------------------------------
@@ -78,12 +82,11 @@ const ProductPage: React.FC = () => {
       alert("Email template copied to clipboard!");
     });
   };
-  
+
   // Fetch the product data based on the ID
   useEffect(() => {
     if (!id) return;
     const fetchProduct = async () => {
-
       try {
         const response = await fetch(
           `http://localhost:3232/get-listing-by-id?listing_id=${id}`
@@ -100,7 +103,7 @@ const ProductPage: React.FC = () => {
         }
       } catch (err) {
         console.error("Error fetching product data:", err);
-      } 
+      }
     };
     fetchProduct();
   }, [id]);
@@ -132,6 +135,17 @@ const ProductPage: React.FC = () => {
   // delete listing
   const handleDeleteListing = async () => {
     try {
+      // delete the image from storage first
+      if (product?.image_url) {
+        const { error } = await supabase.storage
+          .from("images") // Replace with your actual storage bucket name
+          .remove([product.image_url]);
+        if (error) {
+          console.error("Error removing image from storage", error.message);
+          return;
+        }
+      }
+
       const response = await fetch(
         `http://localhost:3232/delete-listing?listing_id=${id}`
       );
@@ -150,21 +164,21 @@ const ProductPage: React.FC = () => {
 
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
 
-  const handleEditListing = (listing: Listing) => {
+  const handleEditListing = (listing: Listing | null) => {
     const initialData = {
-      title: listing.title,
-      available: listing.available,
-      description: listing.description,
-      price: listing.price,
-      category: listing.category,
-      condition: listing.condition,
-      imageUrl: listing.image_url,
-      tags: listing.tags,
+      title: listing?.title,
+      available: listing?.available,
+      description: listing?.description,
+      price: listing?.price,
+      category: listing?.category,
+      condition: listing?.condition,
+      imageUrl: listing?.image_url,
+      tags: listing?.tags,
       images: [], // TODO figure out how to handle existing images
     };
     setEditingListing(listing);
   };
-  
+
   useEffect(() => {
     const modalElement = document.getElementById("editListingModal");
     if (modalElement) {
@@ -257,7 +271,7 @@ const ProductPage: React.FC = () => {
               </div>
             </div>
 
-            {seller?.clerk_id === "123" ? (
+            {seller?.clerk_id === user?.id ? (
               <div className="action-buttons">
                 <button
                   className="btn btn-danger"
@@ -308,20 +322,20 @@ const ProductPage: React.FC = () => {
                       isEditing={true}
                       initialData={{
                         sellerId: userProfile?.id || 1,
-                        title: product.title,
-                        available: product.available,
-                        description: product.description,
-                        price: product.price,
-                        category: product.category,
-                        condition: product.condition,
-                        imageUrl: product.image_url,
-                        tags: product.tags,
+                        title: product?.title || "Product title",
+                        available: product?.available || true,
+                        description: product?.description || "desciption",
+                        price: product?.price || 0,
+                        category: product?.category || "category",
+                        condition: product?.condition || "condition",
+                        imageUrl: product?.image_url || "",
+                        tags: product?.tags || [],
                         images: [],
                       }}
-                      editId={product.id}
+                      editId={product?.id}
                       onSubmit={() => {
                         setEditingListing(null);
-                        fetchUserListings(userProfile?.id || 1);
+                        getUserListings(userProfile?.clerk_id || "1");
                         document.body.style.overflow = "auto";
                       }}
                     />
