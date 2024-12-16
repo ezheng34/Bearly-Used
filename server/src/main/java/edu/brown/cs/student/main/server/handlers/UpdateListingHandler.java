@@ -55,6 +55,15 @@ public class UpdateListingHandler implements Route {
       if (updated) {
         responseMap.put("response_type", "success");
         responseMap.put("message", "Listing updated successfully");
+        responseMap.put("listing_id", listingId);
+        responseMap.put("seller_id", sellerId);
+        responseMap.put("title", title);
+        responseMap.put("description", description);
+        responseMap.put("price", priceStr);
+        responseMap.put("category", category);
+        responseMap.put("condition", condition);
+        responseMap.put("image_url", imageUrl);
+        responseMap.put("tags", tagsParam);
       } else {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Listing could not be updated");

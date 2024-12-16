@@ -35,9 +35,9 @@ public class GetUserHandler implements Route {
         responseMap.put("response_type", "success");
         responseMap.put("user_data", userData);
       }
-    } catch (NumberFormatException e) {
-      responseMap.put("response_type", "failure");
-      responseMap.put("error", "Invalid user ID format");
+      // } catch (NumberFormatException e) {
+      //   responseMap.put("response_type", "failure");
+      //   responseMap.put("error", "Invalid user ID format");
     } catch (IllegalArgumentException e) {
       responseMap.put("response_type", "failure");
       responseMap.put("error", "Invalid input: " + e.getMessage());

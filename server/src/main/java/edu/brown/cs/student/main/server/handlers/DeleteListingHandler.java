@@ -33,7 +33,7 @@ public class DeleteListingHandler implements Route {
         responseMap.put("message", "Listing deleted successfully");
       } else {
         responseMap.put("response_type", "failure");
-        responseMap.put("error", "Listing could not be deleted");
+        responseMap.put("error", "Listing not found");
       }
     } catch (IllegalArgumentException e) {
       responseMap.put("response_type", "failure");
