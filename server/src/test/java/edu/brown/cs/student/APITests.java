@@ -739,7 +739,7 @@ public class APITests {
 
     HttpURLConnection loadConnection =
         tryRequest(
-            "update-user?user_id=21&name=" + name + "&phone_number=123-444-3333&school=brown");
+            "update-user?clerk_id=12345&name=" + name + "&phone_number=1234443333&school=brown");
 
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseBody =
@@ -747,8 +747,9 @@ public class APITests {
     assert responseBody != null;
     assertEquals("success", responseBody.get("response_type"));
     assertEquals("User updated successfully", responseBody.get("message"));
+    assertEquals("12345", responseBody.get("clerk_id"));
     assertEquals(name, responseBody.get("name"));
-    assertEquals(123 - 444 - 3333, responseBody.get("phone_number"));
+    assertEquals("1234443333", responseBody.get("phone_number"));
     assertEquals("brown", responseBody.get("school"));
   }
 }

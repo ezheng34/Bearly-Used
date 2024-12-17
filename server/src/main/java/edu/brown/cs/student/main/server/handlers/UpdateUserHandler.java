@@ -32,7 +32,7 @@ public class UpdateUserHandler implements Route {
       String school = request.queryParams("school");
 
       // EXAMPLE QUERY:
-      // http://localhost:3232/update-user?user_id=9&name=robbie&phone_number=123-444-3333&school=risd
+      // http://localhost:3232/update-user?clerk_id=9&name=robbie&phone_number=123-444-3333&school=risd
 
       User newUser =
           new User(
