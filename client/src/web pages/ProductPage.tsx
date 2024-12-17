@@ -341,6 +341,7 @@ const ProductPage: React.FC = () => {
                     className="btn-close"
                     style={{
                       fontSize: "0.75rem",
+                      margin: "0.5rem",
                       padding: "0.25rem",
                     }}
                     onClick={() => {

@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import HomePage from "./web pages/HomePage";
 import UserProfile from "./web pages/UserProfile";
 import SellerProfile from "./web pages/SellerProfile";
@@ -33,6 +38,8 @@ const App: React.FC = () => {
   const [firstLogin, setFirstLogin] = useState(false);
   const [userInfo, setUserInfo] = useState<userInfo | null>(null);
 
+  // const navigate = useNavigate();
+
   useEffect(() => {
     // checks if user has loggined in for the first time. if so, send them to
     // setupProfilepage
@@ -57,6 +64,10 @@ const App: React.FC = () => {
     checkIfFirstLogin();
   }, [isSignedIn, user]);
 
+  // const handleUserClick = (id: number) => {
+  //   navigate(`/user/${id}?${searchParams.toString()}`);
+  // };
+
   return (
     <div>
       <SignedOut>
@@ -78,7 +89,7 @@ const App: React.FC = () => {
                     <a href="/user" className="user-name">
                       {userInfo?.name || "username"}
                     </a>
-                    <a href="/user">
+                    <a href="/#/user">
                       <img
                         alt="Profile"
                         className="profile-picture"
@@ -94,7 +105,7 @@ const App: React.FC = () => {
 
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/user/" element={<UserProfile />} />
+                <Route path="/user" element={<UserProfile />} />
                 <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/seller/:sellerId" element={<SellerProfile />} />
               </Routes>

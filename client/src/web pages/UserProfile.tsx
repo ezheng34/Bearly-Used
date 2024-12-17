@@ -256,6 +256,7 @@ const UserProfile: React.FC = () => {
                   className="btn-close"
                   style={{
                     fontSize: "0.75rem",
+                    margin: "0.5rem",
                     padding: "0.25rem",
                   }}
                   onClick={() => {
@@ -295,6 +296,7 @@ const UserProfile: React.FC = () => {
                   className="btn-close"
                   style={{
                     fontSize: "0.75rem",
+                    margin: "0.5rem",
                     padding: "0.25rem",
                   }}
                   onClick={() => {
@@ -424,6 +426,7 @@ const UserProfile: React.FC = () => {
               aria-label="Close"
               style={{
                 fontSize: "0.75rem",
+                margin: "0.5rem",
                 padding: "0.25rem",
               }}
             ></button>
