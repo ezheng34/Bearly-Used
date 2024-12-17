@@ -636,6 +636,7 @@ const HomePage: React.FC = () => {
               aria-label="Close"
               style={{
                 fontSize: "0.75rem",
+                margin: "0.5rem",
                 padding: "0.25rem",
               }}
             ></button>
