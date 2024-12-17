@@ -86,7 +86,7 @@ const App: React.FC = () => {
                     Bearly Used &#128059;
                   </a>
                   <div className="user-profile-section">
-                    <a href="/user" className="user-name">
+                    <a href="/#/user" className="user-name">
                       {userInfo?.name || "username"}
                     </a>
                     <a href="/#/user">
