@@ -126,8 +126,11 @@ const SellerProfile: React.FC = () => {
           <div className="profile-picture"></div>
           <div className="profile-info">
             <h2 className="name">{sellerProfile?.name}</h2>
-            <p className="school">School: {sellerProfile?.school}</p>
+            <p className="school">School: {sellerProfile?.school} 🏫 </p>
             <p className="email">Email: {sellerProfile?.email} 💌 </p>
+            <p className="phone number">
+              Phone Number: {sellerProfile?.phone_number} 📞
+            </p>
           </div>
         </div>
       </div>
