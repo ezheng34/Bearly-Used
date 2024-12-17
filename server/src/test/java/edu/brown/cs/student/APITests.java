@@ -1,5 +1,6 @@
 package edu.brown.cs.student;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.squareup.moshi.JsonAdapter;
@@ -22,8 +23,10 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okio.Buffer;
@@ -271,36 +274,31 @@ public class APITests {
 
   /* =========================================================== AddUserHandler tests ===========================================================*/
   // testing successful api call for AddUser endpoint
-  // WONT WORK IF BOBJOE IS THERE< MUST DELETE BOBJOE FRIST
-  // @Test
-  // public void testAddUserSuccess() throws IOException {
+  @Test
+  public void testAddUserSuccess() throws IOException {
+    Random random = new Random();
+    int randomNumber = random.nextInt(20) + 0;
+    String email = "BOBJOE" + randomNumber + "@risd.edu";
 
-  //   // // check to make sure bobjoe isnt there
-  //   // HttpURLConnection loadConnectioncheck =
-  //   //     tryRequest("get-user?clerk_id=user_1");
-  //   // assertEquals(200, loadConnectioncheck.getResponseCode());
-  //   // Map<String, Object> responseBody =
-  //   //     adapter.fromJson(new Buffer().readFrom(loadConnectioncheck.getInputStream()));
-  //   // assert responseBody != null;
-  //   // assertEquals("success", responseBody.get("response_type"));
-  //   // //delete
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "add-user?clerk_id=user_"
+                + randomNumber
+                + "&email="
+                + email
+                + "&name=bob&phone_number=1234567890&school=risd");
 
-  //   HttpURLConnection loadConnection =
-  //       tryRequest(
-  //
-  // "add-user?clerk_id=user_1&email=BOBJOE@risd.edu&name=bob&phone_number=1234567890&school=risd");
-
-  //   assertEquals(200, loadConnection.getResponseCode());
-  //   Map<String, Object> responseBody =
-  //       adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-  //   assert responseBody != null;
-  //   assertEquals("success", responseBody.get("response_type"));
-  //   assertEquals("user_1", responseBody.get("clerk_id"));
-  //   assertEquals("BOBJOE@risd.edu", responseBody.get("email"));
-  //   assertEquals("bob", responseBody.get("name"));
-  //   assertEquals("1234567890", responseBody.get("phone number"));
-  //   assertEquals("risd", responseBody.get("school"));
-  // }
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals("user_" + randomNumber, responseBody.get("clerk_id"));
+    assertEquals("BOBJOE" + randomNumber + "@risd.edu", responseBody.get("email"));
+    assertEquals("bob", responseBody.get("name"));
+    assertEquals("1234567890", responseBody.get("phone number"));
+    assertEquals("risd", responseBody.get("school"));
+  }
 
   // testing unsuccessful api call for AddUser endpoint bc params blank
   @Test
@@ -465,54 +463,53 @@ public class APITests {
   /* =========================================================== GetListingsByIdHandler tests ===========================================================*/
   // WILL FAIL IF LISTINGS CHANGED
   // testing successful api call for GetListingsById endpoint
-  // @Test
-  // public void testGetListingsByIdSuccess() throws IOException {
-  //   HttpURLConnection loadConnection = tryRequest("get-listing-by-id?listing_id=152");
+  @Test
+  public void testGetListingsByIdSuccess() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("get-listing-by-id?listing_id=160");
 
-  //   // Expected data setup
-  //   Map<String, Object> expectedData = new HashMap<>();
-  //   expectedData.put("id", 152); // id as integer
-  //   expectedData.put("seller_id", "user_2qHcjnVBS1wW6Q6bcNPX4h7uc5T");
-  //   expectedData.put("title", "Block of cheese");
-  //   expectedData.put("description", "yummy and definitely not moldy!");
-  //   expectedData.put("price", 10.0);
-  //   expectedData.put("category", "Other");
-  //   expectedData.put("condition", "Poor");
-  //   expectedData.put(
-  //       "image_url",
-  //
-  // "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734329985705-png-clipart-gruyere-cheese-cheesecake-swiss-cheese-cheese-cheese-slice-food-cheese-thumbnail.png");
-  //   expectedData.put("tags", new String[] {"yum cheese"}); // Correcting tags to be an array
-  //   expectedData.put("available", true);
-  //   assertEquals(200, loadConnection.getResponseCode());
+    // Expected data setup
+    Map<String, Object> expectedData = new HashMap<>();
+    expectedData.put("id", 160); // id as integer
+    expectedData.put("seller_id", "user_2qIsp60kbn35x0c0636nJtYNCSX");
+    expectedData.put("title", "Soda");
+    expectedData.put("description", "sodaaaaa");
+    expectedData.put("price", 20.0);
+    expectedData.put("category", "Decor");
+    expectedData.put("condition", "Fair");
+    expectedData.put(
+        "image_url",
+        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734396066987-can-soda.jpg");
+    expectedData.put("tags", new String[] {"soda"});
+    expectedData.put("available", true);
+    assertEquals(200, loadConnection.getResponseCode());
 
-  //   // Parse the response body
-  //   Map<String, Object> responseBody =
-  //       adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-  //   assert responseBody != null;
-  //   assertEquals("success", responseBody.get("response_type"));
+    // Parse the response body
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
 
-  //   // Extract the listing from the response body
-  //   Map<String, Object> actualListing = (Map<String, Object>) responseBody.get("listing");
+    // Extract the listing from the response body
+    Map<String, Object> actualListing = (Map<String, Object>) responseBody.get("listing");
 
-  //   if (actualListing.get("id") instanceof Double) {
-  //     actualListing.put("id", ((Double) actualListing.get("id")).intValue());
-  //   }
+    if (actualListing.get("id") instanceof Double) {
+      actualListing.put("id", ((Double) actualListing.get("id")).intValue());
+    }
 
-  //   List<String> actualTagsList = (List<String>) actualListing.get("tags");
-  //   String[] actualTags = actualTagsList.toArray(new String[0]);
+    List<String> actualTagsList = (List<String>) actualListing.get("tags");
+    String[] actualTags = actualTagsList.toArray(new String[0]);
 
-  //   assertEquals(expectedData.get("id"), actualListing.get("id"));
-  //   assertEquals(expectedData.get("seller_id"), actualListing.get("seller_id"));
-  //   assertEquals(expectedData.get("title"), actualListing.get("title"));
-  //   assertEquals(expectedData.get("description"), actualListing.get("description"));
-  //   assertEquals(expectedData.get("price"), actualListing.get("price"));
-  //   assertEquals(expectedData.get("category"), actualListing.get("category"));
-  //   assertEquals(expectedData.get("condition"), actualListing.get("condition"));
-  //   assertEquals(expectedData.get("image_url"), actualListing.get("image_url"));
-  //   assertArrayEquals((String[]) expectedData.get("tags"), actualTags);
-  //   assertEquals(expectedData.get("available"), actualListing.get("available"));
-  // }
+    assertEquals(expectedData.get("id"), actualListing.get("id"));
+    assertEquals(expectedData.get("seller_id"), actualListing.get("seller_id"));
+    assertEquals(expectedData.get("title"), actualListing.get("title"));
+    assertEquals(expectedData.get("description"), actualListing.get("description"));
+    assertEquals(expectedData.get("price"), actualListing.get("price"));
+    assertEquals(expectedData.get("category"), actualListing.get("category"));
+    assertEquals(expectedData.get("condition"), actualListing.get("condition"));
+    assertEquals(expectedData.get("image_url"), actualListing.get("image_url"));
+    assertArrayEquals((String[]) expectedData.get("tags"), actualTags);
+    assertEquals(expectedData.get("available"), actualListing.get("available"));
+  }
 
   // testing unsuccessful api call for GetListingsById endpoint bc params blank
   @Test
@@ -671,32 +668,27 @@ public class APITests {
   }
 
   /* =========================================================== UpdateListingHandler tests ===========================================================*/
+  // WILL FAIL IF THE LAMP LISTING IS NOT REVERTED TO PRE UPDATE FORM
+  // TO CHANGE LAMP LISTING: CHANGE TITLE TO "LAMP" AND DELETE "UNUSED" TAG
   // testing successful api call for UpdateListing endpoint
-  // @Test
-  // public void testUpdateListingSuccess() throws IOException {
-  //   HttpURLConnection loadConnection =
-  //       tryRequest(
-  //
-  // "update-listing?listing_id=160&title=Updated+Soda&price=20.00&tags=soda&image_url=https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734371958829-can-soda.jpg");
+  @Test
+  public void testUpdateListingSuccess() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "update-listing?listing_id=177&title=Updated+Lamp&price=20.00&tags=from+amazon,lamp,unopened,unused&image_url=https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734396290137-lamp.webp");
 
-  //   assertEquals(200, loadConnection.getResponseCode());
-  //   Map<String, Object> responseBody =
-  //       adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-  //   assert responseBody != null;
-  //   assertEquals("success", responseBody.get("response_type"));
-  //   // assertEquals("Listing updated successfully", responseBody.get("messsage"));
-  //   assertEquals("user_2qIsp60kbn35x0c0636nJtYNCSX", responseBody.get("seller_id"));
-  //   assertEquals("Updated Soda", responseBody.get("title"));
-  //   assertEquals("sodaaaaa", responseBody.get("description"));
-  //   assertEquals(20.00, responseBody.get("price"));
-  //   assertEquals("Decor", responseBody.get("category"));
-  //   assertEquals(
-  //
-  // "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734371958829-can-soda.jpg",
-  //       responseBody.get("imageUrl"));
-  //   assertEquals(Arrays.asList("soda"), responseBody.get("tags"));
-  //   assertEquals("New", responseBody.get("condition"));
-  // }
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals("Listing updated successfully", responseBody.get("message"));
+    assertEquals("Updated Lamp", responseBody.get("title"));
+    assertEquals(
+        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734396290137-lamp.webp",
+        responseBody.get("image_url"));
+    assertEquals("from amazon,lamp,unopened,unused", responseBody.get("tags"));
+  }
 
   // testing unsuccessful api call for UpdateListing endpoint bc missing listing id
   @Test
@@ -738,5 +730,25 @@ public class APITests {
   }
 
   /* =========================================================== UpdateUserHandler tests ===========================================================*/
-  // testing successful api call for GetUserListings endpoint
+  // testing successful api call for UpdateUser endpoint
+  @Test
+  public void testUpdateUserSuccess() throws IOException {
+    Random random = new Random();
+    int randomNumber = random.nextInt(20) + 0;
+    String name = "bob" + randomNumber;
+
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "update-user?user_id=21&name=" + name + "&phone_number=123-444-3333&school=brown");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals("User updated successfully", responseBody.get("message"));
+    assertEquals(name, responseBody.get("name"));
+    assertEquals(123 - 444 - 3333, responseBody.get("phone_number"));
+    assertEquals("brown", responseBody.get("school"));
+  }
 }
