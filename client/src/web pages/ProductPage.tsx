@@ -85,6 +85,7 @@ const ProductPage: React.FC = () => {
 
   // Fetch the product data based on the ID
   useEffect(() => {
+    console.log("Listing ID:", id);
     if (!id) return;
     const fetchProduct = async () => {
       try {

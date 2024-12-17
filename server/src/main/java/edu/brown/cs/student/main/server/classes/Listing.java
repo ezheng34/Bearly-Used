@@ -95,7 +95,7 @@ public class Listing {
     this.image_url = image_url;
   }
 
-  public boolean getAvailable() {
+  public Boolean getAvailable() {
     return this.available;
   }
 

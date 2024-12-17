@@ -668,7 +668,7 @@ public class APITests {
     // Extract the 'listings' field
     List<Map<String, Object>> listings = (List<Map<String, Object>>) responseBody.get("listings");
 
-    Map<String, Object> listing = listings.get(0);
+    Map<String, Object> listing = listings.get(1);
 
     assertEquals(161.0, listing.get("id"));
     assertEquals("BLOCK OF CHEESE", listing.get("title"));
@@ -734,6 +734,19 @@ public class APITests {
         "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734396290137-lamp.webp",
         responseBody.get("image_url"));
     assertEquals("from amazon,lamp,unopened,unused", responseBody.get("tags"));
+  }
+
+  @Test
+  public void testResetListingSuccess() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("update-listing?listing_id=177&title=lamp" + "&available=true");
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals("Listing updated successfully", responseBody.get("message"));
+    assertEquals("lamp", responseBody.get("title"));
   }
 
   // testing unsuccessful api call for UpdateListing endpoint bc missing listing id
