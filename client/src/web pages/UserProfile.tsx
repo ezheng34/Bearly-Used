@@ -148,16 +148,22 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  const handleMarkAsSold = async () => {
+  const handleMarkAsSold = async (
+    listing: { id: any } | undefined,
+    available: boolean
+  ) => {
     try {
       const response = await fetch(
-        `http://localhost:3232/update-listing?listing_id=${id}&available=false`
+        `http://localhost:3232/update-listing?listing_id=${listing?.id}&available=${available}`
       );
       const data = await response.json();
       console.log("bbbb", data);
-      if (data.response_type === "success") {
+      if (data.response_type === "success" && available === false) {
         alert("Listing successfully marked as unavailable.");
-        navigate("/");
+        window.location.reload();
+      } else if (data.response_type === "success" && available === true) {
+        alert("Listing successfully marked as available.");
+        window.location.reload();
       } else {
         alert("Failed to mark as sold.");
       }
@@ -349,14 +355,14 @@ const UserProfile: React.FC = () => {
                 >
                   Edit
                 </button>
-                {listing.available && (
-                  <button
-                    className="btn btn-sm btn-outline-success"
-                    onClick={() => handleMarkAsSold()}
-                  >
-                    {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
-                  </button>
-                )}
+                <button
+                  className="btn btn-sm btn-outline-success"
+                  onClick={() => {
+                    handleMarkAsSold(listing, !listing.available);
+                  }}
+                >
+                  {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
+                </button>
               </div>
             </div>
           ))}

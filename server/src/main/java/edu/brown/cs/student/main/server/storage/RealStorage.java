@@ -149,7 +149,8 @@ public class RealStorage implements StorageInterface {
       List<Listing> listings = new ArrayList<>();
 
       // "Where 1=1" is the same as WHERE TRUE so it lets us append additional filters with AND
-      StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM listings WHERE 1=1");
+      StringBuilder sqlBuilder =
+          new StringBuilder("SELECT * FROM listings WHERE 1=1 AND available = TRUE");
       List<Object> params = new ArrayList<>();
 
       // Apply filters dynamically
@@ -490,7 +491,7 @@ public class RealStorage implements StorageInterface {
         hasUpdates = true;
       }
 
-      if (updatedListing.getAvailable()) {
+      if (updatedListing.getAvailable() != null) {
         sqlBuilder.append(hasUpdates ? ", " : "").append("available = ?");
         params.add(updatedListing.getAvailable());
         hasUpdates = true;

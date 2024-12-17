@@ -60,7 +60,7 @@
 .create-listing:hover {
   background-color: var(--accent-coral);
   transform: translateY(-2px);
-} 
+}
 
 /* Profile section */
 .profile-container {
@@ -215,6 +215,9 @@ h2 {
   background-color: var(--secondary-beige);
   border-radius: 12px;
   margin-bottom: 1rem;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
 }
 
 .listing-price {
@@ -273,7 +276,6 @@ h2 {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
-
 
 /* .modal-header {
   display: flex;
