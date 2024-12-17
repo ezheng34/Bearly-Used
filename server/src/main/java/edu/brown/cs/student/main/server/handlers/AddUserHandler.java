@@ -36,6 +36,11 @@ public class AddUserHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("user_id", userId);
+      responseMap.put("clerk_id", clerkId);
+      responseMap.put("email", email);
+      responseMap.put("name", name);
+      responseMap.put("phone number", phoneNumber);
+      responseMap.put("school", school);
     } catch (IllegalArgumentException e) {
       // Handle input validation errors
       responseMap.put("response_type", "failure");
@@ -54,9 +59,15 @@ public class AddUserHandler implements Route {
       throw new IllegalArgumentException("Email is required");
     }
 
-    // Basic email validation regex
-    if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
-      throw new IllegalArgumentException("Invalid email format");
+    // // Basic email validation regex
+    // if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+    //   throw new IllegalArgumentException("Invalid email format");
+    // }
+
+    // Check that email ends with "@risd.edu" or "@brown.edu"
+    String lowerEmail = email.toLowerCase();
+    if (!lowerEmail.endsWith("@risd.edu") && !lowerEmail.endsWith("@brown.edu")) {
+      throw new IllegalArgumentException("Email must end with @risd.edu or @brown.edu");
     }
 
     return email.trim();

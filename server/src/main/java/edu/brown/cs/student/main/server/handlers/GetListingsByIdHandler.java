@@ -68,7 +68,7 @@ public class GetListingsByIdHandler implements Route {
       //   }
     } catch (Exception e) {
       responseMap.put("response_type", "failure");
-      responseMap.put("error", "Unexpected error: " + e.getMessage());
+      responseMap.put("error", "Invalid input: " + e.getMessage());
       return gson.toJson(responseMap);
     }
   }

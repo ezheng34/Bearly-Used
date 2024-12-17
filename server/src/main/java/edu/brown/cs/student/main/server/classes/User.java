@@ -2,19 +2,19 @@ package edu.brown.cs.student.main.server.classes;
 
 public class User {
 
-  public int clerkId;
+  public String clerkId;
   public String name;
   public String phoneNumber;
   public String school;
 
-  public User(String clerkid, String name, String phoneNumber, String school) {
+  public User(String clerkId, String name, String phoneNumber, String school) {
     this.clerkId = clerkId;
     this.name = name;
     this.phoneNumber = phoneNumber;
     this.school = school;
   }
 
-  public int getId() {
+  public String getClerkId() {
     return this.clerkId;
   }
 
@@ -22,11 +22,23 @@ public class User {
     return this.name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public String getPhoneNumber() {
     return this.phoneNumber;
   }
 
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
+
   public String getSchool() {
     return this.school;
+  }
+
+  public void setSchool(String school) {
+    this.school = school;
   }
 }

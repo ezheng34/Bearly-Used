@@ -27,7 +27,6 @@ public class UpdateUserHandler implements Route {
     try {
 
       String clerkId = request.queryParams("clerk_id");
-
       String name = request.queryParams("name");
       String phoneNumber = request.queryParams("phone_number");
       String school = request.queryParams("school");
@@ -47,6 +46,10 @@ public class UpdateUserHandler implements Route {
       if (updated) {
         responseMap.put("response_type", "success");
         responseMap.put("message", "User updated successfully");
+        responseMap.put("clerk_id", clerkId);
+        responseMap.put("name", name);
+        responseMap.put("phone_number", phoneNumber);
+        responseMap.put("school", school);
       } else {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "User could not be updated");
