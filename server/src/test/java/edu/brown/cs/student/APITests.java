@@ -2,6 +2,7 @@ package edu.brown.cs.student;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -274,6 +275,7 @@ public class APITests {
 
   /* =========================================================== AddUserHandler tests ===========================================================*/
   // testing successful api call for AddUser endpoint
+  // might fail sometimes bc random number chosen could have been chosen already in previous run
   @Test
   public void testAddUserSuccess() throws IOException {
     Random random = new Random();
@@ -461,8 +463,8 @@ public class APITests {
   }
 
   /* =========================================================== GetListingsByIdHandler tests ===========================================================*/
-  // WILL FAIL IF LISTINGS CHANGED
   // testing successful api call for GetListingsById endpoint
+  // WILL FAIL IF LISTINGS CHANGED
   @Test
   public void testGetListingsByIdSuccess() throws IOException {
     HttpURLConnection loadConnection = tryRequest("get-listing-by-id?listing_id=160");
@@ -538,25 +540,71 @@ public class APITests {
   }
 
   /* =========================================================== GetListingsHandler tests ===========================================================*/
+  // THESE TESTS CAN FAIL IF LISTINGS CHANGE AROUND
   // testing successful api call for GetListings endpoint
   @Test
   public void testGetListingsSuccess() throws IOException {
-    // clerk_id, email, name, phone_number, school
-    // HttpURLConnection loadConnection =
-    //     tryRequest(
-    //
-    // "add-user?clerk_id=user_1&email=BOBJOE@risd.edu&name=bob&phone_number=1234567890&school=risd");
+    HttpURLConnection loadConnection = tryRequest("get-listings?");
 
-    // assertEquals(200, loadConnection.getResponseCode());
-    // Map<String, Object> responseBody =
-    //     adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-    // assert responseBody != null;
-    // assertEquals("success", responseBody.get("response_type"));
-    // assertEquals("user_1", responseBody.get("clerk_id"));
-    // assertEquals("BOBJOE@risd.edu", responseBody.get("email"));
-    // assertEquals("bob", responseBody.get("name"));
-    // assertEquals("1234567890", responseBody.get("phone number"));
-    // assertEquals("risd", responseBody.get("school"));
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    Double number = (Double) responseBody.get("number of listings obtained");
+    assertTrue(number > 0);
+  }
+
+  // testing successful api call for GetListings endpoint, searching by title
+  @Test
+  public void testGetListingsTitleSuccess() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("get-listings?title=lamp");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals(1.0, responseBody.get("number of listings obtained"));
+  }
+
+  // testing successful api call for GetListings endpoint, searching by category
+  @Test
+  public void testGetListingsCategorySuccess() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("get-listings?category=Decor");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("success", responseBody.get("response_type"));
+    assertEquals(1.0, responseBody.get("number of listings obtained"));
+  }
+
+  // testing unsuccessful api call for GetListings endpoint bc min price negative
+  @Test
+  public void testGetListingsNegativeMinPrice() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("get-listings?minPrice=-1");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals("Invalid input: Price cannot be negative", responseBody.get("error"));
+  }
+
+  // testing unsuccessful api call for GetListings endpoint bc max price negative
+  @Test
+  public void testGetListingsNegativeMaxPrice() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("get-listings?maxPrice=-1");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals("Invalid input: Price cannot be negative", responseBody.get("error"));
   }
 
   /* =========================================================== GetUserHandler tests ===========================================================*/
@@ -668,8 +716,6 @@ public class APITests {
   }
 
   /* =========================================================== UpdateListingHandler tests ===========================================================*/
-  // WILL FAIL IF THE LAMP LISTING IS NOT REVERTED TO PRE UPDATE FORM
-  // TO CHANGE LAMP LISTING: CHANGE TITLE TO "LAMP" AND DELETE "UNUSED" TAG
   // testing successful api call for UpdateListing endpoint
   @Test
   public void testUpdateListingSuccess() throws IOException {
@@ -731,6 +777,7 @@ public class APITests {
 
   /* =========================================================== UpdateUserHandler tests ===========================================================*/
   // testing successful api call for UpdateUser endpoint
+  // might fail sometimes bc random number chosen could have been chosen already in previous run
   @Test
   public void testUpdateUserSuccess() throws IOException {
     Random random = new Random();
@@ -739,7 +786,7 @@ public class APITests {
 
     HttpURLConnection loadConnection =
         tryRequest(
-            "update-user?user_id=21&name=" + name + "&phone_number=123-444-3333&school=brown");
+            "update-user?clerk_id=12345&name=" + name + "&phone_number=1234443333&school=brown");
 
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseBody =
@@ -747,8 +794,66 @@ public class APITests {
     assert responseBody != null;
     assertEquals("success", responseBody.get("response_type"));
     assertEquals("User updated successfully", responseBody.get("message"));
+    assertEquals("12345", responseBody.get("clerk_id"));
     assertEquals(name, responseBody.get("name"));
-    assertEquals(123 - 444 - 3333, responseBody.get("phone_number"));
+    assertEquals("1234443333", responseBody.get("phone_number"));
     assertEquals("brown", responseBody.get("school"));
+  }
+
+  // testing unsuccessful api call for UpdateUser endpoint bc all params blank
+  @Test
+  public void testUpdateUserParamsEmpty() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("update-user?clerk_id=&name=&phone_number=&school=");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals("Invalid input: Name is required", responseBody.get("error"));
+  }
+
+  // testing unsuccessful api call for UpdateUser endpoint bc wrong name input
+  @Test
+  public void testUpdateUserWrongName() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("update-user?clerk_id=&name=a&phone_number=&school=");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals(
+        "Invalid input: Name must be at least 2 characters long", responseBody.get("error"));
+  }
+
+  // testing unsuccessful api call for UpdateUser endpoint bc missing phone number
+  @Test
+  public void testUpdateUserMissingPhoneNumber() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("update-user?clerk_id=&namebob=&phone_number=&school=");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals("Invalid input: Phone number is required", responseBody.get("error"));
+  }
+
+  // testing unsuccessful api call for UpdateUser endpoint bc missing school
+  @Test
+  public void testUpdateUserMissingSchool() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("update-user?clerk_id=&namebob=&phone_number=111-111-2222&school=");
+
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseBody =
+        adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assert responseBody != null;
+    assertEquals("failure", responseBody.get("response_type"));
+    assertEquals("Invalid input: School is required", responseBody.get("error"));
   }
 }

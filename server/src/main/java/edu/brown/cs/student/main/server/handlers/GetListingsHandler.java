@@ -65,6 +65,7 @@ public class GetListingsHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("result", res);
+      responseMap.put("number of listings obtained", res.size());
 
     } catch (IllegalArgumentException e) {
       responseMap.put("response_type", "failure");
