@@ -83,7 +83,11 @@ const App: React.FC = () => {
               <nav className="navbar navbar-expand-lg navbar-custom">
                 <div className="container-fluid navbar-container">
                   <a className="navbar-brand" href="/">
-                    Bearly Used &#128059;
+                    Bearly Used
+                    <img
+                      src="../public/logo.png"
+                      style={{ height: "75px" }}
+                    ></img>
                   </a>
                   <div className="user-profile-section">
                     <a href="/#/user" className="user-name">
