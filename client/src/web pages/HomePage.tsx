@@ -417,7 +417,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  //redirects user to product page via different url based on id of product
+  // redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}?${searchParams.toString()}`);
   };
