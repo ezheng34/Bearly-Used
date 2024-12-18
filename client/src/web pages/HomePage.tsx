@@ -173,58 +173,87 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchAndFilterListings = async () => {
       const params = new URLSearchParams();
-      let apiUrl = "http://localhost:3232/get-listings?";
+      let apiUrlBase = "http://localhost:3232/get-listings?";
 
       if (selectedCategory) {
         params.set("category", selectedCategory);
-        apiUrl += `category=${selectedCategory}&`;
+        apiUrlBase += `category=${selectedCategory}&`;
       }
 
       if (selectedPrice) {
         const { label, min, max } = selectedPrice;
 
-        // Handle the "Free" case explicitly
         if (label === "Free") {
-          // If it's "Free", we only want listings with price 0
+          // if it's "Free", we only want listings with price 0
           params.set("priceMin", "0");
           params.set("priceMax", "0");
-          apiUrl += `minPrice=0&maxPrice=0&`;
+          apiUrlBase += `minPrice=0&maxPrice=0&`;
         } else {
           params.set("priceLabel", selectedPrice.label || "");
           if (selectedPrice.min) {
             params.set("priceMin", selectedPrice.min.toString());
-            apiUrl += `minPrice=${selectedPrice.min}&`;
+            apiUrlBase += `minPrice=${selectedPrice.min}&`;
           }
           if (selectedPrice.max) {
             params.set("priceMax", selectedPrice.max.toString());
-            apiUrl += `maxPrice=${selectedPrice.max}&`;
+            apiUrlBase += `maxPrice=${selectedPrice.max}&`;
           }
         }
       }
 
       if (priceSort) {
         params.set("priceSort", priceSort);
-        apiUrl += `sorter=${priceSort}&`;
+        apiUrlBase += `sorter=${priceSort}&`;
       }
 
       params.set("page", currentPage.toString());
 
-      if (searchQuery) {
-        params.set("search", searchQuery);
-        apiUrl += `title=${searchQuery}&`;
-      }
-
       setSearchParams(params);
 
-      console.log("API URL:", apiUrl);
+      console.log("API URL:", apiUrlBase);
+
+      // if there's no search query, fetch listings with only filters applied
+      if (!searchQuery) {
+        try {
+          const response = await fetch(apiUrlBase);
+          const data = await response.json();
+
+          if (data.response_type === "success") {
+            setFilteredListings(data.result);
+          } else {
+            console.error("Error fetching listings");
+          }
+        } catch (err) {
+          console.error("Error fetching listings:", err);
+        }
+        return;
+      }
+
+      const titleApiUrl = `${apiUrlBase}${params.toString()}&title=${searchQuery}`;
+      const tagsApiUrl = `${apiUrlBase}${params.toString()}&tags=${searchQuery}`;
 
       try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        console.log(data);
-        if (data.response_type === "success") {
-          let filtered = data.result;
-          setFilteredListings(filtered);
+        // get results for both title and tags
+        const [titleResponse, tagsResponse] = await Promise.all([
+          fetch(titleApiUrl),
+          fetch(tagsApiUrl),
+        ]);
+
+        const titleData = await titleResponse.json();
+        const tagsData = await tagsResponse.json();
+
+        // check for successful responses
+        if (
+          titleData.response_type === "success" &&
+          tagsData.response_type === "success"
+        ) {
+          // merge results and remove duplicates, lowkey kinda jank
+          const mergedListings = [...titleData.result, ...tagsData.result];
+          const uniqueListings = Array.from(
+            new Map(mergedListings.map((item) => [item.id, item])).values()
+          );
+
+          setFilteredListings(uniqueListings);
         } else {
           console.error("Error fetching listings");
         }
@@ -232,7 +261,6 @@ const HomePage: React.FC = () => {
         console.error("Error fetching listings:", err);
       }
     };
-
     fetchAndFilterListings();
   }, [selectedCategory, selectedPrice, priceSort, currentPage, searchQuery]);
 
@@ -489,7 +517,7 @@ const HomePage: React.FC = () => {
           <div className="search-bar mx-4">
             <input
               type="text"
-              placeholder="Search listings..."
+              placeholder="Search listings by title or tags..."
               value={tempSearchQuery}
               onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
