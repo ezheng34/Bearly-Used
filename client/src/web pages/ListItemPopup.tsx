@@ -235,6 +235,23 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         }
       }
 
+      setFormData({
+        sellerId: 0,
+        title: "",
+        available: true,
+        description: "",
+        price: 0,
+        category: "",
+        condition: "",
+        imageUrl: "",
+        tags: [],
+        images: [],
+      });
+
+      setPriceInput("");
+      setTagInput("");
+      setImagePreviews([]);
+
       onSubmit?.();
       navigate(-1);
     } catch (error) {
@@ -430,7 +447,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
-        <button type="submit" className="btn btn-secondary w-100">
+        <button type="submit" className="btn btn-submit w-100">
           {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>

@@ -52,6 +52,7 @@ const ProductPage: React.FC = () => {
   const [product, setProduct] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleViewProfile = (sellerId: string) => {
     navigate(`/seller/${sellerId}`);
@@ -301,23 +302,76 @@ const ProductPage: React.FC = () => {
             {seller?.clerk_id === user?.id ? (
               <div className="action-buttons">
                 <button
-                  className="btn btn-danger"
-                  onClick={handleDeleteListing}
-                >
-                  Delete listing
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleMarkAsSold()}
-                >
-                  Mark as sold
-                </button>
-                <button
-                  className="btn btn-primary"
+                  className="btn btn-edit"
                   onClick={() => handleEditListing(product)}
                 >
-                  Edit
+                  <i className="bi bi-pencil"></i> Edit
                 </button>
+                <button
+                  className="btn btn-sold"
+                  onClick={() => handleMarkAsSold()}
+                >
+                  <i className="bi bi-check-circle"></i> Mark as sold
+                </button>
+
+                <button
+                  className="btn btn-delete"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <i className="bi bi-trash"></i> Delete listing
+                </button>
+
+                {/* Delete Confirmation Modal */}
+                <div
+                  className={`modal fade ${showDeleteConfirm ? "show" : ""}`}
+                  style={{ display: showDeleteConfirm ? "block" : "none" }}
+                  tabIndex={-1}
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title">Delete Listing</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          onClick={() => setShowDeleteConfirm(false)}
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <p>
+                          Are you sure you want to delete this listing? This
+                          action cannot be undone.
+                        </p>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-cancel"
+                          onClick={() => setShowDeleteConfirm(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-delete"
+                          onClick={() => {
+                            handleDeleteListing();
+                            setShowDeleteConfirm(false);
+                          }}
+                        >
+                          Delete Listing
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Backdrop */}
+                {showDeleteConfirm && (
+                  <div
+                    className="modal-backdrop fade show"
+                    onClick={() => setShowDeleteConfirm(false)}
+                  ></div>
+                )}
               </div>
             ) : (
               <div className="action-buttons">
