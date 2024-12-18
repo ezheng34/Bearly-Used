@@ -136,6 +136,20 @@
   transform: translateY(-2px);
 }
 
+.listing-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.listing-actions button {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
 .edit-profile {
   position: absolute;
   top: 2rem;

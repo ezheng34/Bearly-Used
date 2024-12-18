@@ -387,10 +387,9 @@ const UserProfile: React.FC = () => {
                   className="btn btn-sm btn-outline-primary"
                   onClick={() => handleEditListing(listing)}
                   title="Edit"
-
                 >
                   <i className="bi bi-pencil"></i>
-                  </button>
+                </button>
                 <button
                   className="btn btn-sm btn-outline-success"
                   onClick={() => {
@@ -402,64 +401,14 @@ const UserProfile: React.FC = () => {
 
                 <button
                   className="btn btn-sm btn-outline-danger"
-                  title="Delete listing"
-                  onClick={() => setShowDeleteConfirm(true)}
+                  title="Delete"
+                  onClick={() => {
+                    setProduct(listing);
+                    setShowDeleteConfirm(true);
+                  }}
                 >
                   <i className="bi bi-trash"></i>
                 </button>
-
-                {/* Delete Confirmation Modal */}
-                <div
-                  className={`modal fade ${showDeleteConfirm ? "show" : ""}`}
-                  style={{ display: showDeleteConfirm ? "block" : "none" }}
-                  tabIndex={-1}
-                >
-                  <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title">Delete Listing</h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          onClick={() => setShowDeleteConfirm(false)}
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <p>
-                          Are you sure you want to delete this listing? This
-                          action cannot be undone.
-                        </p>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-cancel"
-                          onClick={() => setShowDeleteConfirm(false)}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-delete"
-                          onClick={() => {
-                            setProduct(listing);
-                            handleDeleteListing(listing.id);
-                            setShowDeleteConfirm(false);
-                          }}
-                        >
-                          <i className="bi bi-trash"></i> Delete listing
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Backdrop */}
-                {showDeleteConfirm && (
-                  <div
-                    className="modal-backdrop fade show"
-                    onClick={() => setShowDeleteConfirm(false)}
-                  ></div>
-                )}
               </div>
             </div>
           ))}
@@ -538,6 +487,52 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && product && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          tabIndex={-1}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Delete Listing</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowDeleteConfirm(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to delete this listing? This action
+                  cannot be undone.
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-cancel"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => {
+                    handleDeleteListing(product.id);
+                    setShowDeleteConfirm(false);
+                  }}
+                >
+                  <i className="bi bi-trash"></i> Delete listing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
