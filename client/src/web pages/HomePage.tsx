@@ -417,7 +417,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // redirects user to product page via different url based on id of product
+  //redirects user to product page via different url based on id of product
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}?${searchParams.toString()}`);
   };
@@ -636,7 +636,6 @@ const HomePage: React.FC = () => {
               aria-label="Close"
               style={{
                 fontSize: "0.75rem",
-                margin: "0.5rem",
                 padding: "0.25rem",
               }}
             ></button>

@@ -5,6 +5,11 @@
   --accent-coral: #ff8360;
   --accent-sage: #7ca982;
   --shadow-color: rgba(0, 0, 0, 0.08);
+  font-family: "DM Sans", sans-serif;
+}
+
+p {
+  font-family: "DM Sans", sans-serif;
 }
 
 .header {
@@ -237,18 +242,78 @@
   border-radius: 12px;
 }
 
-.btn-danger { 
-  background-color: var(--accent-coral);
+.btn-edit {
+  background-color: var(--primary-blue);
+  color: white;
   border: none;
-  padding: 1rem 2rem; 
+  padding: 1rem 2rem;
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   transition: all 0.2s ease;
   border-radius: 12px;
 }
 
-.btn-danger:hover { 
-  background-color: var(--accent-coral); 
+.btn-sold {
+  background-color: var(--accent-sage);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+.btn-cancel {
+  background-color: white;
+  color: var(--accent-coral);
+  font-family: "DM Sans", sans-serif;
+
+  text-decoration: underline;
+}
+
+.btn-delete {
+  background-color: var(--accent-coral);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+.btn-danger {
+  background-color: var(--accent-coral);
+  border: none;
+  padding: 1rem 2rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+  color: white;
+
+  background-color: #3c92a3;
+}
+
+.btn-sold:hover {
+  transform: translateY(-2px);
+  color: white;
+  background-color: #618465;
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+  color: white;
+  background-color: #a95841;
+}
+
+.btn-danger:hover {
+  background-color: var(--accent-coral);
   transform: translateY(-2px);
 }
 
@@ -257,13 +322,3 @@
   transform: translateY(-2px);
 }
 
-.btn-secondary {
-  background-color: white;
-  border: 2px solid var(--primary-blue);
-  color: var(--primary-blue);
-}
-
-.btn-secondary:hover {
-  background-color: var(--secondary-beige);
-  color: var(--primary-dark);
-}
