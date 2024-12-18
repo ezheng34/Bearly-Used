@@ -353,6 +353,7 @@ const ProductPage: React.FC = () => {
                         </button>
                         <button
                           type="button"
+                          id="confirm-delete-listing"
                           className="btn btn-delete"
                           onClick={() => {
                             handleDeleteListing();

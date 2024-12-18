@@ -24,9 +24,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
 
   const [name, setName] = useState(formData?.name || "");
   const [school, setSchool] = useState(formData?.school || "");
-  const [phone_number, setPhone_Number] = useState(
-    formData?.phone_number || ""
-  );
+  const [phone_number, setPhoneNumber] = useState(formData?.phone_number || "");
 
   useEffect(() => {
     setFormData(initialData);
@@ -49,7 +47,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
     } else if (name === "name") {
       setName(value);
     } else if (name === "phone_number") {
-      setPhone_Number(value);
+      setPhoneNumber(value);
     }
   };
 

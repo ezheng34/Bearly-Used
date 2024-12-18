@@ -3,6 +3,14 @@ import { setupClerkTestingToken, clerk } from "@clerk/testing/playwright";
 import "dotenv/config";
 import path from "path";
 
+/* 
+ * NOTE: this runs assuming hello@brown.edu is in the database. If not, 
+ * run Signup.spec.ts first 
+ * 
+ * RUN THIS WITHOUT PARALLELISM SINCE IT CREATES PROBLEMS: 
+ * npx playwright test App.spec.ts --workers=1
+ */
+
 const url = "http://localhost:8000";
 
 test.use({
@@ -34,6 +42,7 @@ test.beforeEach(async ({ page }) => {
   }
 });
 
+/* Sign in */
 test("Everything loads on sign in", async ({ page }) => {
   await expect(page.locator("a.navbar-brand")).toBeVisible();
   await expect(page.locator("div.homepage-listings")).toBeVisible();
@@ -41,6 +50,7 @@ test("Everything loads on sign in", async ({ page }) => {
   await expect(page.locator("div.user-profile-section")).toBeVisible();
 });
 
+/* Page switching */
 test("Switching between pages loads correctly", async ({ page }) => {
   await page.locator("a.user-name").click();
   await expect(page.locator("div.profile")).toBeVisible();
@@ -60,12 +70,16 @@ test("Switching between pages loads correctly", async ({ page }) => {
   await expect(page.locator("div.user-profile-section")).toBeVisible();
 });
 
-test("Creating a listing works properly", async ({ page }) => {
+/* Creating and deleting a listing */
+test("Creating and deleting a listing works properly", async ({ page }) => {
   await page.locator("button.create-listing").click();
-  await page.locator('input[name="title"]').fill("Test Item");
+
+  const uniqueTitle = `Test Item ${Date.now()}`; 
+  await page.locator('input[name="title"]').fill(uniqueTitle);
+  
   await page
     .locator('textarea[name="description"]')
-    .fill("Test Item Description");
+    .fill("Description");
   await page.locator('input[name="price"]').fill("4.00");
   await page
     .locator('select[name="category"]')
@@ -75,14 +89,40 @@ test("Creating a listing works properly", async ({ page }) => {
   await page.locator('input[name="tags"]').press("Enter");
   await page.locator('input[name="tags"]').fill("test tag2");
   await page.locator('input[name="tags"]').press("Enter");
-  // const filePath = path.join(__dirname, "dummy.png");
   await page
     .locator('input[type="file"][accept="image/*"]')
     .setInputFiles("./dummy.png");
   await page.locator("button.btn.btn-submit.w-100").click();
-  await page.waitForTimeout(1000);
-  await page.getByRole("button", { name: "3" }).click();
-  await expect(page.locator("div.homepage-listing-title")).toHaveText(
-    "Test Item"
-  );
+  await page.waitForTimeout(2000);
+
+  // Search for it and make sure its there!
+  await page.getByPlaceholder("Search listings by title or tags...").fill(uniqueTitle); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // verify it has the correct information 
+  await page.getByText(uniqueTitle).click();
+  await expect(page.getByText("test tag1")).toBeVisible(); 
+  await expect(page.getByText("test tag2")).toBeVisible(); 
+  await expect(page.getByText("$4")).toBeVisible(); 
+
+  // Delete the item 
+  await page.getByText("Delete listing", {exact: true}).click(); 
+  await expect(page.getByText("Are you sure you want to delete this listing? This action cannot be undone.")).toBeVisible(); 
+  await page.locator("#confirm-delete-listing").click(); 
+  await page.waitForTimeout(2000);
+
+  // Search for it and make sure its not sure its not there! 
+  await page.goto(url);
+  await page.getByPlaceholder("Search listings by title or tags...").fill(uniqueTitle); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+
+  await expect(page.getByText("No Items Found")).toBeVisible();
 });
+
+/* Edit listing */
+
+
+
