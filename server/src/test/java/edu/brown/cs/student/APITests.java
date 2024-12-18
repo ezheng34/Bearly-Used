@@ -668,7 +668,7 @@ public class APITests {
     // Extract the 'listings' field
     List<Map<String, Object>> listings = (List<Map<String, Object>>) responseBody.get("listings");
 
-    Map<String, Object> listing = listings.get(1);
+    Map<String, Object> listing = listings.get(2);
 
     assertEquals(161.0, listing.get("id"));
     assertEquals("BLOCK OF CHEESE", listing.get("title"));
@@ -678,7 +678,7 @@ public class APITests {
     assertEquals("Books", listing.get("category"));
     assertEquals(true, listing.get("available"));
     assertEquals(
-        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734372411741-png-clipart-gruyere-cheese-cheesecake-swiss-cheese-cheese-cheese-slice-food-cheese-thumbnail.png",
+        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734462558914-Add%20Listing.png",
         listing.get("image_url"));
 
     // Check that 'tags' is an array with the expected value

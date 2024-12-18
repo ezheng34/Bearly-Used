@@ -384,6 +384,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
           <input
             type="text"
+            name="tags"
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagKeyDown}
@@ -419,6 +420,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           {/* File input for uploading new images */}
           <input
             type="file"
+            name="image"
             accept="image/*"
             multiple
             onChange={handleImageUpload}
