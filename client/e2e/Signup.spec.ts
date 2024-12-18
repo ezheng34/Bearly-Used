@@ -13,7 +13,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 /* Signing up for the first time */
-/* NOTE: must delete user in supabase after each run to make sure it works */
+/* NOTE: only run this if hello@brown.edu is not in the database. */
+
 test("Signing up for the first time works", async ({ page}) => {
   await expect(
     page.getByRole("heading", { name: "Bearly Used" })

@@ -5,10 +5,7 @@ import path from "path";
 
 /* 
  * NOTE: this runs assuming hello@brown.edu is in the database. If not, 
- * run Signup.spec.ts first 
- * 
- * RUN THIS WITHOUT PARALLELISM SINCE IT CREATES PROBLEMS: 
- * npx playwright test App.spec.ts --workers=1
+ * run Signup.spec.ts first.
  */
 
 const url = "http://localhost:8000";
@@ -70,10 +67,12 @@ test("Switching between pages loads correctly", async ({ page }) => {
   await expect(page.locator("div.user-profile-section")).toBeVisible();
 });
 
-/* Creating and deleting a listing */
-test("Creating and deleting a listing works properly", async ({ page }) => {
+/* Creating, searching, and deleting a listing */
+test("Creating, searching, and deleting a single listing works properly", async ({ page }) => {
   await page.locator("button.create-listing").click();
 
+  // this helps with the parallel workers by preventing issues where multiple
+  // workers will create the same exact item 
   const uniqueTitle = `Test Item ${Date.now()}`; 
   await page.locator('input[name="title"]').fill(uniqueTitle);
   
@@ -123,6 +122,146 @@ test("Creating and deleting a listing works properly", async ({ page }) => {
 });
 
 /* Edit listing */
+test("Creating, editing, and deleting a listing works properly", async ({ page }) => {
+  await page.locator("button.create-listing").click();
+
+  const uniqueTitle = `Test Item ${Date.now()}`; 
+  await page.locator('input[name="title"]').fill(uniqueTitle);
+  
+  await page
+    .locator('textarea[name="description"]')
+    .fill("Description");
+  await page.locator('input[name="price"]').fill("4.00");
+  await page
+    .locator('select[name="category"]')
+    .selectOption({ label: "Other" });
+  await page.locator('select[name="condition"]').selectOption({ label: "New" });
+  await page.locator('input[name="tags"]').fill("test tag1");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page.locator('input[name="tags"]').fill("test tag2");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page
+    .locator('input[type="file"][accept="image/*"]')
+    .setInputFiles("./dummy.png");
+  await page.locator("button.btn.btn-submit.w-100").click();
+  await page.waitForTimeout(2000);
+
+  // Search for it and make sure its there!
+  await page.getByPlaceholder("Search listings by title or tags...").fill(uniqueTitle); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // verify it has the correct information 
+  await page.getByText(uniqueTitle).click();
+  await expect(page.getByText("test tag1")).toBeVisible(); 
+  await expect(page.getByText("test tag2")).toBeVisible(); 
+  await expect(page.getByText("$4")).toBeVisible(); 
+
+  // Edit the item 
+  await page.getByText("Edit").click(); 
+  await page.locator('input[name="price"]').fill("5.00");
+  await page
+    .locator('textarea[name="description"]')
+    .fill("Edited Description");
+  await page.getByText("Save changes").click(); 
+  await page.waitForTimeout(2000);
+
+  // Search for it and make sure its there!
+  await page.getByPlaceholder("Search listings by title or tags...").fill(uniqueTitle); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // verify it has the correct information 
+  await page.getByText(uniqueTitle).click();
+  await expect(page.getByText("$5")).toBeVisible(); 
+  await expect(page.getByText("Edited Description")).toBeVisible(); 
+
+  // Delete the item 
+  await page.getByText("Delete listing", {exact: true}).click(); 
+  await expect(page.getByText("Are you sure you want to delete this listing? This action cannot be undone.")).toBeVisible(); 
+  await page.locator("#confirm-delete-listing").click(); 
+  await page.waitForTimeout(2000);
+});
+
+/* Search by price, category, and tags */
+test("Searching by price, category, and tags works properly", async ({ page }) => {
+  await page.locator("button.create-listing").click();
+
+  const uniqueTitle = `Test Item ${Date.now()}`; 
+  await page.locator('input[name="title"]').fill(uniqueTitle);
+  
+  await page
+    .locator('textarea[name="description"]')
+    .fill("Description");
+  await page.locator('input[name="price"]').fill("0.00");
+  await page
+    .locator('select[name="category"]')
+    .selectOption({ label: "Other" });
+  await page.locator('select[name="condition"]').selectOption({ label: "New" });
+  await page.locator('input[name="tags"]').fill("tag1");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page.locator('input[name="tags"]').fill("tag2");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page
+    .locator('input[type="file"][accept="image/*"]')
+    .setInputFiles("./dummy.png");
+  await page.locator("button.btn.btn-submit.w-100").click();
+  await page.waitForTimeout(2000);
+
+  // Search for free items 
+  await page.locator("#DropdownPrice").click();
+  await page.getByText("Free").click(); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // Sort by High to Low -- item should not be visible 
+  await page.goto(url); 
+  await page.locator("#DropdownPrice").click();
+  await page.getByText("High to Low").click(); 
+  await page.waitForTimeout(3000);
+  await expect.soft(page.getByText(uniqueTitle)).not.toBeVisible(); 
+
+  // Sort by Low to High -- item should be visible 
+  await page.goto(url); 
+  await page.locator("#DropdownPrice").click();
+  await page.getByText("Low to High").click(); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // Search bar -- search the tags 
+  await page.goto(url);
+  await page.getByPlaceholder("Search listings by title or tags...").fill("tag1"); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // Search by category 
+  await page.getByText("Categories").click(); 
+  await page.getByText("Other").first().click(); 
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // Clear all filters makes the item not visible anymore 
+  await page.getByText("Clear All Filters").click(); 
+
+  // Delete the item 
+  await page.getByPlaceholder("Search listings by title or tags...").fill(uniqueTitle); 
+  await page.keyboard.press("Enter"); 
+  await page.waitForTimeout(2000);
+  await page.getByText(uniqueTitle).first().click();
+  await page.getByText("Delete listing", {exact: true}).click(); 
+  await expect(page.getByText("Are you sure you want to delete this listing? This action cannot be undone.")).toBeVisible(); 
+  await page.locator("#confirm-delete-listing").click(); 
+  await page.waitForTimeout(2000);
+});
+
+/* Edit profile */
+
+/* Create/delete listing from profile */
+
+/* Mark as sold hides the item */
 
 
 
