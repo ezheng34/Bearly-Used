@@ -22,6 +22,7 @@ import {
 } from "@clerk/clerk-react";
 import SetupProfile from "./web pages/SetupProfile";
 import SignUp from "./web pages/SignUp";
+import logo from "./assets/logo.png";
 
 type userInfo = {
   id: number;
@@ -83,11 +84,11 @@ const App: React.FC = () => {
               <nav className="navbar navbar-expand-lg navbar-custom">
                 <div className="container-fluid navbar-container">
                   <a className="navbar-brand" href="/">
-                    Bearly Used
                     <img
-                      src="../public/logo.png"
-                      style={{ height: "75px" }}
-                    ></img>
+                      src={logo}
+                      style={{ height: "50px", marginRight: "10px" }}
+                    />
+                    Bearly Used
                   </a>
                   <div className="user-profile-section">
                     <a href="/#/user" className="user-name">
