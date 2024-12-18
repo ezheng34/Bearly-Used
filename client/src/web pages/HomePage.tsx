@@ -436,6 +436,8 @@ const HomePage: React.FC = () => {
         modalInstance.dispose(); // erm idk if this actually is good
       }
 
+      modalElement.style.display = "none";
+
       document.body.classList.remove("modal-open");
       document.body.style.removeProperty("padding-right");
       document.body.style.overflow = "initial";

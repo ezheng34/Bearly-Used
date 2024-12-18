@@ -235,6 +235,23 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         }
       }
 
+      setFormData({
+        sellerId: 0,
+        title: "",
+        available: true,
+        description: "",
+        price: 0,
+        category: "",
+        condition: "",
+        imageUrl: "",
+        tags: [],
+        images: [],
+      });
+
+      setPriceInput("");
+      setTagInput("");
+      setImagePreviews([]);
+
       onSubmit?.();
       navigate(-1);
     } catch (error) {
