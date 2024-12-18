@@ -136,6 +136,20 @@
   transform: translateY(-2px);
 }
 
+.listing-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.listing-actions button {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
 .edit-profile {
   position: absolute;
   top: 2rem;
@@ -166,6 +180,8 @@
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: bold;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .modal.show {
@@ -203,6 +219,7 @@ h2 {
   box-shadow: 0 2px 10px var(--shadow-color);
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .listing:hover {
@@ -232,6 +249,14 @@ h2 {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
   color: var(--primary-dark);
+  -webkit-line-clamp: 2;
+  line-clamp:inherit;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%; /* some of these are definitely unnecessary */
+
 }
 
 .arrow-btn {

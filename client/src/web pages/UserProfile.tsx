@@ -8,6 +8,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getUserListings, getUserProfile, updateUserProfile } from "../api";
 import { useUser } from "@clerk/clerk-react";
 import EditProfilePopup from "./EditProfilePopup";
+import { supabase } from "../utils/supabaseClient";
 
 type Listing = {
   id: number;
@@ -38,6 +39,8 @@ const UserProfile: React.FC = () => {
   const [listingsPage, setListingsPage] = useState(0);
   const [boughtPage, setBoughtPage] = useState(0);
   const ITEMS_PER_PAGE = 4;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [product, setProduct] = useState<Listing | null>(null);
 
   const { id } = useParams();
   console.log("User ID from useParams:", id);
@@ -73,6 +76,35 @@ const UserProfile: React.FC = () => {
       setListings(listingsData.listings ? listingsData.listings : []);
     } catch (error) {
       console.error("Failed to fetch user listings:", error);
+    }
+  };
+
+  const handleDeleteListing = async (listingId: number) => {
+    try {
+      // delete the image from storage first
+      if (product?.image_url) {
+        const { error } = await supabase.storage
+          .from("images")
+          .remove([product.image_url]);
+        if (error) {
+          console.error("Error removing image from storage", error.message);
+          return;
+        }
+      }
+
+      const response = await fetch(
+        `http://localhost:3232/delete-listing?listing_id=${listingId}`
+      );
+      const data = await response.json();
+      if (data.response_type === "success") {
+        alert("Listing successfully deleted.");
+        fetchUserListings(userProfile?.clerk_id || "123");
+      } else {
+        alert("Failed to delete the listing.");
+      }
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      alert("An error occurred while trying to delete the listing.");
     }
   };
 
@@ -354,8 +386,9 @@ const UserProfile: React.FC = () => {
                 <button
                   className="btn btn-sm btn-outline-primary"
                   onClick={() => handleEditListing(listing)}
+                  title="Edit"
                 >
-                  Edit
+                  <i className="bi bi-pencil"></i>
                 </button>
                 <button
                   className="btn btn-sm btn-outline-success"
@@ -364,6 +397,17 @@ const UserProfile: React.FC = () => {
                   }}
                 >
                   {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
+                </button>
+
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  title="Delete"
+                  onClick={() => {
+                    setProduct(listing);
+                    setShowDeleteConfirm(true);
+                  }}
+                >
+                  <i className="bi bi-trash"></i>
                 </button>
               </div>
             </div>
@@ -443,6 +487,52 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && product && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          tabIndex={-1}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Delete Listing</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowDeleteConfirm(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to delete this listing? This action
+                  cannot be undone.
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-cancel"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => {
+                    handleDeleteListing(product.id);
+                    setShowDeleteConfirm(false);
+                  }}
+                >
+                  <i className="bi bi-trash"></i> Delete listing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

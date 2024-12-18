@@ -447,7 +447,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
-        <button type="submit" className="btn btn-secondary w-100">
+        <button type="submit" className="btn btn-submit w-100">
           {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>

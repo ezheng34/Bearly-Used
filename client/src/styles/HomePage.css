@@ -192,6 +192,14 @@ h6 {
   color: var(--primary-dark);
   text-align: center;
   width: 100%;
+  -webkit-line-clamp: 2;
+  line-clamp:inherit;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%; /* some of these are definitely unnecessary */
+
 }
 
 .homepage-listing-price {
@@ -215,7 +223,8 @@ h6 {
   line-height: 1.5;
   margin-top: 0.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp:inherit;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
