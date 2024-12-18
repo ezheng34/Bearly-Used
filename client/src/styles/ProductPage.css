@@ -129,6 +129,12 @@ p {
   font-size: 2.5rem;
   color: var(--primary-dark);
   margin-bottom: 1rem;
+  line-height: 1.2;          /* Tighten line spacing for large titles */
+  overflow: hidden;          /* Prevent overflow */
+  display: -webkit-box;      /* Enable multi-line truncation */
+  -webkit-box-orient: vertical; /* Required for line clamping */
+  word-break: break-word;    /* Break long words to avoid overflow */
+
 }
 
 .product-price {
@@ -227,8 +233,11 @@ p {
   background-color: var(--secondary-brown);
   transform: translateY(-2px);
 }
+
 .action-buttons {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -322,3 +331,9 @@ p {
   transform: translateY(-2px);
 }
 
+
+@media (max-width: 768px) {
+  .product-title {
+    font-size: 1.8rem;      /* Reduce font size on smaller screens */
+  }
+}
