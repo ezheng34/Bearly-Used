@@ -3,7 +3,6 @@ import {
   HashRouter as Router,
   Routes,
   Route,
-  useNavigate,
 } from "react-router-dom";
 import HomePage from "./web pages/HomePage";
 import UserProfile from "./web pages/UserProfile";
@@ -15,9 +14,7 @@ import { useState, useEffect } from "react";
 import {
   SignedIn,
   SignedOut,
-  SignInButton,
   SignOutButton,
-  UserButton,
   useUser,
 } from "@clerk/clerk-react";
 import SetupProfile from "./web pages/SetupProfile";
@@ -34,12 +31,16 @@ type userInfo = {
   tags: string[];
 };
 
+/**
+ * This is the highest level component which builds the application.
+ * It manages user log ins and routing of the application's pages. 
+ *
+ * @return JSX of the entire application
+ */
 const App: React.FC = () => {
   const { isSignedIn, user } = useUser();
   const [firstLogin, setFirstLogin] = useState(false);
   const [userInfo, setUserInfo] = useState<userInfo | null>(null);
-
-  // const navigate = useNavigate();
 
   useEffect(() => {
     // checks if user has loggined in for the first time. if so, send them to

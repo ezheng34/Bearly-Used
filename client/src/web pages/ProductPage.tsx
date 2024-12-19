@@ -4,7 +4,7 @@ import mockProducts from "../data/product";
 import ListItemPopup from "./ListItemPopup";
 import "../styles/ProductPage.css";
 import { Modal } from "bootstrap";
-import { getUserListings, getUserProfile, updateUserProfile } from "../api";
+import { getUserListings } from "../api";
 import { useUser } from "@clerk/clerk-react";
 import { supabase } from "../utils/supabaseClient";
 
@@ -40,14 +40,18 @@ interface Seller {
   school: string;
 }
 
+/**
+ * Renders the Product Page. Each Product has a unique Product page. 
+ * 
+ * @returns {JSX.Element} A JSX element representing a Product Page.
+ */
 const ProductPage: React.FC = () => {
   const { user } = useUser();
   const { id } = useParams();
   const navigate = useNavigate();
-  // -------------------------USED FOR MOCK DATA------------------------------------
+  // USED FOR MOCK DATA
   // const product = mockProducts.mockProducts.find((p) => p.id === Number(id));
   // const [mainImage, setMainImage] = useState(product?.images[0]);
-  // -------------------------USED FOR MOCK DATA------------------------------------
 
   const [product, setProduct] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
@@ -84,7 +88,7 @@ const ProductPage: React.FC = () => {
     });
   };
 
-  // Fetch the product data based on the ID
+  // Fetches the product data based on its id
   useEffect(() => {
     console.log("Listing ID:", id);
     if (!id) return;
@@ -234,7 +238,7 @@ const ProductPage: React.FC = () => {
                 className="product-image"
               />
             </div>
-            {/* DONT DELETE the commented out stuff pls! Will eventually integrate this back in */}
+            {/* Rendering logic for multiple images -- can be integrated in later */}
             {/* <div className="thumbnail-container">
               <div className="d-flex gap-3">
                 {product?.images.map((image, index) => (
@@ -366,6 +370,7 @@ const ProductPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
                 {/* Backdrop */}
                 {showDeleteConfirm && (
                   <div

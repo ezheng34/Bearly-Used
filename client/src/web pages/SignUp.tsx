@@ -1,8 +1,14 @@
-import React from "react";
 import "../styles/Signup.css"; // Make sure you reuse this for the styles
 import { SignInButton } from "@clerk/clerk-react";
 import logo from "../assets/logo.png";
 
+/**
+ * Renders a Sign Up Page. Prompts the user to log in. 
+ * 
+ * Only users signing in with a Brown or RISD email can proceed forward to the website.
+ * 
+ * @returns {JSX.Element} A JSX element representing a Sign Up Page. 
+ */
 const SignUp = () => {
   return (
     <div className="sign-up-container">

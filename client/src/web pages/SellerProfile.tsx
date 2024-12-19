@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../styles/UserProfile.css"; // Can reuse the same styles
-import { useUser } from "@clerk/clerk-react";
 import { getUserListings, getUserProfile } from "../api";
 
 type Listing = {
@@ -26,10 +25,13 @@ type SellerProfile = {
   tags: string[];
 };
 
+/**
+ * Renders Seller Profile Page. Displays the Seller's information and past and current listings. 
+ * 
+ * @returns {JSX.Element} A JSX element representing a Seller Profile Page. 
+ */
 const SellerProfile: React.FC = () => {
-  const { user } = useUser();
   const { sellerId } = useParams();
-  const navigate = useNavigate();
   const [listingsPage, setListingsPage] = useState(0);
   const [listings, setListings] = useState<Listing[]>([]);
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(
@@ -63,7 +65,7 @@ const SellerProfile: React.FC = () => {
     fetchUserListings(userId);
   }, []);
 
-  // // TODO placeholder seller data - replace with actual API call
+  // USED FOR MOCK DATA
   // const [seller, setSeller] = useState<SellerProfile>({
   //   id: 1,
   //   name: "Bob Smith",
@@ -86,7 +88,7 @@ const SellerProfile: React.FC = () => {
   //   // replace with actual sold listings
   // });
 
-  // same pagination logic as UserProfile
+  // Pagination logic, same as logic in UserProfile
   const paginate = (items: Listing[], page: number): Listing[] =>
     items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
@@ -121,6 +123,7 @@ const SellerProfile: React.FC = () => {
         </Link>
       </div>
 
+      {/* Seller Information */}
       <div className="profile-container">
         <div className="profile">
           <div className="profile-picture"></div>
@@ -135,6 +138,7 @@ const SellerProfile: React.FC = () => {
         </div>
       </div>
 
+      {/* Seller Listings */}
       <h2>Listings</h2>
       <div className="listings-navigation">
         <button

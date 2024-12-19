@@ -15,6 +15,11 @@ interface EditProfileProps {
   onSubmit: (updatedProfile: UserProfile) => void;
 }
 
+/**
+ * Renders a modal to allow the user to edit their personal information (name, school, phone number).
+ * 
+ * @returns {JSX.Element} A JSX element representing an Edit User Profile modal.
+ */
 const EditProfilePopup: React.FC<EditProfileProps> = ({
   initialData,
   onSubmit,
@@ -30,6 +35,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
     setFormData(initialData);
   }, [initialData]);
 
+  //handles edits made
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -51,6 +57,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
     }
   };
 
+  //handles submission of edits made 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -62,6 +69,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
     <div>
       <h2 className="text-center mb-4">Edit Profile</h2>
       <form onSubmit={handleSubmit}>
+        {/* Editing Name */}
         <div className="mb-3">
           <label htmlFor="name" className="form-label">
             Name
@@ -77,6 +85,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
           />
         </div>
 
+        {/* Editing School */}
         <div className="mb-3">
           <label htmlFor="school" className="form-label">
             School
@@ -95,6 +104,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
           </select>
         </div>
 
+        {/* Editing Phone Number */}
         <div className="mb-3">
           <label htmlFor="phone_number" className="form-label">
             Phone Number
@@ -112,6 +122,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
           />
         </div>
 
+        {/* Submit Changes */}
         <button
           type="submit"
           className="btn btn-primary"

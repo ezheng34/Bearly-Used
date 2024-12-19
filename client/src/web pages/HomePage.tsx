@@ -4,7 +4,6 @@ import { Modal } from "bootstrap";
 import "../styles/HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { useUser } from "@clerk/clerk-react";
 import mockProducts from "../data/product";
 import {
   BrowserRouter as Router,
@@ -14,23 +13,10 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-type Listing = {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  condition: string;
-  image_url: string;
-  tags: string[];
-  available: boolean;
-};
-
 const ITEMS_PER_PAGE = 8; // TODO change later
-
 type SortOrder = "" | "PRICE_ASC" | "PRICE_DESC";
 
-//actual backend types
+//backend structure for Listings
 interface ListingItem {
   id: number;
   title: string;
@@ -43,65 +29,21 @@ interface ListingItem {
   tags: string[];
 }
 
-// price interface
 interface Price {
   label: string | null;
   min: number | null;
   max: number | null;
 }
 
+/**
+ * Renders the Home Page 
+ * 
+ * Displays listings and has listing filtering functionalities.
+ * Can filter listings based on price, category, and search words.
+ * 
+ * @returns {JSX.Element} A JSX element representing the Home Page.
+ */
 const HomePage: React.FC = () => {
-  const { user } = useUser();
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    searchParams.get("category") || ""
-  );
-  const [selectedPrice, setSelectedPrice] = useState<Price | null>(
-    searchParams.get("priceLabel")
-      ? {
-          label: searchParams.get("priceLabel"),
-          min: searchParams.get("priceMin")
-            ? Number(searchParams.get("priceMin"))
-            : null,
-          max: searchParams.get("priceMax")
-            ? Number(searchParams.get("priceMax"))
-            : null,
-        }
-      : null
-  );
-
-  const [allListings, setAllListings] = useState<ListingItem[]>([]);
-  const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
-
-  const [priceSort, setPriceSort] = useState<SortOrder>(
-    (searchParams.get("priceSort") as SortOrder) || ""
-  );
-  const [currentPage, setCurrentPage] = useState(
-    Number(searchParams.get("page")) || 1
-  );
-
-  const [searchQuery, setSearchQuery] = useState<string>(
-    searchParams.get("search") || ""
-  );
-  const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
-
-  // Trigger the search when Enter is pressed
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setCurrentPage(1);
-      setSearchQuery(tempSearchQuery);
-    }
-  };
-
-  // -------------------------USED FOR MOCK DATA------------------------------------
-  // const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
-  //   mockProducts.mockProducts
-  // );
-  // -------------------------USED FOR MOCK DATA------------------------------------
-
   const categories = [
     "Electronics",
     "Furniture",
@@ -122,6 +64,45 @@ const HomePage: React.FC = () => {
     { label: "$30+", min: 30, max: null },
   ];
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get("category") || ""
+  );
+  const [selectedPrice, setSelectedPrice] = useState<Price | null>(
+    searchParams.get("priceLabel")
+      ? {
+          label: searchParams.get("priceLabel"),
+          min: searchParams.get("priceMin")
+            ? Number(searchParams.get("priceMin"))
+            : null,
+          max: searchParams.get("priceMax")
+            ? Number(searchParams.get("priceMax"))
+            : null,
+        }
+      : null
+  );
+  const [priceSort, setPriceSort] = useState<SortOrder>(
+    (searchParams.get("priceSort") as SortOrder) || ""
+  );
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get("search") || ""
+  );
+  const [tempSearchQuery, setTempSearchQuery] = useState<string>("");
+  // Trigger search when Enter key is pressed
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setCurrentPage(1);
+      setSearchQuery(tempSearchQuery);
+    }
+  };
+
+  const [allListings, setAllListings] = useState<ListingItem[]>([]);
+  const [filteredListings, setFilteredListings] = useState<ListingItem[]>([]);
+
+  // ----------------------------------PAGING LOGIC----------------------------------
   // Calculate total pages
   const totalPages = Math.ceil(filteredListings.length / ITEMS_PER_PAGE);
 
@@ -148,6 +129,12 @@ const HomePage: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  // ----------------------------------FILTERING LISTINGS LOGIC----------------------------------
+  // USED FOR MOCK DATA
+  // const [filteredListings, setFilteredListings] = useState<ListingItem[]>(
+  //   mockProducts.mockProducts
+  // );
+
   //fetch all listings from backend
   useEffect(() => {
     const fetchListings = async () => {
@@ -165,7 +152,6 @@ const HomePage: React.FC = () => {
         console.error("Error fetching listings");
       }
     };
-
     fetchListings();
   }, []);
 
@@ -175,11 +161,13 @@ const HomePage: React.FC = () => {
       const params = new URLSearchParams();
       let apiUrlBase = "http://localhost:3232/get-listings?";
 
+      // category filtering
       if (selectedCategory) {
         params.set("category", selectedCategory);
         apiUrlBase += `category=${selectedCategory}&`;
       }
 
+      // price filtering
       if (selectedPrice) {
         const { label, min, max } = selectedPrice;
 
@@ -206,10 +194,9 @@ const HomePage: React.FC = () => {
         apiUrlBase += `sorter=${priceSort}&`;
       }
 
+      // search filtering
       params.set("page", currentPage.toString());
-
       setSearchParams(params);
-
       console.log("API URL:", apiUrlBase);
 
       // if there's no search query, fetch listings with only filters applied
@@ -247,7 +234,7 @@ const HomePage: React.FC = () => {
           titleData.response_type === "success" &&
           tagsData.response_type === "success"
         ) {
-          // merge results and remove duplicates, lowkey kinda jank
+          // merge results and remove duplicates
           const mergedListings = [...titleData.result, ...tagsData.result];
           const uniqueListings = Array.from(
             new Map(mergedListings.map((item) => [item.id, item])).values()
@@ -264,8 +251,7 @@ const HomePage: React.FC = () => {
     fetchAndFilterListings();
   }, [selectedCategory, selectedPrice, priceSort, currentPage, searchQuery]);
 
-  // -------------------------USED FOR MOCK DATA------------------------------------
-
+  // USED FOR MOCK DATA
   /* 
   // THIS IS WHAT THE OLD FILTER WAS BEFORE I CHANGED IT -JULIE 
       let filteredListings = allListings;
@@ -335,9 +321,7 @@ const HomePage: React.FC = () => {
   //   setCurrentPage(1); // resert to first page when filters/sort change
   // }, [selectedCategory, selectedPrice, priceSort]);
 
-  // -------------------------USED FOR MOCK DATA------------------------------------
-
-  // prices dropdown with sorting options
+  // renders Prices Dropdown. displays price ranges to filter displayed listings.
   const renderPricesDropdown = () => (
     <li className="nav-item dropdown">
       <button
@@ -424,7 +408,7 @@ const HomePage: React.FC = () => {
     </li>
   );
 
-  // Initialize modal
+  // initialize Create Listing Modal
   useEffect(() => {
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
@@ -450,7 +434,8 @@ const HomePage: React.FC = () => {
     }
   };
 
-  //redirects user to product page via different url based on id of product
+  //redirects user to a product page via unique urls based on the product's id
+  const navigate = useNavigate();
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}?${searchParams.toString()}`);
   };
@@ -460,6 +445,7 @@ const HomePage: React.FC = () => {
       <nav className="navbar navbar-expand-lg">
         <div className="container-fluid">
           <ul className="navbar-nav">
+
             {/* Prices Dropdown */}
             {renderPricesDropdown()}
 
@@ -471,7 +457,7 @@ const HomePage: React.FC = () => {
                 id="DropdownCategory"
                 aria-expanded="false"
                 style={{
-                  position: "relative", 
+                  position: "relative",
                   left: "40px",
                 }}
               >
@@ -506,7 +492,7 @@ const HomePage: React.FC = () => {
               </ul>
             </li>
 
-            {/* Clear All Filters */}
+            {/* Clear Price and Category Filters */}
             {(selectedCategory || selectedPrice) && (
               <li className="nav-item">
                 <button
@@ -568,7 +554,7 @@ const HomePage: React.FC = () => {
         </div>
       </nav>
 
-      {/* Display filtered listings */}
+      {/* Display Filtered Listings */}
       <div className="homepage-listings">
         {filteredListings.length > 0 ? (
           <div className="homepage-listings-grid">
@@ -609,7 +595,7 @@ const HomePage: React.FC = () => {
         )}
       </div>
 
-      {/* only show pagination if there are items */}
+      {/* Pagination for Listings */}
       {filteredListings.length > 0 && (
         <nav aria-label="Product pages" className="mt-4">
           <ul className="pagination justify-content-center">
@@ -656,7 +642,7 @@ const HomePage: React.FC = () => {
         </nav>
       )}
 
-      {/* Add Modal markup */}
+      {/* Add Modal Markup */}
       <div
         className="modal fade"
         id="addListingModal"

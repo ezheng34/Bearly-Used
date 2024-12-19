@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
 import "../styles/SetupProfile.css"; // Can reuse the same styles
 import { useUser } from "@clerk/clerk-react";
 
@@ -7,6 +6,11 @@ interface SetupProfileProps {
   setFirstLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Renders a Set Up Profile Page. Only displayed when its the user's first time logging in. 
+ * 
+ * @returns {JSX.Element} A JSX element representing a Set Up Profile Page.
+ */
 const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
@@ -47,6 +51,8 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
       <h2>Configure Your Information</h2>
       <form onSubmit={handleSubmit} className="setup-profile-form">
         {error && <p className="error-message">{error}</p>}
+
+        {/* Configuring Name */}
         <div className="form-group">
           <label htmlFor="name">Name</label>
           <input
@@ -58,6 +64,7 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
             required
           />
         </div>
+        {/* Configuring Phone Number */}
         <div className="form-group">
           <label htmlFor="phoneNumber">Phone Number</label>
           <input
@@ -69,6 +76,7 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
             required
           />
         </div>
+        {/* Configuring School */}
         <div className="form-group">
           <label htmlFor="school">School:</label>
           <select

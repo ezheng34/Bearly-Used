@@ -5,7 +5,7 @@ import ListItemPopup from "./ListItemPopup";
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { getUserListings, getUserProfile, updateUserProfile } from "../api";
+import { getUserListings, getUserProfile } from "../api";
 import { useUser } from "@clerk/clerk-react";
 import EditProfilePopup from "./EditProfilePopup";
 import { supabase } from "../utils/supabaseClient";
@@ -32,6 +32,11 @@ type UserProfile = {
   tags: string[];
 };
 
+/**
+ * Renders a User Profile Page. Displays the User's information listings. 
+ * 
+ * @returns {JSX.Element} A JSX element representing a User Profile Page. 
+ */
 const UserProfile: React.FC = () => {
   const { user } = useUser();
   const [listings, setListings] = useState<Listing[]>([]);
@@ -44,20 +49,12 @@ const UserProfile: React.FC = () => {
 
   const { id } = useParams();
   console.log("User ID from useParams:", id);
-  // useEffect(() => {
-  //   // let id = 9
-  //   if (id) {
-  //     fetchUserData(Number(id));
-  //     fetchUserListings(Number(id));
-  //   }
-  // }, [id]);
-  // -------------------------USED FOR MOCK DATA------------------------------------
+
   useEffect(() => {
     const userId = user?.id || "";
     fetchUserData(userId);
     fetchUserListings(userId);
   }, []);
-  // -------------------------USED FOR MOCK DATA------------------------------------
 
   const fetchUserData = async (userId: string) => {
     try {
@@ -91,7 +88,6 @@ const UserProfile: React.FC = () => {
           return;
         }
       }
-
       const response = await fetch(
         `http://localhost:3232/delete-listing?listing_id=${listingId}`
       );
@@ -108,7 +104,7 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  // paginate for arrow press on listings/items bought prob have to separate later
+  // paginate for arrow press on listings/items bought
   const paginate = (items: Listing[], page: number): Listing[] =>
     items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
@@ -205,7 +201,7 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  // Initialize modal
+  // Initialize ListItemPopup modal for creating Listings
   useEffect(() => {
     const modalElement = document.getElementById("addListingModal");
     if (modalElement) {
@@ -213,6 +209,7 @@ const UserProfile: React.FC = () => {
     }
   }, []);
 
+  // Initialize ListItemPopup modal for editing Listings
   useEffect(() => {
     const modalElement = document.getElementById("editListingModal");
     if (modalElement) {
@@ -487,6 +484,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && product && (
         <div

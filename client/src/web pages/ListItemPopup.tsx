@@ -3,7 +3,7 @@ import "../styles/ListItemPopup.css";
 import { Modal } from "bootstrap";
 import { supabase } from "../utils/supabaseClient";
 import { useUser } from "@clerk/clerk-react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface ListingForm {
   sellerId: number;
@@ -25,6 +25,11 @@ interface ListItemPopupProps {
   editId?: number;
 }
 
+/**
+ * Renders a ListItemPopup modal to allow the user to create a Listing or edit a preexisting Listing.
+ * 
+ * @returns {JSX.Element} A JSX element representing a ListItemPopup modal.
+ */
 const ListItemPopup: React.FC<ListItemPopupProps> = ({
   onSubmit,
   isEditing = false,
@@ -67,7 +72,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
-      // Also set the price input
       setPriceInput(initialData.price.toString());
     }
   }, [initialData]);
@@ -141,7 +145,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     if (imagePreviews[index]) {
       URL.revokeObjectURL(imagePreviews[index]);
     }
-
     // Remove image from both formData and previews
     setFormData({
       ...formData,
@@ -151,7 +154,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       // upload image to supabase storage and get the url
       const uploadedImageUrls = await Promise.all(
@@ -264,15 +266,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
 
   return (
     <div>
-      {/* INSTEAD OF CREATING A CLOSE BUTTON HERE, I CREATE A CLOSE BUTTON IN THE RETURN BODY OF THE TSX. FILE THAT WANTS TO USE A LISTITEMPOPUP MODAL. 
-      if the close button is rendered here it is non functional sometimes and its super weird. rendering it elsewhere guarantees that it works */}
-
-      {/* <button
-        type="button"
-        className="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Close"
-      ></button> */}
       <h2 className="text-center mb-4">
         {isEditing ? "Edit Listing" : "Create Listing"}
       </h2>
@@ -311,7 +304,6 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
               value={priceInput}
               onChange={(e) => {
                 const value = e.target.value;
-                // got regex thingy from Claude
                 if (value === "" || /^\d*\.?\d{0,2}$/.test(value)) {
                   setPriceInput(value);
                   setFormData({
