@@ -398,7 +398,7 @@ test("Marking a listing as sold hides it", async ({ page }) => {
     .getByPlaceholder("Search listings by title or tags...")
     .fill(uniqueTitle3);
   await page.keyboard.press("Enter");
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(3000);
   await expect(page.getByText(uniqueTitle3)).toBeVisible();
 
   // Mark the listing as sold
@@ -417,6 +417,7 @@ test("Marking a listing as sold hides it", async ({ page }) => {
 
   // Delete the listing
   await page.goto(url);
+  await page.waitForTimeout(2000);
   await page.locator("a.user-name").click();
   await page.waitForTimeout(3000);
   await page
