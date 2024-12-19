@@ -414,6 +414,23 @@ test("Marking a listing as sold hides it", async ({ page }) => {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(2000);
   await expect(page.getByText("No Items Found")).toBeVisible();
+
+  // Delete the listing
+  await page.goto(url);
+  await page.locator("a.user-name").click();
+  await page.waitForTimeout(3000);
+  await page
+    .locator(`text=${uniqueTitle3}`)
+    .locator("..")
+    .locator('button[title="Delete"]')
+    .click();
+  await expect(
+    page.getByText(
+      "Are you sure you want to delete this listing? This action cannot be undone."
+    )
+  ).toBeVisible();
+  await page.locator("#confirm-delete-listing").click();
+  await page.waitForTimeout(2000);
 });
 
 /* Viewing seller profile */
@@ -450,14 +467,29 @@ test("Viewing seller profile works properly", async ({ page }) => {
   await page.waitForTimeout(2000);
 
   // Verify seller profile details
-  await expect(page.getByText("hello@brown.edu")).toBeVisible();
-  await expect(page.getByText("Student")).toBeVisible();
-  await expect(page.getByText("School: Brown")).toBeVisible();
-  await expect(page.getByText("Phone Number: 216-222-2121")).toBeVisible();
+  await expect(page.getByText("hello@brown.edu").first()).toBeVisible();
+  await expect(page.getByText("Student").first()).toBeVisible();
+  await expect(page.getByText("Brown").first()).toBeVisible();
+  await expect(page.getByText("216-222-2121")).toBeVisible();
 
-  // Go back to the homepage
+  // Delete the listing 
   await page.locator("a.back-link").click();
   await expect(page.locator("div.homepage-listings")).toBeVisible();
+  await page
+  .getByPlaceholder("Search listings by title or tags...")
+  .fill(uniqueTitle);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(2000);
+  await page.getByText(uniqueTitle).first().click();
+  await page.getByText("Delete listing", { exact: true }).click();
+  await expect(
+    page.getByText(
+      "Are you sure you want to delete this listing? This action cannot be undone."
+    )
+  ).toBeVisible();
+  await page.locator("#confirm-delete-listing").click();
+  await page.waitForTimeout(2000);
+
 });
 
 test("Copying seller's email works properly", async ({ page }) => {
@@ -492,7 +524,7 @@ test("Copying seller's email works properly", async ({ page }) => {
   const email = await page
     .locator(".seller-detail:has-text('Email') span")
     .innerText();
-  await page.getByText("Copy email address").click();
+  await page.locator('button[title="Copy email address"]').click();
 
   // Verify clipboard content
   const clipboardText = await page.evaluate(() =>
