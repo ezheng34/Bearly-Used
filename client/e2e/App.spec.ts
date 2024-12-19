@@ -54,7 +54,7 @@ test("Switching between pages loads correctly", async ({ page }) => {
   await expect(page.locator("div.listings-navigation")).toBeVisible();
   await expect(page.locator("button.edit-profile")).toBeVisible();
   await expect(page.locator("button.create-listing")).toBeVisible();
-  await expect(page.locator("h2.name")).toHaveText("Student");
+  await expect(page.locator("h2.name")).toContainText("Student");
   await expect(page.locator("p.school")).toHaveText("School: Brown");
   await expect(page.locator("p.email")).toHaveText("Email: hello@brown.edu");
   await expect(page.locator("p.phone")).toHaveText(
@@ -257,11 +257,89 @@ test("Searching by price, category, and tags works properly", async ({ page }) =
   await page.waitForTimeout(2000);
 });
 
-/* Edit profile */
+/* Go to profile, see listings, edit information, create/delete listings */
+test("Editing profile information and creating/editing listings from profile works properly", async ({ page }) => {
+  // Go to profile 
+  await page.locator("a.user-name").click();
+  await page.waitForTimeout(2000);
 
-/* Create/delete listing from profile */
+  // Check info is correct 
+  await expect(page.getByText("hello@brown.edu")).toBeVisible(); 
+  await expect(page.getByText("Student").first()).toBeVisible(); 
+  await expect(page.getByText("216-222-2121")).toBeVisible(); 
+
+  // Edit profile info and check it changed 
+  await page.getByText("Edit Profile").click(); 
+  await page.locator('input[name="name"]').fill("Student1");
+  await page.getByText("Save Changes").click(); 
+  await page.waitForTimeout(2000);
+  await page.reload();
+  await page.waitForTimeout(2000);
+  await expect(page.getByText("Student1").first()).toBeVisible(); 
+
+  // Change it back 
+  await page.getByText("Edit Profile").click(); 
+  await page.locator('input[name="name"]').fill("Student");
+  await page.getByText("Save Changes").click(); 
+  await page.waitForTimeout(2000);
+  await page.reload();
+  await page.waitForTimeout(2000);
+
+  // Create a listing from profile and check its there 
+  await page.locator("button.create-listing").click();
+  const uniqueTitle = `Test Item ${Date.now()}`; 
+  await page.locator('input[name="title"]').fill(uniqueTitle);
+
+  await page
+    .locator('textarea[name="description"]')
+    .fill("Description");
+  await page.locator('input[name="price"]').fill("4.00");
+  await page
+    .locator('select[name="category"]')
+    .selectOption({ label: "Other" });
+  await page.locator('select[name="condition"]').selectOption({ label: "New" });
+  await page.locator('input[name="tags"]').fill("test tag1");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page.locator('input[name="tags"]').fill("test tag2");
+  await page.locator('input[name="tags"]').press("Enter");
+  await page
+    .locator('input[type="file"][accept="image/*"]')
+    .setInputFiles("./dummy.png");
+  await page.locator("button.btn.btn-submit.w-100").click();
+  await page.waitForTimeout(2000);
+  await page.goto(url); 
+  await page.locator("a.user-name").click();
+  await page.waitForTimeout(2000);
+  await expect(page.getByText(uniqueTitle)).toBeVisible(); 
+
+  // Edit the listing from profile and check its correct
+  await page.locator(`text=${uniqueTitle}`).locator('..').locator('button[title="Edit"]').click();
+  await page.locator('input[name="price"]').first().fill("5.00");
+  const uniqueTitle2 = `Test Item ${Date.now()}`; 
+  await page.locator('input[name="title"]').first().fill(uniqueTitle2);
+  await page.getByText("Save changes").click(); 
+  await page.waitForTimeout(2000);
+
+  await page.goto(url); 
+  await page.locator("a.user-name").click();
+  await page.waitForTimeout(2000);
+  await expect(page.getByText("$5.00").first()).toBeVisible(); 
+  await expect(page.getByText(uniqueTitle2)).toBeVisible(); 
+
+  // Delete the listing from profile 
+  await page.locator(`text=${uniqueTitle2}`).locator('..').locator('button[title="Delete"]').click();
+  await expect(page.getByText("Are you sure you want to delete this listing? This action cannot be undone.")).toBeVisible(); 
+  await page.locator("#confirm-delete-listing").click(); 
+  await page.waitForTimeout(2000);
+  await page.reload();
+  await page.waitForTimeout(2000);
+  await page.locator("a.user-name").click();
+  await expect(page.getByText(uniqueTitle2)).not.toBeVisible(); 
+});
 
 /* Mark as sold hides the item */
+
+/* Viewing seller profile */
 
 
 

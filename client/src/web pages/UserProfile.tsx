@@ -526,7 +526,8 @@ const UserProfile: React.FC = () => {
                     setShowDeleteConfirm(false);
                   }}
                 >
-                  <i className="bi bi-trash"></i> Delete listing
+                  <i id="confirm-delete-listing" className="bi bi-trash"></i>{" "}
+                  Delete listing
                 </button>
               </div>
             </div>
