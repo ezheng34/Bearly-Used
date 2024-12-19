@@ -7,8 +7,8 @@ interface SetupProfileProps {
 }
 
 /**
- * Renders a Set Up Profile Page. Only displayed when its the user's first time logging in. 
- * 
+ * Renders a Set Up Profile Page. Only displayed when its the user's first time logging in.
+ *
  * @returns {JSX.Element} A JSX element representing a Set Up Profile Page.
  */
 const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
@@ -47,13 +47,24 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
   };
 
   return (
-    <div className="setup-profile-container">
-      <h2>Configure Your Information</h2>
-      <form onSubmit={handleSubmit} className="setup-profile-form">
-        {error && <p className="error-message">{error}</p>}
+    <div
+      className="setup-profile-container"
+      aria-label="Setup profile container"
+    >
+      <h2 aria-label="Setup profile heading">Configure Your Information</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="setup-profile-form"
+        aria-label="Setup profile form"
+      >
+        {error && (
+          <p className="error-message" aria-label={`Error: ${error}`}>
+            {error}
+          </p>
+        )}
 
         {/* Configuring Name */}
-        <div className="form-group">
+        <div className="form-group" aria-label="Name input field">
           <label htmlFor="name">Name</label>
           <input
             id="name"
@@ -61,11 +72,12 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your full name"
+            aria-label="Enter your full name"
             required
           />
         </div>
         {/* Configuring Phone Number */}
-        <div className="form-group">
+        <div className="form-group" aria-label="Phone number input field">
           <label htmlFor="phoneNumber">Phone Number</label>
           <input
             id="phoneNumber"
@@ -74,15 +86,17 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="123-456-7890"
             required
+            aria-label="Enter your phone number in the format 123-456-7890"
           />
         </div>
         {/* Configuring School */}
-        <div className="form-group">
+        <div className="form-group" aria-label="School selection field">
           <label htmlFor="school">School:</label>
           <select
             id="school"
             value={school}
             onChange={(e) => setSchool(e.target.value)}
+            aria-label="Select your school"
             required
           >
             <option value="" disabled>
@@ -92,7 +106,11 @@ const SetupProfile = ({ setFirstLogin }: SetupProfileProps) => {
             <option value="RISD">RISD</option>
           </select>
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          aria-label="Save and continue button"
+          className="btn btn-primary"
+        >
           Save and Continue
         </button>
       </form>

@@ -13,7 +13,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 8; // TODO change later
+const ITEMS_PER_PAGE = 8;
 type SortOrder = "" | "PRICE_ASC" | "PRICE_DESC";
 
 //backend structure for Listings
@@ -29,6 +29,7 @@ interface ListingItem {
   tags: string[];
 }
 
+// defines the structure of a price range filter
 interface Price {
   label: string | null;
   min: number | null;
@@ -36,14 +37,15 @@ interface Price {
 }
 
 /**
- * Renders the Home Page 
- * 
+ * Renders the Home Page
+ *
  * Displays listings and has listing filtering functionalities.
  * Can filter listings based on price, category, and search words.
- * 
+ *
  * @returns {JSX.Element} A JSX element representing the Home Page.
  */
 const HomePage: React.FC = () => {
+  // lists all available categories for filtering
   const categories = [
     "Electronics",
     "Furniture",
@@ -55,6 +57,7 @@ const HomePage: React.FC = () => {
     "Other",
   ];
 
+  // defines the available price ranges for filtering
   const priceRanges = [
     { label: "Free", min: 0, max: 0 },
     { label: "Less than $5", min: 0.01, max: 5 },
@@ -64,6 +67,7 @@ const HomePage: React.FC = () => {
     { label: "$30+", min: 30, max: null },
   ];
 
+  // initializes search parameters from the URL
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get("category") || ""
@@ -329,6 +333,7 @@ const HomePage: React.FC = () => {
         data-bs-toggle="dropdown"
         id="DropdownPrice"
         aria-expanded="false"
+        aria-label="Select price filter"
         style={{
           position: "relative",
           left: "20px",
@@ -338,7 +343,9 @@ const HomePage: React.FC = () => {
       </button>
       <ul className="dropdown-menu" aria-labelledby="DropdownPrice">
         <li>
-          <h6 className="dropdown-header">Price Range</h6>
+          <h6 className="dropdown-header" aria-label="Price Range">
+            Price Range
+          </h6>
         </li>
         {priceRanges.map((range) => (
           <li key={range.label}>
@@ -369,7 +376,8 @@ const HomePage: React.FC = () => {
               setCurrentPage(1), setPriceSort("PRICE_ASC");
             }}
           >
-            <i className="bi bi-arrow-up"></i> Low to High
+            <i className="bi bi-arrow-up" aria-label="Low to high"></i> Low to
+            High
           </button>
         </li>
         <li>
@@ -442,74 +450,81 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg">
+      <nav className="navbar navbar-expand-lg" aria-label="Main navigation">
         <div className="container-fluid">
           <ul className="navbar-nav">
+            <div className="dropdown-container">
+              {/* Prices Dropdown */}
+              {renderPricesDropdown()}
 
-            {/* Prices Dropdown */}
-            {renderPricesDropdown()}
-
-            {/* Categories Dropdown */}
-            <li className="nav-item dropdown">
-              <button
-                className="nav-link dropdown-toggle"
-                data-bs-toggle="dropdown"
-                id="DropdownCategory"
-                aria-expanded="false"
-                style={{
-                  position: "relative",
-                  left: "40px",
-                }}
-              >
-                {selectedCategory || "Categories"}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="DropdownCategory">
-                {categories.map((category) => (
-                  <li key={category}>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </button>
-                  </li>
-                ))}
-                {selectedCategory && (
-                  <>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => setSelectedCategory("")}
-                      >
-                        Clear Category Filter
-                      </button>
-                    </li>
-                  </>
-                )}
-              </ul>
-            </li>
-
-            {/* Clear Price and Category Filters */}
-            {(selectedCategory || selectedPrice) && (
-              <li className="nav-item">
+              {/* Categories Dropdown */}
+              <li className="nav-item dropdown">
                 <button
-                  className="nav-link"
-                  onClick={() => {
-                    setSelectedCategory("");
-                    setSelectedPrice(null);
+                  className="nav-link dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  id="DropdownCategory"
+                  aria-expanded="false"
+                  aria-label="Select category filter"
+                  style={{
+                    position: "relative",
+                    left: "40px",
                   }}
                 >
-                  Clear All Filters
+                  {selectedCategory || "Categories"}
                 </button>
+                <ul
+                  className="dropdown-menu"
+                  aria-labelledby="DropdownCategory"
+                >
+                  {categories.map((category) => (
+                    <li key={category}>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => setSelectedCategory(category)}
+                        aria-label={`Filter by category: ${category}`}
+                      >
+                        {category}
+                      </button>
+                    </li>
+                  ))}
+                  {selectedCategory && (
+                    <>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          aria-label="Clear category filter"
+                          onClick={() => setSelectedCategory("")}
+                        >
+                          Clear Category Filter
+                        </button>
+                      </li>
+                    </>
+                  )}
+                </ul>
               </li>
-            )}
+
+              {/* Clear Price and Category Filters */}
+              {(selectedCategory || selectedPrice) && (
+                <li className="nav-item">
+                  <button
+                    className="nav-link"
+                    onClick={() => {
+                      setSelectedCategory("");
+                      setSelectedPrice(null);
+                    }}
+                  >
+                    Clear All Filters
+                  </button>
+                </li>
+              )}
+            </div>
           </ul>
 
           {/* Search */}
-          <div className="search-bar mx-4">
+          <div className="search-bar mx-4" aria-label="Search listings">
             <input
               type="text"
               placeholder="Search listings by title or tags..."
@@ -517,6 +532,7 @@ const HomePage: React.FC = () => {
               onChange={(e) => setTempSearchQuery(e.target.value)}
               className="form-control"
               onKeyDown={handleKeyDown}
+              aria-label="Enter search query"
             />
             <button
               type="button"
@@ -524,6 +540,7 @@ const HomePage: React.FC = () => {
               onClick={() => {
                 setCurrentPage(1), setSearchQuery(tempSearchQuery);
               }}
+              aria-label="Press to search"
             >
               🔍
             </button>
@@ -547,6 +564,7 @@ const HomePage: React.FC = () => {
             className="create-listing"
             data-bs-toggle="modal"
             data-bs-target="#addListingModal"
+            aria-label="Create new listing"
             font-family="DM Sans"
           >
             Create Listing
@@ -555,7 +573,7 @@ const HomePage: React.FC = () => {
       </nav>
 
       {/* Display Filtered Listings */}
-      <div className="homepage-listings">
+      <div className="homepage-listings" aria-label="Filtered product listings">
         {filteredListings.length > 0 ? (
           <div className="homepage-listings-grid">
             {getCurrentItems().map((item) => (
@@ -564,30 +582,44 @@ const HomePage: React.FC = () => {
                 className="homepage-listing cursor-pointer"
                 onClick={() => handleProductClick(item.id)}
                 style={{ cursor: "pointer" }}
+                aria-label={`View product: ${item.title}`}
               >
                 <div className="homepage-listing-image">
-                  {/* <img
-                    src={item.images[0]} //used when mock
-                    className="img-fluid rounded mb-3 product-image"
-                    alt={item.title}
-                  /> */}
                   <img
                     src={item.image_url}
                     className="img-fluid rounded mb-3 product-image"
                     alt="Product"
                   />
                 </div>
-                <div className="homepage-listing-title">{item.title}</div>
-                <div className="homepage-listing-price">${item.price}</div>
-                <div className="homepage-listing-category">{item.category}</div>
-                <div className="homepage-listing-description">
+                <div
+                  className="homepage-listing-title"
+                  aria-label={`Product title: ${item.title}`}
+                >
+                  {item.title}
+                </div>
+                <div
+                  className="homepage-listing-price"
+                  aria-label={`Price: $${item.price}`}
+                >
+                  ${item.price}
+                </div>
+                <div
+                  className="homepage-listing-category"
+                  aria-label={`Category: ${item.category}`}
+                >
+                  {item.category}
+                </div>
+                <div
+                  className="homepage-listing-description"
+                  aria-label={`Description: ${item.description}`}
+                >
                   {item.description}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="no-items-found">
+          <div className="no-items-found" aria-label="No items found">
             <i className="bi bi-search"></i>
             <h3>No Items Found</h3>
             <p>Try adjusting your filters or search terms!</p>
@@ -597,13 +629,14 @@ const HomePage: React.FC = () => {
 
       {/* Pagination for Listings */}
       {filteredListings.length > 0 && (
-        <nav aria-label="Product pages" className="mt-4">
+        <nav aria-label="Pagination for product listings" className="mt-4">
           <ul className="pagination justify-content-center">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
                 className="page-link"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
+                aria-label="Previous page"
               >
                 Previous
               </button>
@@ -615,10 +648,12 @@ const HomePage: React.FC = () => {
                 className={`page-item ${
                   currentPage === number ? "active" : ""
                 }`}
+                aria-current={currentPage === number ? "page" : undefined}
               >
                 <button
                   className="page-link"
                   onClick={() => handlePageChange(number)}
+                  aria-label={`Go to page ${number}`}
                 >
                   {number}
                 </button>
@@ -634,6 +669,7 @@ const HomePage: React.FC = () => {
                 className="page-link"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                aria-label="Next page"
               >
                 Next
               </button>
@@ -656,10 +692,12 @@ const HomePage: React.FC = () => {
               type="button"
               className="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
+              aria-label="Close modal for adding a listing"
               style={{
                 fontSize: "0.75rem",
-                padding: "0.25rem",
+                padding: "0.5rem",
+                paddingLeft: "1rem",
+                paddingTop: "1rem",
               }}
             ></button>
 

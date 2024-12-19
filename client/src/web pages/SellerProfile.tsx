@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import "../styles/UserProfile.css"; // Can reuse the same styles
+import "../styles/UserProfile.css";
 import { getUserListings, getUserProfile } from "../api";
 
 type Listing = {
@@ -26,9 +26,9 @@ type SellerProfile = {
 };
 
 /**
- * Renders Seller Profile Page. Displays the Seller's information and past and current listings. 
- * 
- * @returns {JSX.Element} A JSX element representing a Seller Profile Page. 
+ * Renders Seller Profile Page. Displays the Seller's information and past and current listings.
+ *
+ * @returns {JSX.Element} A JSX element representing a Seller Profile Page.
  */
 const SellerProfile: React.FC = () => {
   const { sellerId } = useParams();
@@ -110,13 +110,17 @@ const SellerProfile: React.FC = () => {
   const visibleListings = paginate(listings, listingsPage);
 
   return (
-    <div className="user-profile-container">
-      <div className="header">
-        <Link to="/" className="back-link">
+    <div
+      className="user-profile-container"
+      aria-label="Seller profile container"
+    >
+      <div className="header" aria-label="Header section">
+        <Link to="/" className="back-link" aria-label="Go back to home page">
           <svg
             className="back-icon"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -124,14 +128,30 @@ const SellerProfile: React.FC = () => {
       </div>
 
       {/* Seller Information */}
-      <div className="profile-container">
-        <div className="profile">
-          <div className="profile-picture"></div>
+      <div className="profile-container" aria-label="Profile container">
+        <div className="profile" aria-label="Seller profile information">
+          <div className="profile-picture" aria-label="Profile picture"></div>
           <div className="profile-info">
-            <h2 className="name">{sellerProfile?.name}</h2>
-            <p className="school">School: {sellerProfile?.school} 🏫 </p>
-            <p className="email">Email: {sellerProfile?.email} 💌 </p>
-            <p className="phone number">
+            <h2
+              className="name"
+              aria-label={`Seller name: ${sellerProfile?.name}`}
+            ></h2>
+            <p
+              className="school"
+              aria-label={`Seller school: ${sellerProfile?.school}`}
+            >
+              School: {sellerProfile?.school} 🏫{" "}
+            </p>
+            <p
+              className="email"
+              aria-label={`Seller email: ${sellerProfile?.email}`}
+            >
+              Email: {sellerProfile?.email} 💌{" "}
+            </p>
+            <p
+              className="phone number"
+              aria-label={`Seller phone number: ${sellerProfile?.phone_number}`}
+            >
               Phone Number: {sellerProfile?.phone_number} 📞
             </p>
           </div>
@@ -139,22 +159,46 @@ const SellerProfile: React.FC = () => {
       </div>
 
       {/* Seller Listings */}
-      <h2>Listings</h2>
-      <div className="listings-navigation">
+      <h2 aria-label="Seller's listings">Listings</h2>
+      <div className="listings-navigation" aria-label="Listings navigation">
         <button
           className="arrow-btn"
           onClick={() => handlePrevPage(listingsPage, setListingsPage)}
           disabled={listingsPage === 0}
+          aria-label="Previous page of listings"
         >
           &#8592;
         </button>
-        <div className="listings">
+        <div className="listings" aria-label="Seller's current listings">
           {visibleListings.map((listing: Listing) => (
-            <div key={listing.id} className="listing">
-              {!listing.available && <div className="sold-badge">SOLD</div>}
-              <img src={listing.image_url} className="listing-image" />
-              <p className="listing-price">${listing.price.toFixed(2)}</p>
-              <p className="listing-name">{listing.title}</p>
+            <div
+              key={listing.id}
+              className="listing"
+              aria-label={`Listing ${listing.title}`}
+            >
+              {!listing.available && (
+                <div className="sold-badge" aria-label="Sold badge">
+                  SOLD
+                </div>
+              )}
+              <img
+                src={listing.image_url}
+                className="listing-image"
+                alt={listing.title}
+                aria-label={`Image for ${listing.title}`}
+              />
+              <p
+                className="listing-price"
+                aria-label={`Price: $${listing.price.toFixed(2)}`}
+              >
+                {" "}
+              </p>
+              <p
+                className="listing-name"
+                aria-label={`Listing title: ${listing.title}`}
+              >
+                {listing.title}
+              </p>
             </div>
           ))}
         </div>
@@ -164,6 +208,7 @@ const SellerProfile: React.FC = () => {
             handleNextPage(listingsPage, setListingsPage, listings)
           }
           disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= listings.length}
+          aria-label="Next page of listings"
         >
           &#8594;
         </button>

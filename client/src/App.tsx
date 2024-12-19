@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  HashRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./web pages/HomePage";
 import UserProfile from "./web pages/UserProfile";
 import SellerProfile from "./web pages/SellerProfile";
@@ -33,7 +29,7 @@ type userInfo = {
 
 /**
  * This is the highest level component which builds the application.
- * It manages user log ins and routing of the application's pages. 
+ * It manages user log ins and routing of the application's pages.
  *
  * @return JSX of the entire application
  */
@@ -71,49 +67,86 @@ const App: React.FC = () => {
   // };
 
   return (
-    <div>
+    <div aria-label="Application Container">
       <SignedOut>
-        <SignUp />
+        <SignUp aria-label="Sign-Up Page" />
       </SignedOut>
       <SignedIn>
         <Router>
           {firstLogin ? (
-            <SetupProfile setFirstLogin={setFirstLogin} />
+            <SetupProfile
+              setFirstLogin={setFirstLogin}
+              aria-label="Setup Profile Page"
+            />
           ) : (
             //<SetupProfile setFirstLogin={setFirstLogin} />
             <div>
-              <nav className="navbar navbar-expand-lg navbar-custom">
-                <div className="container-fluid navbar-container">
-                  <a className="navbar-brand" href="/">
+              <nav
+                className="navbar navbar-expand-lg navbar-custom"
+                aria-label="Main Navigation"
+              >
+                <div
+                  className="container-fluid navbar-container"
+                  aria-label="Navigation Container"
+                >
+                  <a
+                    className="navbar-brand"
+                    href="/"
+                    aria-label="Bearly Used Home Page Link"
+                  >
                     <img
                       src={logo}
                       style={{ height: "50px", marginRight: "10px" }}
+                      alt="Bearly Used Logo"
+                      aria-label="Application Logo"
                     />
                     Bearly Used
                   </a>
-                  <div className="user-profile-section">
-                    <a href="/#/user" className="user-name">
+                  <div
+                    className="user-profile-section"
+                    aria-label="User Profile Section"
+                  >
+                    <a
+                      href="/#/user"
+                      className="user-name"
+                      aria-label="User Profile Page Link"
+                    >
                       {userInfo?.name || "username"}
                     </a>
-                    <a href="/#/user">
+                    <a href="/#/user" aria-label="User Profile Page Link">
                       <img
                         alt="Profile"
                         className="profile-picture"
                         src={user?.imageUrl}
+                        aria-label="User Profile Picture"
                       />
                     </a>
                     <SignOutButton>
-                      <button className="btn-signout">Sign out</button>
+                      <button
+                        className="btn-signout"
+                        aria-label="Sign Out Button"
+                      >
+                        Sign out
+                      </button>
                     </SignOutButton>
                   </div>
                 </div>
               </nav>
 
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/user" element={<UserProfile />} />
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/seller/:sellerId" element={<SellerProfile />} />
+                <Route path="/" element={<HomePage aria-label="Home Page" />} />
+                <Route
+                  path="/user"
+                  element={<UserProfile aria-label="User Profile Page" />}
+                />
+                <Route
+                  path="/product/:id"
+                  element={<ProductPage aria-label="Product Page" />}
+                />
+                <Route
+                  path="/seller/:sellerId"
+                  element={<SellerProfile aria-label="Seller Profile Page" />}
+                />
               </Routes>
             </div>
           )}
