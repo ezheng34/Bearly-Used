@@ -135,7 +135,7 @@ const SellerProfile: React.FC = () => {
         </div>
       </div>
 
-      <h2>Previously Sold Items</h2>
+      <h2>Listings</h2>
       <div className="listings-navigation">
         <button
           className="arrow-btn"
@@ -147,6 +147,7 @@ const SellerProfile: React.FC = () => {
         <div className="listings">
           {visibleListings.map((listing: Listing) => (
             <div key={listing.id} className="listing">
+              {!listing.available && <div className="sold-badge">SOLD</div>}
               <img src={listing.image_url} className="listing-image" />
               <p className="listing-price">${listing.price.toFixed(2)}</p>
               <p className="listing-name">{listing.title}</p>

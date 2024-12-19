@@ -279,7 +279,7 @@ public class APITests {
   @Test
   public void testAddUserSuccess() throws IOException {
     Random random = new Random();
-    int randomNumber = random.nextInt(20) + 0;
+    int randomNumber = random.nextInt(200) + 0;
     String email = "BOBJOE" + randomNumber + "@risd.edu";
 
     HttpURLConnection loadConnection =
@@ -654,7 +654,7 @@ public class APITests {
   @Test
   public void testGetUserListingsSuccess() throws IOException {
     HttpURLConnection loadConnection =
-        tryRequest("get-user-listings?seller_id=user_2qHcjnVBS1wW6Q6bcNPX4h7uc5T");
+        tryRequest("get-user-listings?seller_id=user_2qIsp60kbn35x0c0636nJtYNCSX");
 
     assertEquals(200, loadConnection.getResponseCode());
 
@@ -668,25 +668,26 @@ public class APITests {
     // Extract the 'listings' field
     List<Map<String, Object>> listings = (List<Map<String, Object>>) responseBody.get("listings");
 
-    Map<String, Object> listing = listings.get(2);
+    Map<String, Object> listing = listings.get(0);
 
-    assertEquals(161.0, listing.get("id"));
-    assertEquals("BLOCK OF CHEESE", listing.get("title"));
-    assertEquals("Good", listing.get("condition"));
-    assertEquals(2.0, listing.get("price"));
-    assertEquals("CHEESE", listing.get("description"));
-    assertEquals("Books", listing.get("category"));
+    assertEquals(177.0, listing.get("id"));
+    assertEquals("lamp", listing.get("title"));
+    assertEquals("New", listing.get("condition"));
+    assertEquals(20.0, listing.get("price"));
+    assertEquals("its a lamp!", listing.get("description"));
+    assertEquals("Furniture", listing.get("category"));
     assertEquals(true, listing.get("available"));
     assertEquals(
-        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734462558914-Add%20Listing.png",
+        "https://qguaazfosybrxefngxta.supabase.co/storage/v1/object/public/images/1734396290137-lamp.webp",
         listing.get("image_url"));
 
     // Check that 'tags' is an array with the expected value
     List<String> tags = (List<String>) listing.get("tags");
-    assertEquals(3, tags.size());
-    assertEquals("i", tags.get(0));
-    assertEquals("love", tags.get(1));
-    assertEquals("cheese", tags.get(2));
+    assertEquals(4, tags.size());
+    assertEquals("from amazon", tags.get(0));
+    assertEquals("lamp", tags.get(1));
+    assertEquals("unopened", tags.get(2));
+    assertEquals("unused", tags.get(3));
   }
 
   // testing unsuccessful api call for GetUserListings endpoint bc missing seller id

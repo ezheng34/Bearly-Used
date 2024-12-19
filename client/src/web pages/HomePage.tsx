@@ -345,6 +345,10 @@ const HomePage: React.FC = () => {
         data-bs-toggle="dropdown"
         id="DropdownPrice"
         aria-expanded="false"
+        style={{
+          position: "relative",
+          left: "20px",
+        }}
       >
         {selectedPrice ? `Price: ${selectedPrice.label}` : "Price"}
       </button>
@@ -466,6 +470,10 @@ const HomePage: React.FC = () => {
                 data-bs-toggle="dropdown"
                 id="DropdownCategory"
                 aria-expanded="false"
+                style={{
+                  position: "relative", 
+                  left: "40px",
+                }}
               >
                 {selectedCategory || "Categories"}
               </button>
