@@ -18,6 +18,7 @@ interface ListingForm {
   images: File[];
 }
 
+// defines the props that the ListItemPopup component can accept
 interface ListItemPopupProps {
   onSubmit?: () => void;
   isEditing?: boolean;
@@ -27,7 +28,7 @@ interface ListItemPopupProps {
 
 /**
  * Renders a ListItemPopup modal to allow the user to create a Listing or edit a preexisting Listing.
- * 
+ *
  * @returns {JSX.Element} A JSX element representing a ListItemPopup modal.
  */
 const ListItemPopup: React.FC<ListItemPopupProps> = ({
@@ -69,6 +70,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
   ];
   const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 
+  // populate form fields when editing an existing listing
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -76,6 +78,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     }
   }, [initialData]);
 
+  // generate image previews for uploaded images
   useEffect(() => {
     const objectUrls = formData.images.map((image) =>
       URL.createObjectURL(image)
@@ -93,6 +96,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     };
   }, [formData.images]);
 
+  // handles input changes for all form fields
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -111,6 +115,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     });
   };
 
+  // adds a new tag when the user presses "Enter"
   const handleTagKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
@@ -124,6 +129,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     }
   };
 
+  // removes a tag from the list
   const removeTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
@@ -131,6 +137,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     });
   };
 
+  // handles image uploads and appends them to the form data
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFormData({
@@ -152,6 +159,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
     });
   };
 
+  // handles form submission, uploading images and sending data to the backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -237,6 +245,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         }
       }
 
+      // reset form data and notify the parent component
       setFormData({
         sellerId: 0,
         title: "",
@@ -270,6 +279,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         {isEditing ? "Edit Listing" : "Create Listing"}
       </h2>
 
+      {/* form for creating or editing a listing */}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Title</label>
@@ -280,8 +290,11 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             onChange={handleInputChange}
             className="form-control"
             required
+            aria-label="Enter the title of the listing"
           />
         </div>
+
+        {/* description input */}
         <div className="mb-3">
           <label className="form-label">Description</label>
           <textarea
@@ -291,9 +304,11 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             className="form-control"
             rows={4}
             required
+            aria-label="Enter a description for the listing"
           />
         </div>
 
+        {/* price and category inputs */}
         <div className="row mb-3">
           <div className="col-md-6">
             <label className="form-label">Price</label>
@@ -318,6 +333,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
               className="form-control"
               placeholder="0.00"
               required
+              aria-label="Enter the price for the listing"
             />
           </div>
 
@@ -329,6 +345,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
               onChange={handleInputChange}
               className="form-control"
               required
+              aria-label="Select a category for the listing"
             >
               <option value="">Select category</option>
               {categories.map((category) => (
@@ -340,6 +357,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
+        {/* condition dropdown */}
         <div className="mb-3">
           <label className="form-label">Condition</label>
           <select
@@ -348,6 +366,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             onChange={handleInputChange}
             className="form-control"
             required
+            aria-label="Select the condition of the listing"
           >
             <option value="">Select condition</option>
             {conditions.map((condition) => (
@@ -358,18 +377,23 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </select>
         </div>
 
+        {/* tags input */}
         <div className="mb-3">
           <label className="form-label">Tags</label>
           <div className="tag-container">
             {formData.tags.map((tag, i) => (
-              <span key={i} className="badge bg-secondary me-2">
+              <span
+                key={i}
+                className="badge bg-secondary me-2"
+                aria-label="Remove tag"
+              >
                 {tag}
                 <button
                   key={i}
                   type="button"
                   onClick={() => removeTag(tag)}
                   className="btn-close btn-close-white ms-2"
-                  aria-label="Remove tag"
+                  aria-label={`Remove tag ${tag}`}
                 />
               </span>
             ))}
@@ -382,9 +406,11 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             onKeyDown={handleTagKeyDown}
             className="form-control"
             placeholder="Type and press Enter to add tags"
+            aria-label="Enter tags for the listing, press Enter to add"
           />
         </div>
 
+        {/* image upload and preview */}
         <div className="mb-3">
           <label className="form-label">Image</label>
 
@@ -396,6 +422,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
                 alt="Existing Image"
                 className="img-thumbnail mb-2"
                 style={{ maxWidth: "200px", maxHeight: "200px" }}
+                aria-label="Preview of the existing uploaded image"
               />
               <button
                 type="button"
@@ -403,6 +430,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
                 onClick={() =>
                   setFormData((prev) => ({ ...prev, imageUrl: "", images: [] }))
                 }
+                aria-label="Remove existing image"
               >
                 Remove Image
               </button>
@@ -418,6 +446,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
             onChange={handleImageUpload}
             className="form-control"
             required={!isEditing || !formData.imageUrl} // Only required if not editing or no imageUrl exists
+            aria-label="Upload images for the listing"
           />
 
           {/* Preview newly uploaded images */}
@@ -433,7 +462,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
                 <button
                   type="button"
                   className="btn-close position-absolute top-0 end-0"
-                  aria-label="Remove image"
+                  aria-label={`Remove uploaded image ${index + 1}`}
                   onClick={() => removeImage(index)}
                 ></button>
               </div>
@@ -441,7 +470,14 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
           </div>
         </div>
 
-        <button type="submit" className="btn btn-submit w-100">
+        {/* submit button */}
+        <button
+          type="submit"
+          className="btn btn-submit w-100"
+          aria-label={
+            isEditing ? "Save changes to the listing" : "Create new listing"
+          }
+        >
           {isEditing ? "Save changes" : "Create listing"}
         </button>
       </form>

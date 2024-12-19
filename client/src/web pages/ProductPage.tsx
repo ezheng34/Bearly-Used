@@ -41,22 +41,22 @@ interface Seller {
 }
 
 /**
- * Renders the Product Page. Each Product has a unique Product page. 
- * 
+ * Renders the Product Page. Each Product has a unique Product page.
+ *
  * @returns {JSX.Element} A JSX element representing a Product Page.
  */
 const ProductPage: React.FC = () => {
-  const { user } = useUser();
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { user } = useUser(); // retrieves the current user
+  const { id } = useParams(); // gets the listing ID from the URL
+  const navigate = useNavigate(); // handles navigation between pages
   // USED FOR MOCK DATA
   // const product = mockProducts.mockProducts.find((p) => p.id === Number(id));
   // const [mainImage, setMainImage] = useState(product?.images[0]);
 
-  const [product, setProduct] = useState<Listing | null>(null);
-  const [seller, setSeller] = useState<Seller | null>(null);
-  const [mainImage, setMainImage] = useState<string>("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [product, setProduct] = useState<Listing | null>(null); // stores the product details
+  const [seller, setSeller] = useState<Seller | null>(null); // stores the seller's information
+  const [mainImage, setMainImage] = useState<string>(""); // stores the main image of the product
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // controls the visibility of the delete confirmation modal
 
   const handleViewProfile = (sellerId: string) => {
     navigate(`/seller/${sellerId}`);
@@ -180,7 +180,7 @@ const ProductPage: React.FC = () => {
       condition: listing?.condition,
       imageUrl: listing?.image_url,
       tags: listing?.tags,
-      images: [], // TODO figure out how to handle existing images
+      images: [],
     };
     setEditingListing(listing);
   };
@@ -204,6 +204,7 @@ const ProductPage: React.FC = () => {
     }
   };
 
+  // initializes the modal for editing the listing
   useEffect(() => {
     const modalElement = document.getElementById("editListingModal");
     if (modalElement) {
@@ -216,11 +217,16 @@ const ProductPage: React.FC = () => {
   return (
     <div className="product-page">
       <div className="header">
-        <button onClick={handleBack} className="back-link">
+        <button
+          onClick={handleBack}
+          className="back-link"
+          aria-label="Go back to the previous page"
+        >
           <svg
             className="back-icon"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -231,65 +237,78 @@ const ProductPage: React.FC = () => {
         <div className="row">
           {/* Product Images */}
           <div className="col-md-6">
-            <div className="main-image-container">
+            <div
+              className="main-image-container"
+              aria-label="Main Product Image"
+            >
               <img
                 src={mainImage}
                 alt={product?.title}
                 className="product-image"
               />
             </div>
-            {/* Rendering logic for multiple images -- can be integrated in later */}
-            {/* <div className="thumbnail-container">
-              <div className="d-flex gap-3">
-                {product?.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`${product?.title} view ${index + 1}`}
-                    className={`thumbnail ${
-                      mainImage === image ? "active" : ""
-                    }`}
-                    onClick={() => setMainImage(image)}
-                  />
-                ))}
-              </div>
-            </div> */}
           </div>
 
           {/* Product Info */}
-          <div className="col-md-6 product-info">
-            <h1 className="product-title">{product?.title}</h1>
-            <div className="product-price">${product?.price}</div>
-            <div className="tag-container">
+          <div
+            className="col-md-6 product-info"
+            aria-label="Product Information"
+          >
+            <h1 className="product-title" aria-label="Product Title">
+              {product?.title}{" "}
+            </h1>
+            <div className="product-price" aria-label="Product Price">
+              ${product?.price}
+            </div>
+            <div className="tag-container" aria-label="Product Tags">
               {product?.tags.map((tag, index) => (
                 <span key="tag" className="badge bg-secondary me-2">
                   {tag}
                 </span>
               ))}
             </div>
-            <p className="product-description">{product?.description}</p>
+            <p className="product-description" aria-label="Product Description">
+              {product?.description}
+            </p>
 
             {/* Seller Information Section */}
-            <div className="seller-info-section">
+            <div
+              className="seller-info-section"
+              aria-label="Seller Information Section"
+            >
               <h3>Seller Information</h3>
-              <div className="seller-details">
-                <div className="seller-detail">
+              <div className="seller-details" aria-label="Seller Details">
+                <div
+                  className="seller-detail"
+                  aria-label={`Seller Name: ${seller?.name || "Anonymous"}`}
+                >
                   <i className="bi bi-person"></i>
                   <span>{seller?.name || "Anonymous"}</span>
                 </div>
-                <div className="seller-detail">
+                <div
+                  className="seller-detail"
+                  aria-label={`Seller School: ${
+                    seller?.school || "Unknown School"
+                  }`}
+                >
                   <i className="bi bi-building"></i>
                   <span>{seller?.school || "Unknown School"}</span>
                 </div>
-                <div className="seller-detail">
+                <div
+                  className="seller-detail"
+                  aria-label={`Seller Email: ${
+                    seller?.email || "No email provided"
+                  }`}
+                >
                   <i className="bi bi-envelope"></i>
                   <span>{seller?.email || "No email provided"}</span>
                   <button
                     className="copy-email-btn"
                     onClick={copyEmail}
                     title="Copy email address"
+                    aria-label="Copy email address to clipboard"
                   >
-                    <i className="bi bi-clipboard"></i>
+                    <i className="bi bi-clipboard" aria-hidden="true"></i>
                   </button>
                 </div>
                 <button
@@ -304,16 +323,18 @@ const ProductPage: React.FC = () => {
             </div>
 
             {seller?.clerk_id === user?.id ? (
-              <div className="action-buttons">
+              <div className="action-buttons" aria-label="Seller Actions">
                 <button
                   className="btn btn-edit"
                   onClick={() => handleEditListing(product)}
+                  aria-label="Edit Listing"
                 >
                   <i className="bi bi-pencil"></i> Edit
                 </button>
                 <button
                   className="btn btn-sold"
                   onClick={() => handleMarkAsSold()}
+                  aria-label="Mark Listing as Sold"
                 >
                   <i className="bi bi-check-circle"></i> Mark as sold
                 </button>
@@ -321,6 +342,7 @@ const ProductPage: React.FC = () => {
                 <button
                   className="btn btn-delete"
                   onClick={() => setShowDeleteConfirm(true)}
+                  aria-label="Delete Listing"
                 >
                   <i className="bi bi-trash"></i> Delete listing
                 </button>
@@ -339,9 +361,13 @@ const ProductPage: React.FC = () => {
                           type="button"
                           className="btn-close"
                           onClick={() => setShowDeleteConfirm(false)}
+                          aria-label="Delete Listing Confirmation"
                         ></button>
                       </div>
-                      <div className="modal-body">
+                      <div
+                        className="modal-body"
+                        aria-label="Are you sure you want to delete the listing?"
+                      >
                         <p>
                           Are you sure you want to delete this listing? This
                           action cannot be undone.
@@ -352,6 +378,7 @@ const ProductPage: React.FC = () => {
                           type="button"
                           className="btn btn-cancel"
                           onClick={() => setShowDeleteConfirm(false)}
+                          aria-label="Cancel"
                         >
                           Cancel
                         </button>
@@ -359,6 +386,7 @@ const ProductPage: React.FC = () => {
                           type="button"
                           id="confirm-delete-listing"
                           className="btn btn-delete"
+                          aria-label="Yes, Delete Listing"
                           onClick={() => {
                             handleDeleteListing();
                             setShowDeleteConfirm(false);
@@ -392,6 +420,8 @@ const ProductPage: React.FC = () => {
           {editingListing && (
             <div
               className="modal fade show"
+              aria-label="Edit Listing Popup"
+
               style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
             >
               <div className="modal-dialog modal-lg modal-dialog-centered">
@@ -399,6 +429,7 @@ const ProductPage: React.FC = () => {
                   <button
                     type="button"
                     className="btn-close"
+                    aria-label="Close popup"
                     style={{
                       fontSize: "0.75rem",
                       margin: "0.5rem",

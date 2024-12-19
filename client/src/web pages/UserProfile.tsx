@@ -33,9 +33,9 @@ type UserProfile = {
 };
 
 /**
- * Renders a User Profile Page. Displays the User's information listings. 
- * 
- * @returns {JSX.Element} A JSX element representing a User Profile Page. 
+ * Renders a User Profile Page. Displays the User's information listings.
+ *
+ * @returns {JSX.Element} A JSX element representing a User Profile Page.
  */
 const UserProfile: React.FC = () => {
   const { user } = useUser();
@@ -226,9 +226,10 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="user-profile-container">
-      <div className="header">
-        <Link to="/" className="back-link">
+    <div className="user-profile-container" aria-label="User profile page">
+      <div className="header" aria-label="Navigation header">
+        {" "}
+        <Link to="/" className="back-link" aria-label="Go back to homepage">
           <svg
             className="back-icon"
             viewBox="0 0 24 24"
@@ -241,23 +242,36 @@ const UserProfile: React.FC = () => {
           className="create-listing"
           data-bs-toggle="modal"
           data-bs-target="#addListingModal"
+          aria-label="Create new listing"
         >
           Create Listing
         </button>
       </div>
 
-      <div className="profile-container">
+      <div className="profile-container" aria-label="User profile details">
         <div className="profile">
-          <img className="user-page-profile-picture" src={user?.imageUrl}></img>
+          <img
+            className="user-page-profile-picture"
+            src={user?.imageUrl}
+            alt="User profile"
+          ></img>
           <div className="profile-info">
-            <h2 className="name">{userProfile?.name || "Loading..."}</h2>
-            <p className="school">
+            <h2 className="name" aria-label={`User name: ${userProfile?.name}`}>
+              {userProfile?.name || "Loading..."}
+            </h2>
+            <p className="school" aria-label={`School: ${userProfile?.school}`}>
               School: {userProfile?.school || "Loading..."}
             </p>
-            <p className="email">Email: {userProfile?.email || "Loading..."}</p>
-            <p className="phone">
+            <p className="email" aria-label={`Email: ${userProfile?.email}`}>
+              Email: {userProfile?.email || "Loading..."}
+            </p>
+            <p
+              className="phone"
+              aria-label={`Phone number: ${userProfile?.phone_number}`}
+            >
               Phone Number: {userProfile?.phone_number || "Loading..."}
             </p>
+
             {/* <div className="tags">
               Interests:
               {userProfile?.tags?.map((tag: string) => (
@@ -268,7 +282,11 @@ const UserProfile: React.FC = () => {
             </div> */}
           </div>
         </div>
-        <button className="edit-profile" onClick={handleEditProfile}>
+        <button
+          className="edit-profile"
+          aria-label="Edit profile"
+          onClick={handleEditProfile}
+        >
           Edit Profile
         </button>
 
@@ -276,9 +294,13 @@ const UserProfile: React.FC = () => {
         {editingProfile && (
           <div
             className="modal fade show"
+            aria-label="Edit Profile Modal"
             style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
           >
-            <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div
+              className="modal-dialog modal-lg modal-dialog-centered"
+              aria-labelledby="editProfileTitle"
+            >
               <div className="modal-content">
                 <button
                   type="button"
@@ -292,9 +314,10 @@ const UserProfile: React.FC = () => {
                     setEditingProfile(null);
                     document.body.style.overflow = "auto";
                   }}
+                  aria-label="Close Edit Profile Modal"
                 ></button>
 
-                <div className="modal-body">
+                <div className="modal-body" aria-label="Edit Profile Form">
                   {userProfile ? (
                     <EditProfilePopup
                       initialData={userProfile}
@@ -316,9 +339,13 @@ const UserProfile: React.FC = () => {
         {editingListing && (
           <div
             className="modal fade show"
+            aria-label="Edit Listing Modal"
             style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
           >
-            <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div
+              className="modal-dialog modal-lg modal-dialog-centered"
+              aria-labelledby="editListingTitle"
+            >
               <div className="modal-content">
                 <button
                   type="button"
@@ -332,9 +359,10 @@ const UserProfile: React.FC = () => {
                     setEditingListing(null);
                     document.body.style.overflow = "auto";
                   }}
+                  aria-label="Close Edit Listing Modal"
                 ></button>
 
-                <div className="modal-body">
+                <div className="modal-body" aria-label="Edit Listing Form">
                   <ListItemPopup
                     isEditing={true}
                     initialData={{
@@ -363,27 +391,51 @@ const UserProfile: React.FC = () => {
         )}
       </div>
 
-      <h2>My Listings</h2>
-      <div className="listings-navigation">
+      <h2 aria-label="My listings section">My Listings</h2>
+      <div className="listings-navigation" aria-label="Listings navigation">
         <button
           className="arrow-btn"
           onClick={() => handlePrevPage(listingsPage, setListingsPage)}
           disabled={listingsPage === 0}
+          aria-label="Previous page of listings"
         >
           &#8592;
         </button>
-        <div className="listings">
+        <div className="listings" aria-label="List of user listings">
           {visibleListings.map((listing: Listing) => (
-            <div key={listing.id} className="listing">
-              <img className="listing-image" src={listing.image_url} />
-              <p className="listing-price">${listing.price.toFixed(2)}</p>
-              <p className="listing-name">{listing.title}</p>
-              {!listing.available && <div className="sold-badge">SOLD</div>}
-              <div className="listing-actions">
+            <div
+              key={listing.id}
+              className="listing"
+              aria-label={`Listing for ${listing.title}`}
+            >
+              <img
+                className="listing-image"
+                src={listing.image_url}
+                alt={`${listing.title} image`}
+              />
+              <p
+                className="listing-price"
+                aria-label={`Price: $${listing.price}`}
+              >
+                ${listing.price.toFixed(2)}
+              </p>
+              <p
+                className="listing-name"
+                aria-label={`Listing title: ${listing.title}`}
+              >
+                {listing.title}
+              </p>
+              {!listing.available && (
+                <div className="sold-badge" aria-label="Sold badge">
+                  SOLD
+                </div>
+              )}
+              <div className="listing-actions" aria-label="Listing actions">
                 <button
                   className="btn btn-sm btn-outline-primary"
                   onClick={() => handleEditListing(listing)}
                   title="Edit"
+                  aria-label="Edit listing"
                 >
                   <i className="bi bi-pencil"></i>
                 </button>
@@ -392,6 +444,11 @@ const UserProfile: React.FC = () => {
                   onClick={() => {
                     handleMarkAsSold(listing, !listing.available);
                   }}
+                  aria-label={
+                    listing.available
+                      ? "Mark listing as sold"
+                      : "Unmark listing as sold"
+                  }
                 >
                   {!listing.available ? "Unmark as Sold" : "Mark as Sold"}
                 </button>
@@ -416,6 +473,7 @@ const UserProfile: React.FC = () => {
             handleNextPage(listingsPage, setListingsPage, listings)
           }
           disabled={(listingsPage + 1) * ITEMS_PER_PAGE >= listings.length}
+          aria-label="Next page of listings"
         >
           &#8594;
         </button>
@@ -484,7 +542,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && product && (
         <div

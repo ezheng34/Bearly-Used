@@ -17,7 +17,7 @@ interface EditProfileProps {
 
 /**
  * Renders a modal to allow the user to edit their personal information (name, school, phone number).
- * 
+ *
  * @returns {JSX.Element} A JSX element representing an Edit User Profile modal.
  */
 const EditProfilePopup: React.FC<EditProfileProps> = ({
@@ -57,7 +57,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
     }
   };
 
-  //handles submission of edits made 
+  //handles submission of edits made
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -66,11 +66,13 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
   };
 
   return (
-    <div>
-      <h2 className="text-center mb-4">Edit Profile</h2>
-      <form onSubmit={handleSubmit}>
+    <div aria-label="Edit Profile Modal">
+      <h2 className="text-center mb-4" aria-label="Edit Profile Header">
+        Edit Profile
+      </h2>
+      <form onSubmit={handleSubmit} aria-label="Edit Profile Form">
         {/* Editing Name */}
-        <div className="mb-3">
+        <div className="mb-3" aria-label="Name Input Section">
           <label htmlFor="name" className="form-label">
             Name
           </label>
@@ -82,11 +84,13 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
             onChange={handleInputChange}
             className="form-control"
             required
+            aria-required="true"
+            aria-label="Edit your name"
           />
         </div>
 
         {/* Editing School */}
-        <div className="mb-3">
+        <div className="mb-3" aria-label="School Dropdown Section">
           <label htmlFor="school" className="form-label">
             School
           </label>
@@ -97,6 +101,8 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
             onChange={(e) => handleInputChange(e)}
             className="form-control"
             required
+            aria-required="true"
+            aria-label="Select your school"
           >
             <option value="">Select a school</option>
             <option value="Brown">Brown</option>
@@ -105,7 +111,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
         </div>
 
         {/* Editing Phone Number */}
-        <div className="mb-3">
+        <div className="mb-3" aria-label="Phone Number Input Section">
           <label htmlFor="phone_number" className="form-label">
             Phone Number
           </label>
@@ -119,6 +125,8 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
             placeholder="123-456-7890"
             pattern="^\d{3}-\d{3}-\d{4}$"
             required
+            aria-required="true"
+            aria-label="Edit your phone number in the format 123-456-7890"
           />
         </div>
 
@@ -127,6 +135,7 @@ const EditProfilePopup: React.FC<EditProfileProps> = ({
           type="submit"
           className="btn btn-primary"
           disabled={isSubmitting}
+          aria-label="Save changes button"
         >
           {isSubmitting ? "Saving..." : "Save Changes"}
         </button>
