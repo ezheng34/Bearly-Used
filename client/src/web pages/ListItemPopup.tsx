@@ -386,7 +386,7 @@ const ListItemPopup: React.FC<ListItemPopupProps> = ({
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Images</label>
+          <label className="form-label">Image</label>
 
           {/* Show existing image preview if editing and imageUrl exists */}
           {isEditing && formData.imageUrl && (

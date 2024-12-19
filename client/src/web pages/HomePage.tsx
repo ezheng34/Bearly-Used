@@ -445,6 +445,7 @@ const HomePage: React.FC = () => {
       <nav className="navbar navbar-expand-lg">
         <div className="container-fluid">
           <ul className="navbar-nav">
+          <div className="dropdown-container">
 
             {/* Prices Dropdown */}
             {renderPricesDropdown()}
@@ -506,6 +507,7 @@ const HomePage: React.FC = () => {
                 </button>
               </li>
             )}
+            </div>
           </ul>
 
           {/* Search */}
@@ -659,7 +661,9 @@ const HomePage: React.FC = () => {
               aria-label="Close"
               style={{
                 fontSize: "0.75rem",
-                padding: "0.25rem",
+                padding: "0.5rem",
+                paddingLeft: "1rem",
+                paddingTop: "1rem"
               }}
             ></button>
 
