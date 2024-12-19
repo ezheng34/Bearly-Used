@@ -10,6 +10,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a UpdateListingHandler object.
+ *
+ * <p>Handles update-listing request to our server, which is the request used to update a Listing
+ * object from the database. Implements Route: Route is the SparkJava interface for request
+ * handlers.
+ */
 public class UpdateListingHandler implements Route {
 
   public StorageInterface dbHandler;
@@ -18,6 +25,13 @@ public class UpdateListingHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles update-listing request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -79,7 +93,8 @@ public class UpdateListingHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // validate inputs
+  // validation methods for user input
+
   private Long validateListingId(String listingIdStr) {
     if (listingIdStr == null || listingIdStr.isEmpty()) {
       throw new IllegalArgumentException("Listing ID is required");

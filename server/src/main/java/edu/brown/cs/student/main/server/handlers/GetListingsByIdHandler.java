@@ -9,6 +9,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a GetListingsByIdHandler object.
+ *
+ * <p>Handles get-listing-by-id request to our server, which is the request used to get a specific
+ * Listing object via its unique id from the database. Implements Route: Route is the SparkJava
+ * interface for request handlers.
+ */
 public class GetListingsByIdHandler implements Route {
   public StorageInterface dbHandler;
   private Gson gson;
@@ -18,6 +25,13 @@ public class GetListingsByIdHandler implements Route {
     this.gson = new Gson();
   }
 
+  /**
+   * Method that handles get-listing-by-id request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -44,28 +58,6 @@ public class GetListingsByIdHandler implements Route {
         responseMap.put("error", "Listing not found");
         return gson.toJson(responseMap);
       }
-
-      //         String idParam = request.params(":id");
-      //         Long id = validateListingId(idParam);
-
-      //         Listing listing = dbHandler.getListingById(id);
-
-      //         if (listing != null) {
-      //                 responseMap.put("response_type", "success");
-      //                 responseMap.put("listing", listing);
-      //             } else {
-      //                 responseMap.put("response_type", "failure");
-      //                 responseMap.put("error", "Listing not found");
-      // } catch (IllegalArgumentException e) {
-      //   responseMap.put("response_type", "failure");
-      //   responseMap.put("error", "Invalid input: " + e.getMessage());
-      // } catch (Exception e) {
-      //   responseMap.put("response_type", "failure");
-      //   responseMap.put("error", "Unexpected error: " + e.getMessage());
-      // }
-
-      //     return Utils.toMoshiJson(responseMap);
-      //   }
     } catch (Exception e) {
       responseMap.put("response_type", "failure");
       responseMap.put("error", "Invalid input: " + e.getMessage());
@@ -73,19 +65,11 @@ public class GetListingsByIdHandler implements Route {
     }
   }
 
+  // validation method for user input
   private Long validateListingId(String listingIdStr) {
     if (listingIdStr == null || listingIdStr.isEmpty()) {
       throw new IllegalArgumentException("Listing ID is required");
     }
     return Long.parseLong(listingIdStr);
   }
-
-  //   // validate inputs
-  //   private Long validateListingId(String listingIdStr) {
-  //     Long listingId = Long.parseLong(listingIdStr);
-  //     if (listingId < 0) {
-  //       throw new IllegalArgumentException("Listing ID is required");
-  //     }
-  //     return listingId;
-
 }

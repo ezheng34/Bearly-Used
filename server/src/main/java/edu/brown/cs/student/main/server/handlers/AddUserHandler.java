@@ -8,6 +8,12 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a AddUserHandler object.
+ *
+ * <p>Handles add-user request to our server, which is the request used to add a new User object to
+ * the database. Implements Route: Route is the SparkJava interface for request handlers.
+ */
 public class AddUserHandler implements Route {
 
   public StorageInterface dbHandler;
@@ -16,6 +22,13 @@ public class AddUserHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles add-user request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -26,8 +39,6 @@ public class AddUserHandler implements Route {
       String name = validateName(request.queryParams("name"));
       String phoneNumber = validatePhoneNumber(request.queryParams("phone_number"));
       String school = validateSchool(request.queryParams("school"));
-
-      // TODO: error checking
 
       // EXAMPLE QUERY:
       // http://localhost:3232/add-user?clerk_id=12345&email=abc@gmail.com&name=bob&phone_number=1234567890&school=brown
@@ -53,17 +64,12 @@ public class AddUserHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // validation for user input
+  // validation methods for user input
+
   private String validateEmail(String email) {
     if (email == null || email.trim().isEmpty()) {
       throw new IllegalArgumentException("Email is required");
     }
-
-    // // Basic email validation regex
-    // if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
-    //   throw new IllegalArgumentException("Invalid email format");
-    // }
-
     // Check that email ends with "@risd.edu" or "@brown.edu"
     String lowerEmail = email.toLowerCase();
     if (!lowerEmail.endsWith("@risd.edu") && !lowerEmail.endsWith("@brown.edu")) {
@@ -72,14 +78,6 @@ public class AddUserHandler implements Route {
 
     return email.trim();
   }
-
-  //  private String validateUserId(String userIdStr) {
-  //    int userId = Integer.parseInt(userIdStr);
-  //    if (userId < 0) {
-  //      throw new IllegalArgumentException("Invalid user id inputted");
-  //    }
-  //    return userIdStr;
-  //  }
 
   private String validateName(String name) {
     if (name == null || name.trim().isEmpty()) {

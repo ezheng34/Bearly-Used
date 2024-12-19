@@ -7,6 +7,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a DeleteListingHandler object.
+ *
+ * <p>Handles delete-listing request to our server, which is the request used to delete a Listing
+ * object from the database. Implements Route: Route is the SparkJava interface for request
+ * handlers.
+ */
 public class DeleteListingHandler implements Route {
 
   public StorageInterface dbHandler;
@@ -15,6 +22,13 @@ public class DeleteListingHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles delete-listing request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -45,6 +59,8 @@ public class DeleteListingHandler implements Route {
 
     return Utils.toMoshiJson(responseMap);
   }
+
+  // validation method for user input
 
   private Long validateListingId(String listingIdStr) {
     if (listingIdStr == null || listingIdStr.isEmpty()) {

@@ -11,6 +11,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a GetListingsHandler object.
+ *
+ * <p>Handles get-listings request to our server, which is the request used to get all Listing
+ * object from the database. Implements Route: Route is the SparkJava interface for request
+ * handlers.
+ */
 public class GetListingsHandler implements Route {
 
   public StorageInterface dbHandler;
@@ -19,6 +26,13 @@ public class GetListingsHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles get-listings request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -52,8 +66,6 @@ public class GetListingsHandler implements Route {
         }
       }
 
-      System.out.println("tagsList: " + tagsList);
-
       List<Listing> res =
           this.dbHandler.getListings(
               title,
@@ -77,6 +89,8 @@ public class GetListingsHandler implements Route {
 
     return Utils.toMoshiJson(responseMap);
   }
+
+  // validation methods for user input
 
   private Long validateListingId(String listingIdStr) {
     if (listingIdStr == null || listingIdStr.isEmpty()) {

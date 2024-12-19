@@ -2,7 +2,10 @@ package edu.brown.cs.student.main.server.classes;
 
 import java.util.List;
 
-/** Represents a listing */
+/**
+ * A class representing a Listing object. Contains accessor methods to access the data stored in a
+ * Listing object.
+ */
 public class Listing {
   public Long id;
   public String seller_id;
@@ -13,7 +16,6 @@ public class Listing {
   public String condition;
   public String image_url;
   public List<String> tags;
-
   public boolean available;
 
   public Listing(

@@ -8,6 +8,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a GetUserListingsHandler object.
+ *
+ * <p>Handles get-user-listings request to our server, which is the request used to get the Listing
+ * objects made by a specifc User object via the user's Clerk id from the database. Implements
+ * Route: Route is the SparkJava interface for request handlers.
+ */
 public class GetUserListingsHandler implements Route {
 
   private final StorageInterface dbHandler;
@@ -16,6 +23,13 @@ public class GetUserListingsHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles get-user-listing request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();

@@ -7,6 +7,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a GetUserHandler object.
+ *
+ * <p>Handles get-user request to our server, which is the request used to get a specifc User object
+ * via the user's Clerk id from the database. Implements Route: Route is the SparkJava interface for
+ * request handlers.
+ */
 public class GetUserHandler implements Route {
 
   private StorageInterface dbHandler;
@@ -15,6 +22,13 @@ public class GetUserHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles get-user request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -35,9 +49,6 @@ public class GetUserHandler implements Route {
         responseMap.put("response_type", "success");
         responseMap.put("user_data", userData);
       }
-      // } catch (NumberFormatException e) {
-      //   responseMap.put("response_type", "failure");
-      //   responseMap.put("error", "Invalid user ID format");
     } catch (IllegalArgumentException e) {
       responseMap.put("response_type", "failure");
       responseMap.put("error", "Invalid input: " + e.getMessage());

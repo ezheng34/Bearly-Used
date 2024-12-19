@@ -9,6 +9,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A class representing a Listing object. Contains accessor methods to access the data stored in a
+ * Listing object.
+ */
 public class AddListingHandler implements Route {
 
   public StorageInterface dbHandler;

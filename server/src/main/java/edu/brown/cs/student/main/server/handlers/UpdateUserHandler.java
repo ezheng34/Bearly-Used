@@ -9,9 +9,12 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-// USER cant update their tags yet
-// should user be allowed to switch their schools maybe not,
-
+/**
+ * A class representing a UpdateUserHandler object.
+ *
+ * <p>Handles update-user request to our server, which is the request used to update a User object
+ * from the database. Implements Route: Route is the SparkJava interface for request handlers.
+ */
 public class UpdateUserHandler implements Route {
   public StorageInterface dbHandler;
 
@@ -19,6 +22,13 @@ public class UpdateUserHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles update-user request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     System.out.println("Received request to update user");
@@ -66,14 +76,7 @@ public class UpdateUserHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // handlers to validate user input
-  //  private String validateUserId(String userIdStr) {
-  //    int userId = Integer.parseInt(userIdStr);
-  //    if (userId < 0) {
-  //      throw new IllegalArgumentException("Invalid user id inputted");
-  //    }
-  //    return userIdStr;
-  //  }
+  // validation methods for user input
 
   private String validateName(String name) {
     if (name == null || name.trim().isEmpty()) {

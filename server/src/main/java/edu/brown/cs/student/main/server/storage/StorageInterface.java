@@ -35,7 +35,6 @@ public interface StorageInterface {
 
   Optional<Listing> getListingById(Long listingId);
 
-  //   Listing getListingById(Long listingId);
   Listing obtainListing(Long listingId);
 
   boolean updateListing(Long listingId, Listing updatedListing);
@@ -47,14 +46,4 @@ public interface StorageInterface {
   boolean updateUser(String userId, User updatedUser);
 
   List<Map<String, Object>> getListingsBySellerId(String sellerId) throws Exception;
-
-  //  void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data);
-  //
-  //  List<Map<String, Object>> getCollection(String uid, String collection_id)
-  //      throws InterruptedException, ExecutionException;
-  //
-  //  void clearUser(String uid) throws InterruptedException, ExecutionException;
-  //
-  //  List<Map<String, Object>> getCollectionForAllUsers(String collection)
-  //      throws ExecutionException, InterruptedException;
 }

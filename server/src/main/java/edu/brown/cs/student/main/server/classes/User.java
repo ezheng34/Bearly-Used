@@ -1,5 +1,9 @@
 package edu.brown.cs.student.main.server.classes;
 
+/**
+ * A class representing an User object. Contains accessor methods to access the data stored in an
+ * User object.
+ */
 public class User {
 
   public String clerkId;
