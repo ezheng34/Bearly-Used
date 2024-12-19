@@ -10,8 +10,10 @@ import spark.Response;
 import spark.Route;
 
 /**
- * A class representing a Listing object. Contains accessor methods to access the data stored in a
- * Listing object.
+ * A class representing a AddListingHandler object.
+ *
+ * <p>Handles add-listing request to our server, which is the request used to add a new Listing
+ * object to the database. Implements Route: Route is the SparkJava interface for request handlers.
  */
 public class AddListingHandler implements Route {
 
@@ -21,6 +23,13 @@ public class AddListingHandler implements Route {
     this.dbHandler = dbHandler;
   }
 
+  /**
+   * Method that handles add-listing request
+   *
+   * @param request - request from user
+   * @param response - the response
+   * @return the response map, represented as a Map from String to Object
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
@@ -37,7 +46,6 @@ public class AddListingHandler implements Route {
       String imageUrl = validateImageUrl(request.queryParams("image_url"));
       // parse tags
       List<String> tags = parseTags(request.queryParams("tags"));
-      System.out.println("TAGS AFTER PARSING " + tags);
 
       // EXAMPLE QUERY:
       // http://localhost:3232/add-listing?seller_id=1&title=Book&available=true&description=Great+book
@@ -70,7 +78,8 @@ public class AddListingHandler implements Route {
     return Utils.toMoshiJson(responseMap);
   }
 
-  // handlers to validate user input
+  // validation methods for user input
+
   private String validateSellerId(String sellerIdStr) {
     if (sellerIdStr == null || sellerIdStr.isEmpty()) {
       throw new IllegalArgumentException("Seller ID is required");
